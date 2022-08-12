@@ -1,4 +1,0 @@
-*.html
-*.Rda
-!spec/*.html
-!spec/*.Rda
