@@ -1,0 +1,222 @@
+---
+title: "Brief summary of the analyses on the changes in loneliness during the first wave in Spain"
+author: 
+ - name: "Jesus Sierralaya"
+   url: https://github.com/JesusSierralaya
+   affiliation: CCOMS-UAM
+   affiliation-url: https://github.com/CCOMS-UAM
+date: today
+format: 
+  revealjs:
+    # footer: "Changes in loneliness during the first wave in Spain"
+    chalkboard: true
+    transition: slide
+---
+
+## Loneliness
+
+- Feeling of being isolated
+- Associated with worsening in physical and mental health
+- Urgent social problem even more in COVID context
+- Spain one of the most restrictive lockdown
+
+::: notes
+- [1]Lon. is a feeling of bein /ai/solated
+- [2]is associated with worsening in /fi/sical and mental health
+- [3]it was a social emergency due to the covid /nineteen/ and 
+- [4]Spain had one of the most restrictive lockdowns
+:::
+
+## Aims
+
+- Study the change in loneliness (UCLA scale) before and during the lockdown 
+- And the factors associated with this change
+
+::: notes
+- The principal /e/ims are to study the change in loneliness COMPILE with the UCLA scale before and during the lockdowm
+- [2] And study which factors are associated associated with these changes
+:::
+
+## Sample
+
+- n = 1002
+- 18+ from regions of Madrid and Barcelona
+- Project: Edad con Salud
+- Recruited following a multistage stratified design
+
+::: notes
+- [1]We have a sample of 1002 participans and 
+- [2] they were over 18 years old.
+- [3]These are part for the refreshment sample of the Edad con Salud project
+:::
+
+## Sociodemographic variables
+
+- Age grouped 
+- Sex
+- Marital status
+- Education level
+
+::: notes
+The soc. dem. that we take into account are...
+:::
+
+## Covariates (Scales)
+
+:::: {.columns}
+
+::: {.column width="50%"}
+- Social relationships 
+- A worsening in economy
+- Living alone
+- Resilience (BRS)
+- Neuroticism (EPQR-A)
+- Extraversion (EPQR-A)
+:::
+
+::: {.column width="50%"}
+- Physical activity (GPAQ)
+- Disability (WHO-DAS II)
+- Anxiety (GAD - CIDI 3)
+- Panic (PAN - CIDI 3)
+- Depression before (CIDI 3)
+- Depression during (CIDI 3)
+:::
+
+::::
+
+::: notes
+- We take into account three variables related to the covid
+- and some valid mental health tests
+:::
+
+# Parameter estimation
+
+- Characterization of Loneliness 
+  - Mixed model `lme4::lmer` to estimate means and CI
+  - `Loneliness ~ 0 + Assessment*factor + (1|ID)`
+- Regression Multivariate 
+  - General linear model `survey::svyglm` to estimate beta, CI and p values
+  - `Loneliness_before ~ offset(Loneliness_before) + factors`
+
+::: footer
+To improve the representativeness, sampling weights were generated according to the sex, age and city.
+:::
+
+
+::: notes
+- We fit the data with the mixed model for...
+- Next I will present the results of the demograp and the covariates with the most relevant changes in loneliness.
+:::
+
+# Characterization of Loneliness in the population
+
+## Loneliness Total
+
+::: {.r-stack}
+![](plot_total.png){.fragment}
+
+![](plot_total_slope.png){.fragment}
+:::
+
+
+## Age grouped 
+
+::: {.r-stack}
+![](plot_age.png){.fragment}
+
+![](plot_age_slope.png){.fragment}
+:::
+
+::: notes
+The older people are, the more loneliness they felt
+:::
+
+## Marital status
+
+::: {.r-stack}
+![](plot_marital.png){.fragment}
+
+![](plot_marital_slope.png){.fragment}
+:::
+
+::: notes
+The people who been married at least once they felt more lon. than the others groups.
+:::
+
+## Education level
+
+::: {.r-stack}
+![](plot_ed.png){.fragment}
+
+![](plot_ed_slope.png){.fragment}
+:::
+
+::: notes
+The lower education level people reached, the more loneliness they felt...
+:::
+
+## Social relationships
+
+::: {.r-stack}
+![](plot_social.png){.fragment}
+
+![](plot_social_slope.png){.fragment}
+:::
+
+::: notes
+- The important issues are from here---
+- The people who have had worse personal relationships have felt more loneliness during the confinement than before----as we can see here the CI dont overlap...
+- The other groups it remains the same
+:::
+
+## Depression Before
+
+::: {.r-stack}
+![](plot_depre_pre.png){.fragment}
+
+![](plot_depre_pre_slope.png){.fragment}
+:::
+
+::: notes
+In the depression test that was collected before the lockdown
+:::
+
+## Depression During
+
+::: {.r-stack}
+![](plot_depre_post.png){.fragment}
+
+![](plot_depre_post_slope.png){.fragment}
+:::
+
+::: notes
+The opposite happens...
+The people feel depressed...
+:::
+
+# Multivariate regression
+
+## Multivariate {.scrollable}
+
+![](multi.png)
+<!-- Example -->
+
+::: notes
+- [0] There are not important changes in the sociod
+- [1] but in the separated group of marital status we have a significant change in lon.
+- [3] Next, the group of social relationship felt more lone. and is more significant when the soc. rel. have worsened
+- [4] And we found something interesting about the neuroticism...the more neuroticism a person shows the less loneliness they felt.
+- [5] And last, we can see the depression is significant when is tested during the lockdown
+:::
+
+## Conclusion
+
+- There are changes in loneliness that could be due to the effect of lockdown
+- The most important factors related to change of loneliness are social relationships, neuroticism and depression during the lockdown
+
+::: notes
+- We can deepen in these factors in the future
+:::
+
+# Thank you for your attention

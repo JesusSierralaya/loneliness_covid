@@ -1,0 +1,743 @@
+---
+title: "Borrador del primer análisis del paper de soledad "
+author: "Jesús Sierralaya"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_float: true
+    number_sections: true
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+# rm(list = ls())
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(dplyr)
+library(haven)
+library(psych)
+library(magrittr)
+library(gtsummary)
+library(expss)
+library(survey)
+library(kableExtra)
+library(labelled)
+```
+
+# Especificación de las variables
+
+Las bases de datos son de con Salud -- Cohorte 2019: Ola 1 y el Subestudio Covid. Las variables Outcome han sido transformadas por el equipo de Edad con Salud del CCOMS.
+
+```{r Merge BDD}
+# El directorio está en:
+source("Archive/folder.R")
+# Cargamos las bases de datos
+ola1 <- DB_FILE_PRE |> read_dta()
+covid <- DB_FILE_POST |> read_dta()
+
+# Merge
+DB_colapsed <- full_join(ola1, covid, by = "ID_ECS")
+# Filtrado pre confinamiento y estado entrevista
+DB_filtered <- DB_colapsed |> filter(subsample_pre == 1 & ESTADO_ENTREVISTA == 1)
+
+# Añadimos la variable de los pesos
+pesos <- DB_FILE_WEIGHTS |> read_dta()
+DB_WEIGHTS <- DB_filtered |>
+  left_join(pesos, by = "ID_ECS") |>
+  select(wfinal_norm)
+DB_filtered$wfinal_norm <- DB_WEIGHTS$wfinal_norm
+```
+
+Confirmamos que tenemos `r nrow(DB_filtered)` casos.
+
+```{r Merge VO}
+# Cargamos las bases de datos de las VO en pre y post
+source("Archive/folder_VO.R")
+```
+
+La variable de respuesta a estudiar es Soledad (Loneliness) medida a través del cuestionario UCLA (Hughes et al., 2004) en la Ola 1 y el Subestudio Covid. En lugar de utilizar la variable Outcome ya transformada (escala 0-100) planteamos una nueva transformación (más usual en papers relacionados).
+
++-----------------------+----------------------------------------------+-----------+-----------+-------------------------------------+
+| Nombre                | Transformación                               | Formato   | Rango     | Origen                              |
++=======================+==============================================+===========+===========+=====================================+
+| Loneliness_c2019_pre  | Suma de los ítems Q6351, Q6352 y Q6353       | Discreto  | 3-9       | rawdata_c2019w1.dta                 |
++-----------------------+----------------------------------------------+-----------+-----------+-------------------------------------+
+| Loneliness_c2019_post | Suma de los ítems SOLO7_1, SOLO7_2 y SOLO7_3 | Discreto  | 3-9       | Edad_con_salud_Fichero_Completo.dta |
++-----------------------+----------------------------------------------+-----------+-----------+-------------------------------------+
+
+Las covariables
+
++---------------------+---------------------------------------------------------------+------------+----------+-------------------------------------------------------------+
+| Nombre              | Transformación                                                | Formato    | Rango    | Origen                                                      |
++=====================+===============================================================+============+==========+=============================================================+
+| sex                 | Q1009                                                         | Nominal    | 0-1      | rawdata_c2019w1.dta                                         |
++---------------------+---------------------------------------------------------------+------------+----------+-------------------------------------------------------------+
+| age_cat             | Categorizamos Q1011 en 4 grupos de 18-34, 35-49, 50-64 y 65+  | Ordinal    | 1-4      | rawdata_c2019w1.dta                                         |
++---------------------+---------------------------------------------------------------+------------+----------+-------------------------------------------------------------+
+| ed_level            | Q1016                                                         | Ordinal    | 1-6      | rawdata_c2019w1.dta                                         |
++---------------------+---------------------------------------------------------------+------------+----------+-------------------------------------------------------------+
+| rel_pers            | SOLO3                                                         | Ordinal    | 1-3      | Edad_con_salud_Fichero_Completo.dta                         |
++---------------------+---------------------------------------------------------------+------------+----------+-------------------------------------------------------------+
+| marital_st          | q1012_mar_stat                                                | Ordinal    | 1-5      | rawdata_c2019w1.dta                                         |
++---------------------+---------------------------------------------------------------+------------+----------+-------------------------------------------------------------+
+| whodas12_pre        | Description_disability.docx                                   | Continuo   | 0-100    | Outcome_disability.dta                                      |
++---------------------+---------------------------------------------------------------+------------+----------+-------------------------------------------------------------+
+| whodas12_post       | Description_disability.docx                                   | Continuo   | 0-100    | Outcome_disability.dta                                      |
++---------------------+---------------------------------------------------------------+------------+----------+-------------------------------------------------------------+
+| social_support_pre  | Description_loneliness, social support, social isolation.docx | Continuo   | 0-100    | Outcome_Loneliness, social support and social isolation.dta |
++---------------------+---------------------------------------------------------------+------------+----------+-------------------------------------------------------------+
+| social_support_post | Description_loneliness and social support_Subestudio_covid    | Continuo   | 0-100    | Outcome_loneliness and social support_Subestudio_covid.dta  |
++---------------------+---------------------------------------------------------------+------------+----------+-------------------------------------------------------------+
+| living_alone        | Description_social_interaction_Subestudio_covid.docx          | Dicotómico | 0-1      | Outcome_social interactions_Subestudio_covid.dta            |
++---------------------+---------------------------------------------------------------+------------+----------+-------------------------------------------------------------+
+| neuroticism         | Description_EPQR-A.docx                                       | Discreto   | 0-6      | Outcome_EPQR-A.dta                                          |
++---------------------+---------------------------------------------------------------+------------+----------+-------------------------------------------------------------+
+| extraversion        | Description_EPQR-A.docx                                       | Discreto   | 0-6      | Outcome_EPQR-A.dta                                          |
++---------------------+---------------------------------------------------------------+------------+----------+-------------------------------------------------------------+
+| sincerity           | Description_EPQR-A.docx                                       | Discreto   | 0-6      | Outcome_EPQR-A.dta                                          |
++---------------------+---------------------------------------------------------------+------------+----------+-------------------------------------------------------------+
+| physical            | Description_physical_activity.docx                            | Ordinal    | 0-2      | Outcome_physical_activity.dta                               |
++---------------------+---------------------------------------------------------------+------------+----------+-------------------------------------------------------------+
+| resilience_scale    | Description_Brief resilience scale_Subestudio_covid.doc       | Continuo   | 1-5      | Outcome_brief resilience scale_Subestudio_covid.dta         |
++---------------------+---------------------------------------------------------------+------------+----------+-------------------------------------------------------------+
+| depression_12m_pre  | Description_depression.docx                                   | Dicotómico | 0-1      | Outcome_depression_ICD10.dta                                |
++---------------------+---------------------------------------------------------------+------------+----------+-------------------------------------------------------------+
+| depression_30d_post | Description_depression_ICD10.docx                             | Dicotómico | 0-1      | Outcome_depression_ICD10.dta                                |
++---------------------+---------------------------------------------------------------+------------+----------+-------------------------------------------------------------+
+| GAD12m_pre          | Description_anxietyDSM4.docx                                  | Dicotómico | 0-1      | Outcome_anxietyDSM4.dta                                     |
++---------------------+---------------------------------------------------------------+------------+----------+-------------------------------------------------------------+
+| PAN12m_pre          | Description_panic.docx                                        | Dicotómico | 0-1      | Outcome_panic.dta                                           |
++---------------------+---------------------------------------------------------------+------------+----------+-------------------------------------------------------------+
+
+```{r cargar variables}
+# Aislamos las variables a utilizar en una Base de datos aparte
+DB_1 <- DB_filtered |>
+  select(ID_ECS,
+         q6351_companion, q6352_leftout, q6353_isolated, # Loneliness ola 1
+         SOLO7_1, SOLO7_2, SOLO7_3, # Loneliness ola 1
+         q1009_sex, # Sex
+         q1011_age,  # Age
+         q1016_highest, # Physical health
+         SOLO3, # afectado las relaciones personales
+         q1012_mar_stat, # marital status
+         economy_post, # economic
+         # variables outcome
+         whodas12_pre, # Disabilityh ola 1
+         whodas12_post, # Disability covid
+         social_support_pre, # Social support ola 1 
+         social_support_post, # Social support covid
+         living_alone, # Living status
+         neuroticism, # Personality - Neuroticism ola 1
+         extraversion, # Personality - Extraversion ola 1
+         sincerity, # Personality - Sincerity ola 1
+         physical, # Physical activity covid
+         resilience_scale, # Resilience scale covid
+         depression_12m_pre, # Depression ola 1
+         depression_30d_post, # Depression covid
+         GAD12m_pre, # Anxiety ola 1
+         PAN12m_pre # Panic ola 1
+         )
+```
+
+Transformación de la variable respuesta Loneliness ola 1 y covid
+
+```{r Loneliness}
+DB_2 <- DB_1 |>
+  mutate(loneliness_pre = q6351_companion + q6352_leftout + q6353_isolated) |>
+  mutate(loneliness_post = SOLO7_1 + SOLO7_2 + SOLO7_3) 
+```
+
+Transformación de covariables
+
+```{r Covariables}
+# Sexo
+DB_2 <- DB_2 |> 
+  mutate(sex = if_else(q1009_sex == 1, 0,  1))
+
+DB_2 <- DB_2 |> 
+  mutate(sex = if_else(q1009_sex == 1, "Male",  "Female"))
+
+addmargins(table(DB_2$sex))
+
+# Edad categorizada
+DB_2 <- DB_2 |>
+  mutate(age_cat = case_when(
+            q1011_age <= 34 ~ "18-33", 
+            q1011_age > 34 & q1011_age <= 50  ~ "34-49",
+            q1011_age > 50 & q1011_age <= 65 ~ "50-64", 
+            q1011_age > 65 ~ "65+"
+                             ))
+# Educational level
+DB_2 <- DB_2 |> 
+  mutate(ed_level = case_when(
+            q1016_highest < 1 ~ "Less than primary", 
+            q1016_highest == 2 ~ "Primary", 
+            q1016_highest == 3 | q1016_highest == 4 ~ "Secondary",
+            q1016_highest > 5 ~ "Tertiary"
+                             ))
+
+
+# afectado las relaciones personales
+DB_2 <- DB_2 |> 
+  mutate(rel_pers = case_when(
+            SOLO3 == 1 ~ "Han mejorado",
+            SOLO3 == 2 ~ "Han empeorado", 
+            SOLO3 == 3 ~ "Sin efecto"
+                             ))
+# Marital status
+DB_2 <- DB_2 |> 
+  mutate(marital_st = case_when(
+            q1012_mar_stat == 1  ~ "Single",
+            q1012_mar_stat == 2 | q1012_mar_stat == 3 ~ "Married/ Registered partnership", 
+            q1012_mar_stat == 4 | q1012_mar_stat == 5 ~ "Separated/ Widowed" 
+                             ))
+# Living alone
+DB_2 <- DB_2 |> 
+  mutate(living_alone = if_else(living_alone == 1, "Yes", "No"))
+
+# Physical activity
+DB_2 <- DB_2 |> 
+  mutate(physical = case_when(
+            physical == 0 ~ "High",
+            physical == 1 ~ "Moderate", 
+            physical == 2 ~ "Low"
+                             ))
+
+# Depression ola1
+DB_2 <- DB_2 |> 
+  mutate(depression_12m_pre = if_else(depression_12m_pre == 1, "Yes", "No"))
+
+# Depression Covid
+DB_2 <- DB_2 |> 
+  mutate(depression_30d_post = if_else(depression_30d_post == 1, "Yes", "No"))
+
+# Ansiedad
+DB_2 <- DB_2 |> 
+  mutate(GAD12m_pre = if_else(GAD12m_pre == 1, "Yes", "No"))
+
+# Panico
+DB_2 <- DB_2 |> 
+  mutate(PAN12m_pre = if_else(PAN12m_pre == 1, "Yes", "No"))
+
+# Economic
+DB_2 <- DB_2 |> 
+  mutate(economy_post = if_else(economy_post == 1, "Yes", "No"))
+```
+
+------
+Borrar desde aquí sino funciona
+
+# ```{r}
+# library(labelled)
+# library(DT)
+# 
+# Dict <- covid |> look_for(details = "full")
+# datatable(Dict[,-c(1,9:11)]) # Only the columns that interest us 
+# ```
+
+------
+
+# Control de calidad de las puntuaciones
+
+Medida de fiabilidad (Alfa de Cronbach) de todas las variables donde proceda
+
+```{r}
+# Fiabilidad Loneliness
+source("reliability.R")
+alpha_loneliness_pre
+alpha_loneliness_post
+```
+
+# Descriptivos
+
+Tabla de sociodemográficos
+
+```{r message=FALSE}
+# Base de datos para el summary
+DB_2 <- DB_2 |> 
+  transmute(ID_ECS, loneliness_pre,
+            loneliness_post,
+            sex,
+            q1011_age,
+            age_cat, 
+            ed_level,
+            economy_post,
+            rel_pers,
+            marital_st,
+            whodas12_pre,
+            whodas12_post,# variable continua
+            social_support_pre, 
+            social_support_post,
+            living_alone,
+            neuroticism,
+            extraversion,
+            sincerity,
+            physical,
+            resilience_scale,
+            depression_12m_pre,
+            depression_30d_post, 
+            GAD12m_pre,
+            PAN12m_pre
+            )
+# Labels
+DB_2_without_labels <- DB_2
+# Da error si se pibota datos con label
+DB_2 <-  apply_labels(DB_2,
+                  loneliness_pre = "Loneliness Ola 1",
+                  loneliness_post = "Loneliness Covid",
+                  age_cat = "Grupos de edades", 
+                  ed_level = "Education level",
+                  economy_post = "Economic situation worsened",
+                  rel_pers = "Relaciones personales en el confinamiento (SOLO3)",
+                  marital_st = "Marital status",
+                  whodas12_pre = "Disability - Ola 1 (whodas12)",
+                  whodas12_post = "Disability - Covid (whodas12)", 
+                  social_support_pre = "Social support - Ola 1",
+                  social_support_post = "Social support - Covid",
+                  living_alone = "Living alone - Covid",
+                  neuroticism = "Neuroticism",
+                  extraversion = "Extraversion",
+                  sincerity = "Sincerity", 
+                  physical  = "Physical activity",
+                  resilience_scale = "Resilience scale",
+                  depression_12m_pre = "Depression - Ola 1",
+                  depression_30d_post = "Depression - Covid",
+                  GAD12m_pre = "Anxiety - Ola 1",
+                  PAN12m_pre = "Panic - Ola 1")
+
+# Summary
+DB_2 |> tbl_summary(
+  # label = label_list,
+  statistic = all_continuous() ~ "{mean} ({sd})",
+  digits = all_continuous() ~ 2,
+  type = c(neuroticism, extraversion, sincerity,
+           loneliness_pre, loneliness_post) ~ "continuous",
+  missing = "no",
+)
+```
+
+# Tratamiento de valores perdidos
+
+Se eliminarán los casos donde existan valores perdidos en el outcome de soledad.
+
+```{r}
+DB_2 <- DB_2 |> drop_na(loneliness_pre)
+DB_filtered <- DB_filtered |> drop_na(q6351_companion)
+# base de datos sin labels
+DB_2_without_labels <- DB_2_without_labels |> drop_na(loneliness_pre)
+```
+
+Detectamos que existe un valor perdido en `loneliness_pre` y retiramos el caso de la BDD. Ahora quedan 1102 casos.
+
+# Cambios en la media de soledad
+
+## Por grupo de edad
+
+```{r}
+# Con grupos de edades
+dif_medias <- c(
+  "loneliness_pre", "loneliness_post", "age_cat"
+)
+DB_2[dif_medias] |> 
+  tbl_summary(
+    statistic = all_continuous() ~ "{mean} ({sd})",
+    type = c(loneliness_pre, loneliness_post) ~ "continuous",
+    missing = "no",
+    by = age_cat
+  ) |> add_p()
+```
+
+## Pre post
+
+Entre evaluaciones (pre-post). Comprobamos si hay diferencias en la soledad para los jóvenes entre el pre y el post.
+
+```{r}
+# Pivotar (pivot-long)
+DB_2_pivot <- DB_2_without_labels |> 
+  pivot_longer(
+    cols = dif_medias <- c("loneliness_pre", "loneliness_post"), 
+    names_to = "Evaluacion", 
+    values_to = "Loneliness")
+
+# Label
+DB_2_pivot <- DB_2_pivot |> 
+mutate(Evaluacion = if_else(Evaluacion == "loneliness_pre", "Pre-confinement", "Post-confinement")) 
+
+# Orden
+DB_2_pivot$Evaluacion <- DB_2_pivot$Evaluacion |> 
+  fct_relevel("Pre-confinement")
+
+# Loneliness total
+DB_2_pivot |> 
+  select(Loneliness, Evaluacion) |> 
+  tbl_summary(
+    statistic = all_continuous() ~ "{mean} ({sd})",
+    type = Loneliness ~ "continuous",
+    missing = "no",
+    by = Evaluacion
+  ) |> add_p() 
+
+# Lonesliness Edad grupos ####
+# Pivotar edad
+DB_2_pivot_age <- DB_2_pivot |> 
+  pivot_wider(names_from = age_cat, values_from = Loneliness)
+  
+# tabla
+DB_2_pivot_age |> 
+  select(Evaluacion, `18-33`, `34-49`, `50-64`, `65+`) |> 
+  tbl_summary(
+    statistic = all_continuous() ~ "{mean} ({sd})",
+    type = c(`18-33`, `34-49`, `50-64`, `65+`) ~ "continuous",
+    # missing = "no",
+    by = Evaluacion
+  ) |> add_p() |> add_n()
+
+```
+
+Aplicación del Modelo mixto
+
+```{r, file = 'error_plot_1.r'}
+# print(p)
+```
+
+
+```{r message=FALSE, warning=FALSE}
+# Observamos el gráfico para tener una idea de la relación entre las 3 variables
+
+# source("error_plot_1.R")
+# 
+# 
+# 
+# print(p)
+# Edad agrupada como efectos fijos 
+
+# Evaluación (pre-post) como aleatorios
+
+library(lme4)
+
+# Aplicación del modelo lineal mixto
+
+Fit <- lmer(Loneliness ~ age_cat  + age_cat:Evaluacion + (1 | ID_ECS), data = DB_2_pivot)
+
+Fit2 <- lmer(Loneliness ~ 0 + age_cat * Evaluacion + (1 | ID_ECS), data = DB_2_pivot)
+
+summary(Fit)
+
+Fit_coef <- summary(Fit)$coefficients
+
+Fit2_coef <- summary(Fit2)$coefficients
+
+# En las comparaciones 
+
+# DB_2_pivot |> group_by(age_cat, Evaluacion) |> summarize(across(Loneliness, lst(mean, sd), na.rm = TRUE))
+# > DB_2_pivot |> count(age_cat, Evaluacion)
+
+```
+
+
+# Ponderación de muestras para el ajuste
+
+La muestras han sido ponderadas a la distribución poblacional obtenidas del Instituto Nacional de Estadística para ser representativas de la población objetivo. 
+
+```{r}
+# Reorden
+DB_2$ed_level <- DB_2$ed_level |> 
+  fct_relevel("Tertiary")
+DB_2$rel_pers <- DB_2$rel_pers |> 
+  fct_relevel("Sin efecto")
+DB_2$age_cat <- DB_2$age_cat |> 
+  fct_relevel("50-64")
+# Los pesos se encuentran en DB_filtered$wfinal_norm
+svy_design <- svydesign(
+  data = DB_2,
+  ids = ~DB_filtered$ID_ECS,
+  weights = DB_filtered$wfinal_norm
+)
+```
+
+# Ajuste del modelo univariados
+
+## Anova
+
+Comprobamos si existe relación lineal entre las variables `loneliness_pre` y `loneliness_post`:
+
+```{r}
+fit_null <-  svyglm(loneliness_post ~ offset(loneliness_pre),
+             design  = svy_design)
+
+# anova_m <- anova(m)
+# options(knitr.kable.NA = '')
+# anova_m |> kable() |> kable_styling(full_width = FALSE)
+
+```
+
+El nivel crítico asociado a la F del ANOVA permite mantener la hipótesis nula por lo que podemos decir tentativamente que hay relación lineal entre las variables `loneliness_pre` y `loneliness_post`
+
+## Coeficientes
+
+Para la estimación de los coeficientes se han aplicado los pesos.
+
+```{r univariado}
+# Sex 
+fit_sex <-   svyglm(
+    formula = loneliness_post ~ offset(loneliness_pre) 
+    + sex,
+    design  = svy_design
+  )
+
+anova(fit_sex, fit_null)
+
+anova_sex <- anova(fit_sex, fit_null)
+
+select_covs <- c(sex = anova_sex$p < .05)
+
+# para la siguiente
+# select_covs <- select_covs |> c()
+
+######
+tbl_regression(fit_sex, 
+  show_single_row = "sex",
+  label = sex ~ "Sex (female)",
+  intercept = TRUE
+)
+
+# Age continuous
+tbl_regression(
+  svyglm(
+    formula = loneliness_post ~ offset(loneliness_pre) 
+    + q1011_age,
+    design  = svy_design
+  ),
+  label = q1011_age ~ "Age (continuous)",
+  intercept = TRUE
+)
+
+# Age cat
+tbl_regression(
+  svyglm(
+    formula = loneliness_post ~ offset(loneliness_pre) 
+    + age_cat,
+    design  = svy_design
+  ),
+  intercept = TRUE
+)
+
+# Education level
+tbl_regression(
+  svyglm(
+    formula = loneliness_post ~ offset(loneliness_pre) 
+    + ed_level,
+    design  = svy_design
+  ),
+  label = ed_level ~ "Educational level",
+  intercept = TRUE
+)
+
+# Economic
+tbl_regression(
+  svyglm(
+    formula = loneliness_post ~ offset(loneliness_pre) 
+    + economy_post,
+    design  = svy_design
+  ),
+  label = economy_post ~ "Economic situation worsened",
+  show_single_row = "economy_post",
+  intercept = TRUE
+)
+
+
+  # Relaciones personales (SOLO3)
+tbl_regression(
+  svyglm(
+    formula = loneliness_post ~ offset(loneliness_pre) 
+    + rel_pers,
+    design  = svy_design
+  ),
+  intercept = TRUE
+)
+
+# Estado civil
+tbl_regression(
+  svyglm(
+    formula = loneliness_post ~ offset(loneliness_pre) 
+    + marital_st,
+    design  = svy_design
+  ),
+  intercept = TRUE
+)
+
+# Disability pre 
+tbl_regression(
+  svyglm(
+    formula = loneliness_post ~ offset(loneliness_pre) 
+    + whodas12_pre,
+    design  = svy_design
+  ),
+  intercept = TRUE
+)
+
+# Disability post 
+tbl_regression(
+  svyglm(
+    formula = loneliness_post ~ offset(loneliness_pre) 
+    + whodas12_post,
+    design  = svy_design
+  ),
+  intercept = TRUE
+)
+
+# Social support pre 
+tbl_regression(
+  svyglm(
+    formula = loneliness_post ~ offset(loneliness_pre) 
+    + social_support_pre,
+    design  = svy_design
+  ),
+  intercept = TRUE
+)
+
+# Social support ola1 
+tbl_regression(
+  svyglm(
+    formula = loneliness_post ~ offset(loneliness_pre) 
+    + social_support_post,
+    design  = svy_design
+  ),
+  intercept = TRUE
+)
+
+# Living alone post
+tbl_regression(
+  svyglm(
+    formula = loneliness_post ~ offset(loneliness_pre) 
+    + living_alone,
+    design  = svy_design
+  ),
+    show_single_row = "living_alone",
+  intercept = TRUE
+)
+
+# physical
+tbl_regression(
+  svyglm(
+    formula = loneliness_post ~ offset(loneliness_pre) 
+    + physical,
+    design  = svy_design
+  ),
+  intercept = TRUE
+)
+
+# resilience_scale
+tbl_regression(
+  svyglm(
+    formula = loneliness_post ~ offset(loneliness_pre) 
+    + resilience_scale,
+    design  = svy_design
+  ),
+  intercept = TRUE
+)
+
+# Personality ####
+
+# neuroticism
+tbl_regression(
+  svyglm(
+    formula = loneliness_post ~ offset(loneliness_pre) 
+    + neuroticism,
+    design  = svy_design
+  ),
+  intercept = TRUE
+)
+
+# extraversion
+tbl_regression(
+  svyglm(
+    formula = loneliness_post ~ offset(loneliness_pre) 
+    + extraversion,
+    design  = svy_design
+  ),
+  intercept = TRUE
+)
+
+# Mental disorders ####
+
+# depression_12m_pre
+tbl_regression(
+  svyglm(
+    formula = loneliness_post ~ offset(loneliness_pre) 
+    + depression_12m_pre,
+    design  = svy_design
+  ),
+  show_single_row = "depression_12m_pre",
+  intercept = TRUE
+)
+
+# depression_30d_post
+tbl_regression(
+  svyglm(
+    formula = loneliness_post ~ offset(loneliness_pre) 
+    + depression_30d_post,
+    design  = svy_design
+  ),
+    show_single_row = "depression_30d_post",
+  intercept = TRUE
+)
+
+# Anxiety GAD12m_pre
+tbl_regression(
+  svyglm(
+    formula = loneliness_post ~ offset(loneliness_pre) 
+    + GAD12m_pre,
+    design  = svy_design
+  ),
+    show_single_row = "GAD12m_pre",
+  intercept = TRUE
+)
+
+# PanicPAN12m_pre
+tbl_regression(
+  svyglm(
+    formula = loneliness_post ~ offset(loneliness_pre) 
+    + PAN12m_pre,
+    design  = svy_design
+  ),
+  show_single_row = "PAN12m_pre",
+  intercept = TRUE
+)
+```
+
+# Ajuste multivariado
+
+Fijamos sexo y edad
+
+```{r multivariado}
+tbl_regression(
+  svyglm(
+    
+    formula = loneliness_post ~ offset(loneliness_pre) 
+    # Fijos
+    + depression_12m_pre + depression_30d_post 
+    + GAD12m_pre
+    + PAN12m_pre
+    + sex 
+    + age_cat
+    # No fijos
+    + rel_pers 
+    + economy_post
+    + whodas12_pre
+    + whodas12_post
+    + social_support_pre
+    + neuroticism
+    + extraversion,
+
+    design  = svy_design
+  ),
+  show_single_row = 
+    c("depression_12m_pre", "depression_30d_post",
+      "GAD12m_pre", "PAN12m_pre", "sex", "economy_post")
+)
+
+```

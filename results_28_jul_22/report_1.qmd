@@ -1,0 +1,66 @@
+---
+title: "Report 1"
+date: today
+author: 
+ - name: "Jesus Sierralaya"
+   url: https://github.com/JesusSierralaya
+   affiliation: CCOMS-UAM
+   affiliation-url: https://github.com/CCOMS-UAM
+title-block-banner: true
+format:
+  html:
+    theme: flatly
+    # code-fold: true
+    code-tools: true
+    code-link: true
+    toc: true
+    number-sections: true
+    # df-print: paged
+    self-contained: true
+# link-citations: yes
+# editor: source
+# editor_options: 
+#   chunk_output_type: inline
+---
+
+# Sample Characteristics 
+
+## Table descriptives
+
+![](table_1.png)
+
+## Graphs
+
+### Sociodemographics
+
+![](plot_sociod.png)
+
+### Social aspects
+
+![](plot_social.png)
+
+### Health and wellbeing
+
+![](plot_health.png)
+
+# Multivariate regression
+
+## Graphs
+
+### Model 1
+
+![](plot_multi_1.png)
+
+### Model with interaction
+
+![](plot_multi_interaction.png)
+
+## Tables
+
+### Model 1
+
+![](tbl_multi_1.png)
+
+### Model with interaction
+
+![](tbl_multi_interaction.png)
