@@ -1,38 +1,24 @@
----
-title: "Loneliness study: Importing and cleaning the datasets"
-author: "Jesús Sierralaya"
-date: "`r format(Sys.time(), '%d %B, %Y')`"
-output: 
-  html_document:
-    code_folding: hide
-    toc: true
-    toc_float: true
-    number_sections: true
-    code_download: true
-editor_options: 
-  chunk_output_type: console
----
+# ··············································································
+# FILE NAME:   import_clean.R
+# DESCRIPTION: Importing and clean of the data
+# 
+# AUTHOR:      Jesus (jesus.sierralaya@inv.uam.es)
+# 
+# DATE:        17/08/2022
+# 
+# ·············································································· 
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+## ---- INCLUDES: --------------------------------------------------------------
+
 library(tidyverse)
 library(haven)
 library(rmarkdown)
 library(psych)
 library(labelled)
 library(readstata13)
-```
+library(gt)
 
-# Database
-
-"Edad con salud" cohort 2019 pre and post COVID-19 pandemic in Spain.
-
-## Database paths
-
-Paths database `Code`
-
-```{r paths-directory}
-# 
+## ---- PATHS: -----------------------------------------------------------------
 
 # Base directory
 BASE_DIR <- "~/../../UAM"
@@ -51,9 +37,9 @@ DB_FILE_POST <- file.path(DB_PATH_MASTER,
 DB_FILE_WEIGHTS <- file.path(DB_PATH_MASTER, 
                              "Ola_3/Cohorte_2019/Pesos", "pesos_norm.dta")
 
-# Covariates outcomes
+# Covariates outcomes path
 DB_PATH_OUTCOMES <- file.path(BASE_DIR, 
-                         "marta.miret@uam.es - Documentacion Edad con Salud")
+                              "marta.miret@uam.es - Documentacion Edad con Salud")
 DB_PATH_OUTCOMES_PRE <- file.path(DB_PATH_OUTCOMES, 
                                   "Edad con salud - Ola 3/Outcomes/Cohorte 2019/Outcome datasets")
 DB_PATH_OUTCOMES_POST <- file.path(DB_PATH_OUTCOMES, 
@@ -61,19 +47,10 @@ DB_PATH_OUTCOMES_POST <- file.path(DB_PATH_OUTCOMES,
 
 # File Disability pre
 DB_OUTCOME_PRE_DISABILITY <- file.path(DB_PATH_OUTCOMES_PRE,
-                               "Outcome_disability.dta")
-
+                                       "Outcome_disability.dta")
 # File Disability post
 DB_OUTCOME_POST_DISABILITY <- file.path(DB_PATH_OUTCOMES_POST,
-                                    "Outcome_disability.dta")
-
-# File Social support pre
-# DB_OUTCOME_PRE_SOC_SUPP <- file.path(DB_PATH_OUTCOMES_PRE,
-#                                      "Outcome_Loneliness, social support and social isolation.dta")
-
-# # File Social support post
-# DB_OUTCOME_POST_SOC_SUPP <- file.path(DB_PATH_OUTCOMES_POST,
-#                                       "Outcome_loneliness and social support_Subestudio_covid.dta")
+                                        "Outcome_disability.dta")
 # File Living Status post
 DB_OUTCOME_POST_LIVING_STATUS <- file.path(DB_PATH_OUTCOMES_POST,
                                            "Outcome_social interactions_Subestudio_covid.dta")
@@ -86,8 +63,6 @@ DB_OUTCOME_POST_PHYSICAL <- file.path(DB_PATH_OUTCOMES_POST,
 # File Resilience post
 DB_OUTCOME_POST_RESILIENCE <- file.path(DB_PATH_OUTCOMES_POST,
                                         "Outcome_brief resilience scale_Subestudio_covid.dta")
-# Mental disorders ########################
-
 # File depression pre
 DB_OUTCOME_PRE_DEPRESSION <- file.path(DB_PATH_OUTCOMES_PRE,
                                        "Outcome_depression_ICD10.dta")
@@ -107,37 +82,23 @@ DB_OUTCOME_POST_ECONOMIC <- file.path(DB_PATH_OUTCOMES_POST,
 # Weights
 DB_FILE_WEIGHTS <- file.path(DB_PATH_MASTER, "Ola_3/Cohorte_2019/Pesos", "pesos_norm.dta")
 
-# Material deprivation 11/7/2022
-DB_FILE_MAT_DEPRIV <- file.path(DB_PATH_OUTCOMES_PRE,
+# Material deprivation. Added 11/7/2022
+DB_OUTCOME_MAT_DEPRIV <- file.path(DB_PATH_OUTCOMES_PRE,
                                 "Outcome_materialdeprivation.dta")
 
-# File Physical activity post 20/7/2022
+# File Physical activity post. Added 20/7/2022
 DB_OUTCOME_PRE_PHYSICAL <- file.path(DB_PATH_OUTCOMES_PRE,
                                      "Outcome_physicalactivity.dta")
 
-# File health status post 20/7/2022
+# File health status post. Added 20/7/2022
 DB_OUTCOME_PRE_HEALTH <- file.path(DB_PATH_OUTCOMES_PRE,
-                                     "Outcome_healthstatus.dta")
+                                   "Outcome_healthstatus.dta")
 
-```
+# Check that there is the correct files and outcomes
+# ls(pat = "DB_FILE"); ls(pat = "DB_OUTCOME")
 
-Data base selected are:
 
-```{r}
-path_list <- ls(pat = "DB_FILE")
-kableExtra::kable(path_list, col.names = NULL) |> kableExtra::kable_styling()
-```
-
-Data base of variables outcomes are:
-
-```{r}
-# Variables outcome
-kableExtra::kable(ls(pat = "DB_OUTCOME"), col.names = NULL) |> kableExtra::kable_styling()
-```
-
-## Variables selected
-
-```{r variables-directory}
+## ---- SELECT COLUMNS: --------------------------------------------------------
 
 # Data base pre
 
@@ -174,12 +135,7 @@ col_post <- c("ID_ECS", # Id
 # Disability (Physical health)
 col_disability <- c("ID_ECS", # Id
                     "whodas12" # Variable outcome
-                    )
-
-# Social support (OSLO)
-# col_soc_supp <- c("ID_ECS", # Id
-#                   "social_support" # Variable outcome
-# )
+)
 
 # Living status (living or not alone)
 col_living_status <- c("ID_ECS", # Id
@@ -192,7 +148,7 @@ col_personality <- c("ID_ECS", # Id
                      "extraversion")
 # Physical activity 
 col_physical <- c("ID_ECS", # Id
-               "physical")   
+                  "physical")   
 
 # Resilience 
 col_resilience <- c("ID_ECS", # Id
@@ -203,7 +159,7 @@ col_depression_pre <- c("ID_ECS", # Id
                         "depression_12m")
 # Anxiety pre
 col_anxiety <- c("ID_ECS", # Id
-                    "GAD12m")
+                 "GAD12m")
 
 # Panic pre
 col_panic <- c("ID_ECS", # Id
@@ -211,50 +167,34 @@ col_panic <- c("ID_ECS", # Id
 
 # Depression post
 col_depression_post <- c("ID_ECS", # Id
-                        "depression_30d")
+                         "depression_30d")
 # Economic post
 col_economic_post <- c("ID_ECS", # Id
                        "economy")
 
 # V.O pre: material deprivation
 col_mat_deprivation <- c("ID_ECS", # Id
-                       "material")
+                         "material")
 
 # V.O pre: physical activity
 col_physical_pre <- c("ID_ECS", # Id
-               "physical")   
+                      "physical")   
 
 # v.o pre: health status
 col_health_pre <-  c("ID_ECS", # Id
-                        "health")
+                     "health")
 
-```
+# Check all cols selected
+# ls(pat = "col_")
 
-Variables selected from pre:
+## ---- LOAD: -----------------------------------------------------------------
 
-```{r}
-kableExtra::kable(col_pre, col.names = NULL) |> kableExtra::kable_styling()
-```
-
-Variables selected from post:
-
-```{r}
-kableExtra::kable(col_post, col.names = NULL) |> kableExtra::kable_styling()
-```
-
-## Load databases
-
-Load database pre and post:
-
-```{r load-directory, message=FALSE, warning=FALSE}
 # Load file pre
 db_pre <- DB_FILE_PRE |> 
-  # read_dta(col_select = col_pre)
   read_dta(col_select = all_of(col_pre))
 
 # Load file post
 db_post <- DB_FILE_POST |> 
-  # read_dta(col_select = col_post)
   read.dta13(select.cols = col_post)
 
 # Load disability pre
@@ -266,17 +206,6 @@ db_disability_pre <- DB_OUTCOME_PRE_DISABILITY |>
 db_disability_post <- DB_OUTCOME_POST_DISABILITY |> 
   read_dta(col_select = col_disability) |> 
   rename(whodas12_post = whodas12)
-
-# # Load social support pre
-# db_soc_supp_pre <- DB_OUTCOME_PRE_SOC_SUPP |> 
-#   read_dta(col_select = col_soc_supp) |> 
-#   rename(social_support_pre = social_support)
-# 
-# 
-# # Load social support post
-# db_soc_supp_post <- DB_OUTCOME_POST_SOC_SUPP |> 
-#   read_dta(col_select = col_soc_supp) |> 
-#   rename(social_support_post = social_support)
 
 # Load living status post
 db_living_status_post <- DB_OUTCOME_POST_LIVING_STATUS |> 
@@ -302,11 +231,6 @@ db_depression_pre <- DB_OUTCOME_PRE_DEPRESSION |>
   read_dta(col_select = col_depression_pre) |> 
   rename(depression_12m_pre = depression_12m)
 
-# # Load anxiety pre
-# db_anxiety_pre <- DB_OUTCOME_PRE_ANXIETY |> 
-#   read_dta(col_select = col_anxiety) |> 
-#   rename(GAD12m_pre = GAD12m)
-
 # Load panic pre
 db_panic_pre <- DB_OUTCOME_PRE_PANIC |> 
   read_dta(col_select = col_panic) |> 
@@ -329,7 +253,7 @@ db_weights <- DB_FILE_WEIGHTS |>
 # Load material deprivation
 # Path: DB_FILE_MAT_DEPRIV
 # Columns: col_mat_deprivation
-db_mat_deprivation <- DB_FILE_MAT_DEPRIV |> 
+db_mat_deprivation <- DB_OUTCOME_MAT_DEPRIV |> 
   read_dta(col_select = all_of(col_mat_deprivation))
 
 # Load physical activity pre
@@ -339,33 +263,27 @@ db_physical_pre <- DB_OUTCOME_PRE_PHYSICAL |>
   read_dta(col_select = all_of(col_physical_pre)) |> 
   rename(physical_pre = physical)
 
-
 # Load health status pre
 # Path: DB_OUTCOME_PRE_HEALTH
 # Columns: col_health_pre
 db_health_pre <- DB_OUTCOME_PRE_HEALTH |> 
   read_dta(col_select = all_of(col_health_pre)) |> 
   rename(health_pre = health)
-```
 
+# Check all data load
+# ls(pat = "db_")
 
-## Merge databases
+## ---- MERGE: -----------------------------------------------------------------
 
-Merge databases:
-
-```{r merge-directory, message=FALSE, warning=FALSE}
 db_pre_post <- full_join(db_pre, db_post, by = "ID_ECS") |>
   filter(subsample_pre == 1 & ESTADO_ENTREVISTA == 1) |>
   left_join(db_disability_pre, by = "ID_ECS") |> # disability_pre
   left_join(db_disability_post, by = "ID_ECS") |>  # disability_post
-  # left_join(db_soc_supp_pre, by = "ID_ECS") |>  # soc_supp_pre
-  # left_join(db_soc_supp_post, by = "ID_ECS") |>  # soc_supp_post
   left_join(db_living_status_post, by = "ID_ECS") |> # soc_supp_post
   left_join(db_personality, by = "ID_ECS") |> # personality_pre
   left_join(db_physical_post, by = "ID_ECS") |>  # physical_post
   left_join(db_resilience_post, by = "ID_ECS") |> # resilience_post
   left_join(db_depression_pre, by = "ID_ECS") |> # depression_pre
-  # left_join(db_anxiety_pre, by = "ID_ECS") |> # anxiety_pre
   left_join(db_panic_pre, by = "ID_ECS") |> # panic_pre
   left_join(db_depression_post, by = "ID_ECS") |> # depression_post
   left_join(db_economic_post, by = "ID_ECS") |>  # depression_post 
@@ -373,41 +291,53 @@ db_pre_post <- full_join(db_pre, db_post, by = "ID_ECS") |>
   left_join(db_mat_deprivation, by = "ID_ECS") |> # mat deprivation
   left_join(db_physical_pre, by = "ID_ECS") |> # mat deprivation 
   left_join(db_health_pre, by = "ID_ECS")
-```
 
-# Briefly Descriptives
+## ---- BRIEFLY DESCRIPTIVES: --------------------------------------------------
 
-```{r}
-paged_table(describe(db_pre_post)[
-  -(c(1,9,10)),
-  c("n", "mean", "min", "max")], # Include col
-  options = list(rows.print = 26))
-```
+# Version to print
+describe(db_pre_post)[-(c(1,9,10)), c("n", "mean", "min", "max")] |>
+  rownames_to_column() |> 
+  gt() |> 
+  fmt_number(
+    columns = c("mean", "min", "max"),
+    decimals = 1,
+    use_seps = FALSE
+  ) |>  
+  tab_header(
+    title = md("Briefly descriptives **BEFORE transformation**"),
+    subtitle = md("*Loneliness covid study*")
+  )
 
-After carefully cheking the values of the variables we change the abnormal values to NA.
+## ---- TREATMENT OF OUTLIERS TO NA --------------------------------------------
 
-```{r}
+# SOLO3: Live alone. Range 1:3
+# Check frequency
 addmargins(table(db_pre_post$SOLO3, useNA = "always"))
-db_pre_post$SOLO3 <- db_pre_post$SOLO3 |> 
-  na_if(9)
-# Check
+# Replace >3 to NA 
+db_pre_post$SOLO3 <- db_pre_post$SOLO3 |> na_if(9)
+# Recheck
 addmargins(table(db_pre_post$SOLO3, useNA = "always"))
-```
 
-List each variable with NA
+# ECON5: recode 9 to missing
+db_pre_post <- db_pre_post |> 
+  mutate(ECON5 = if_else(ECON5 == 9, NA_real_, ECON5))
 
-```{r}
-NA_db_pre_post <- db_pre_post |> 
+
+
+## ---- TREATMENT OF NA --------------------------------------------------------
+
+# Check the NA for each variable
+# Version to print
+db_pre_post |> 
   summarise(across(.fns = ~sum(is.na(.)))) |> 
-  pivot_longer(everything())
+  pivot_longer(everything()) |> 
+  gt()  |>  
+  tab_header(
+    title = md("NA **BEFORE transformation**"),
+    subtitle = md("*Loneliness covid study*")
+  )
 
-paged_table(NA_db_pre_post[-(c(1,9,10)),], # Include col
-  options = list(rows.print = 26))
-```
-
-Remove the case with missing values of the items of the criterion variable (loneliness_pre, loneliness_post).
-
-```{r}
+# Drop NA in the criterion variable loneliness pre and post
 db_pre_post <- db_pre_post |> 
   drop_na(any_of(c(
     "q6351_companion",
@@ -417,100 +347,50 @@ db_pre_post <- db_pre_post |>
     "SOLO7_2",
     "SOLO7_3"
   )))
-```
 
-# Variables transformation
 
-## Loneliness pre and post
 
-```{r}
+## ---- TRANSFORMATION OF VARIABLES --------------------------------------------
+
+# Loneliness pre and post
 db_pre_post <- db_pre_post |> 
-    mutate(loneliness_pre = 
-             q6351_companion + q6352_leftout + q6353_isolated, 
-           loneliness_post = 
-             SOLO7_1 + SOLO7_2 + SOLO7_3,
-           .keep = "unused") # delete the column no longer need
-```
+  mutate(loneliness_pre = 
+           q6351_companion + q6352_leftout + q6353_isolated, 
+         loneliness_post = 
+           SOLO7_1 + SOLO7_2 + SOLO7_3,
+         .keep = "unused") # delete the column no longer need
 
-## Loneliness pre and post cat
-
-Loneliness (binary) with a cut-off point of 4.
-
-```{r}
-# cutoff_point <- 4
-# 
-# db_pre_post <- db_pre_post |> 
-#     mutate(loneliness_pre_cat = 
-#              if_else(loneliness_pre < cutoff_point, 0, 1),
-#            loneliness_post_cat = 
-#              if_else(loneliness_post < cutoff_point, 0, 1),
-#            ) 
-```
-
-## Age grouped
-
-```{r}
+# Age grouped
 db_pre_post <- db_pre_post |> 
-    mutate(q1011_age_cat = 
-             cut(q1011_age, breaks = c(-Inf, 35, 50, 65 ,Inf),
-                 labels = c("18-34", "35-49", "50-64", "+65"), right = FALSE)) |> 
-    relocate(q1011_age_cat,.after = q1011_age)
+  mutate(q1011_age_cat = 
+           cut(q1011_age, breaks = c(-Inf, 35, 50, 65 ,Inf),
+               labels = c("18-34", "35-49", "50-64", "+65"), right = FALSE)) |> 
+  relocate(q1011_age_cat,.after = q1011_age)
 
-```
-
-## Marital status recat
-
-```{r}
+# Marital status recat
 db_pre_post <- db_pre_post |> 
-    mutate(q1012_mar_stat_recat = 
-        case_when(
-            q1012_mar_stat == 1  ~ 1,
-            q1012_mar_stat == 2 | q1012_mar_stat == 3 ~ 2, 
-            q1012_mar_stat == 4 | q1012_mar_stat == 5 ~ 3),
-      .keep = "unused"
-    ) |> 
+  mutate(q1012_mar_stat_recat = 
+           case_when(
+             q1012_mar_stat == 1  ~ 1,
+             q1012_mar_stat == 2 | q1012_mar_stat == 3 ~ 2, 
+             q1012_mar_stat == 4 | q1012_mar_stat == 5 ~ 3),
+         .keep = "unused"
+  ) |> 
   relocate(q1012_mar_stat_recat,.after = q1011_age_cat)
-```
 
-## Education level recat
-
-```{r}
+# Education level recat
 db_pre_post <- db_pre_post |> 
-    mutate(q1016_highest_recat =
-                     case_when(
-            q1016_highest <= 1 ~ 1, 
-            q1016_highest == 2 ~ 2, 
-            q1016_highest == 3 | q1016_highest == 4 ~ 3,
-            q1016_highest >= 5 ~ 4)      
-      , .keep = "unused"
-    ) |> 
+  mutate(q1016_highest_recat =
+           case_when(
+             q1016_highest <= 1 ~ 1, 
+             q1016_highest == 2 ~ 2, 
+             q1016_highest == 3 | q1016_highest == 4 ~ 3,
+             q1016_highest >= 5 ~ 4)      
+         , .keep = "unused"
+  ) |> 
   relocate(q1016_highest_recat,.after = q1012_mar_stat_recat)
-# Show table
-# paged_table(db_pre_post, options = list(rows.print = 22))
-```
 
-## Unemployment (ECON5)
-
-```{r}
-# recode 9 to missing
-db_pre_post <- db_pre_post |> 
-    mutate(ECON5 = if_else(ECON5 == 9, NA_real_, ECON5))
-```
-
-
-## Cantril striving (q7008d_cantril)
-
-```{r}
-# recode 888 and 999 to missing
-db_pre_post <- db_pre_post |>
-    mutate(q7008d_cantril = unclass(q7008d_cantril)) |> 
-    mutate(q7008d_cantril = if_else(q7008d_cantril > 9, NA_real_, q7008d_cantril)) 
-```
-
-
-## Soc supp punt originales
-
-```{r}
+# Social support
 db_pre_post <- db_pre_post |> 
   mutate(q6320_close = q6320_close |> unclass(),
          q6310_help_neig = q6310_help_neig |> unclass(),
@@ -529,40 +409,48 @@ db_pre_post <- db_pre_post |>
          social_support_post_original = 
            SOLO9A  + (6 - SOLO9C) + (6 - SOLO9B),
          .keep = "unused") # delete the column no longer need
-```
 
-# Missings
+# Drop some items that will no used
 
-
-```{r}
-NA_db_pre_post <- db_pre_post |> 
-  summarise(across(.fns = ~sum(is.na(.)))) |> 
-  pivot_longer(everything())
-
-paged_table(NA_db_pre_post[-(c(1,9,10)),], # Include col
-  options = list(rows.print = 26))
-```
-
-
-
-# Final raw data
-
-Drop items that will not be used and save data base. Delete subsambple pre and estado_entrevista
-
-```{r}
 db_pre_post <- db_pre_post |>
   select(-c(subsample_pre, ESTADO_ENTREVISTA))
 
-db_pre_post |> look_for(details = "full")
+# ---- RECHECK DESCRIPTIVES AND NA ---------------------------------------------
 
-```
+describe(db_pre_post)[-(c(1,9,10)), c("n", "mean", "min", "max")] |>
+  rownames_to_column() |> 
+  gt() |> 
+  fmt_number(
+    columns = c("mean", "min", "max"),
+    decimals = 1,
+    use_seps = FALSE
+  ) |>  
+  tab_header(
+    title = md("Briefly descriptives **AFTER transformation**"),
+    subtitle = md("*Loneliness covid study*")
+  )
 
-# Pivot data for desprictives
+# Check the NA for each variable
+# Version to print
+db_pre_post |> 
+  summarise(across(.fns = ~sum(is.na(.)))) |> 
+  pivot_longer(everything()) |> 
+  gt()  |>  
+  tab_header(
+    title = md("NA **AFTER transformation**"),
+    subtitle = md("*Loneliness covid study*")
+  )
 
-```{r}
-# Pivot 1
-# Con Na donde corresponde
-db_pivot <- db_pre_post |> 
+# Codebook 
+db_pre_post |> look_for(details = "full") |> 
+  select(-starts_with("na_")) |> gt()
+
+
+# ---- DATABASE: db_longer_NA ---------------------------------------------
+
+# Created for descriptives table
+
+db_longer_NA <- db_pre_post |> 
   select(ID_ECS,
          q1011_age, 
          q1011_age_cat,
@@ -586,13 +474,13 @@ db_pivot <- db_pre_post |>
          # loneliness_pre_cat, loneliness_post_cat,
          wfinal_norm
          # FALTARIA los nuevos
-         ) |> 
+  ) |> 
   pivot_longer(
     cols = c("loneliness_pre","loneliness_post"),
     names_to = "Assessment",
     names_prefix = "loneliness_",
     values_to = "Loneliness"
-    )|> 
+  )|> 
   # Transform to NA if don't correspond with the assessment
   mutate(
     # Age
@@ -656,55 +544,48 @@ db_pivot <- db_pre_post |>
     # loneliness cat
     # loneliness_cat = if_else(Assessment == "pre", loneliness_pre_cat, loneliness_post_cat),
   ) |> 
-    select(-c(whodas12_pre, whodas12_post,
+  select(-c(whodas12_pre, whodas12_post,
             social_support_pre_original, social_support_post_original,
             depression_12m_pre, depression_30d_post#,
             # loneliness_pre_cat, loneliness_post_cat
-            ))
+  ))
 
-db_pivot |> look_for(details = "full")
-paged_table(db_pivot)
-```
-
-# Label Pivot for descriptives
-
-```{r}
-
+# Label db_longer_NA
 # Age
-var_label(db_pivot$q1011_age) <- "Age"
+var_label(db_longer_NA$q1011_age) <- "Age"
 # Sex
-var_label(db_pivot$q1009_sex) <- "Sex (female)"
+var_label(db_longer_NA$q1009_sex) <- "Sex (female)"
 # Resilience
-var_label(db_pivot$resilience_scale_post) <-"Resilience post"
+var_label(db_longer_NA$resilience_scale_post) <-"Resilience post"
 # living alone
-var_label(db_pivot$living_alone_post) <-"Living alone"
+var_label(db_longer_NA$living_alone_post) <-"Living alone"
 # neuroticism
-var_label(db_pivot$neuroticism) <-"Neuroticism"
+var_label(db_longer_NA$neuroticism) <-"Neuroticism"
 # extraversion
-var_label(db_pivot$extraversion) <-"Extraversion"
+var_label(db_longer_NA$extraversion) <-"Extraversion"
 # gad
-# var_label(db_pivot$GAD12m_pre) <-"Anxiety"
+# var_label(db_longer_NA$GAD12m_pre) <-"Anxiety"
 # panic
-var_label(db_pivot$PAN12m_pre) <-"Panic"
+var_label(db_longer_NA$PAN12m_pre) <-"Panic"
 # economic
-var_label(db_pivot$economy_post) <-"Economy worsened"
+var_label(db_longer_NA$economy_post) <-"Economy worsened"
 # disability
-var_label(db_pivot$whodas12) <-"Disability"
+var_label(db_longer_NA$whodas12) <-"Disability"
 # social support
-var_label(db_pivot$social_support) <-"Social support"
+var_label(db_longer_NA$social_support) <-"Social support"
 # depression
-var_label(db_pivot$depression) <- "Depression"
+var_label(db_longer_NA$depression) <- "Depression"
 # Loneliness grouped (cutoff 4) 
-# var_label(db_pivot$loneliness_cat) <- "Loneliness grouped (cutoff 4)"
+# var_label(db_longer_NA$loneliness_cat) <- "Loneliness grouped (cutoff 4)"
 
 
 # Labels with mutate
-db_pivot <- db_pivot |> 
+db_longer_NA <- db_longer_NA |> 
   mutate(
     # Assessment
     Assessment = Assessment |> recode(
       pre = "Pre-confinement", post = "Post-confinement"),
-
+    
     # Age grouped 
     q1011_age_cat = q1011_age_cat |> var_label( ) <- "Age grouped",
     q1011_age_cat = q1011_age_cat |> val_label(1) <- "Between 18-34",
@@ -712,7 +593,7 @@ db_pivot <- db_pivot |>
     q1011_age_cat = q1011_age_cat |> val_label(3) <- "Between 50-64",
     q1011_age_cat = q1011_age_cat |> val_label(4) <- "Older than 65",
     q1011_age_cat = q1011_age_cat |> to_factor( ),
-
+    
     # Marital status
     q1012_mar_stat_recat = q1012_mar_stat_recat |> 
       var_label() <- "Marital status",
@@ -752,19 +633,14 @@ db_pivot <- db_pivot |>
     physical_post = physical_post |> to_factor( ),
   )
 
-# Show codebook
-db_pivot |> look_for(details = "full")
+# Codebook for print
+db_longer_NA |> look_for(details = "full") |> 
+  select(-starts_with("na_")) |> gt()
 
-```
+# ---- DATABASE: db_longer ---------------------------------------------
 
-# PIVOT (long format) for mixed model 
-
-```{r}
-# Pivot
-
-# ES NECESARIO CREAR DB_PIVOT SIN NA Y VER SI FUNCIONA EL FIT 
-
-db_pivot_2 <- db_pre_post |> 
+# Created for descriptives graphs
+db_longer <- db_pre_post |> 
   select(ID_ECS,
          q1011_age, 
          q1011_age_cat,
@@ -793,85 +669,54 @@ db_pivot_2 <- db_pre_post |>
          q7008d_cantril,
          social_support_pre_original,
          social_support_post_original
-         ) |> 
+  ) |> 
   pivot_longer(
     cols = c("loneliness_pre","loneliness_post"),
     names_to = "Assessment",
     names_prefix = "loneliness_",
     values_to = "Loneliness"
-    )|> 
+  )|> 
   mutate(
     whodas12 = if_else(
       Assessment == "pre", whodas12_pre, whodas12_post
     ),
-    # # social support
-    # social_support = if_else(
-    #   Assessment == "pre", social_support_pre, social_support_post
-    # ),
     # depression
     depression = if_else(
       Assessment == "pre", depression_12m_pre, depression_30d_post
-    )#,
-    # loneliness cat
-    # loneliness_cat = if_else(Assessment == "pre", loneliness_pre_cat, loneliness_post_cat),
-  ) #|>
-    # select(-c(whodas12_pre, whodas12_post,
-    #         # social_support_pre, social_support_post#,
-    #         # depression_12m_pre, depression_30d_post,
-    #         # loneliness_pre_cat, loneliness_post_cat
-    #         ))
-
-db_pivot_2 |> look_for(details = "full")
-paged_table(db_pivot_2)
-```
+    )
+  ) 
 
 # Label Pivot for descriptives
 
-```{r}
-
 # Age
-var_label(db_pivot_2$q1011_age) <- "Age"
+var_label(db_longer$q1011_age) <- "Age"
 # Sex
-var_label(db_pivot_2$q1009_sex) <- "Sex (female)"
+var_label(db_longer$q1009_sex) <- "Sex (female)"
 # Resilience
-var_label(db_pivot_2$resilience_scale_post) <-"Resilience post"
+var_label(db_longer$resilience_scale_post) <-"Resilience post"
 # living alone
-var_label(db_pivot_2$living_alone_post) <-"Living alone"
+var_label(db_longer$living_alone_post) <-"Living alone"
 # neuroticism
-var_label(db_pivot_2$neuroticism) <-"Neuroticism"
+var_label(db_longer$neuroticism) <-"Neuroticism"
 # extraversion
-var_label(db_pivot_2$extraversion) <-"Extraversion"
-# gad
-# var_label(db_pivot_2$GAD12m_pre) <-"Anxiety"
+var_label(db_longer$extraversion) <-"Extraversion"
 # panic
-var_label(db_pivot_2$PAN12m_pre) <-"Panic"
+var_label(db_longer$PAN12m_pre) <-"Panic"
 # economic
-var_label(db_pivot_2$economy_post) <-"Economy worsened"
+var_label(db_longer$economy_post) <-"Economy worsened"
 # disability
-var_label(db_pivot_2$whodas12) <-"Disability"
-# social support
-# var_label(db_pivot_2$social_support) <-"Social support"
-# depression
-var_label(db_pivot_2$depression) <- "Depression"
-# Loneliness grouped (cutoff 4) 
-# var_label(db_pivot_2$loneliness_cat) <- "Loneliness grouped (cutoff 4)"
+var_label(db_longer$whodas12) <-"Disability"
 
+# depression
+var_label(db_longer$depression) <- "Depression"
 
 # Labels with mutate
-db_pivot_2 <- db_pivot_2 |> 
+db_longer <- db_longer |> 
   mutate(
     # Assessment
     Assessment = Assessment |> recode(
       pre = "Pre-confinement", post = "Post-confinement"),
-    
-    # Age grouped 
-    # q1011_age_cat = q1011_age_cat |> var_label( ) <- "Age grouped",
-    # q1011_age_cat = q1011_age_cat |> val_label(1) <- "18-34",
-    # q1011_age_cat = q1011_age_cat |> val_label(2) <- "35-49",
-    # q1011_age_cat = q1011_age_cat |> val_label(3) <- "50-64",
-    # q1011_age_cat = q1011_age_cat |> val_label(4) <- ">65",
-    # q1011_age_cat = q1011_age_cat |> to_factor( ),
-    
+
     # Marital status
     q1012_mar_stat_recat = q1012_mar_stat_recat |> 
       var_label() <- "Marital status",
@@ -912,43 +757,26 @@ db_pivot_2 <- db_pivot_2 |>
   )
 
 # depression pre post
-var_label(db_pivot_2$depression_12m_pre) <- "Depression pre 12 month"
-var_label(db_pivot_2$depression_30d_post) <- "Depression post 30 days"
-val_labels(db_pivot_2$depression_30d_post) <- 
+var_label(db_longer$depression_12m_pre) <- "Depression pre 12 month"
+var_label(db_longer$depression_30d_post) <- "Depression post 30 days"
+val_labels(db_longer$depression_30d_post) <- 
   c("No" = 0, "Yes" = 1)
 
 # panic
-val_labels(db_pivot_2$PAN12m_pre) <- 
+val_labels(db_longer$PAN12m_pre) <- 
   c("No" = 0, "Yes" = 1)
 
 # sex
-val_label(db_pivot_2$q1009_sex, 2) <- "Female"
+val_label(db_longer$q1009_sex, 2) <- "Female"
 
-# Solo2 Virtual contact
-# var_label(db_pivot_2$SOLO2) <- "Virtual Contact"
-# val_labels(db_pivot_2$SOLO2) <- c(
-#   "Daily" = 1, 
-#   "Once a week" = 2,
-#   "Less than once a week" = 3, 
-#   "Never" = 4
-# )
-  
+# Codebook for print
+db_longer |> look_for(details = "full") |> 
+  select(-starts_with("na_")) |> gt()
 
-# Show codebook
-db_pivot_2 |> look_for(details = "full")
+# ---- DATABASE: db_pre_post ---------------------------------------------
 
-```
+# The db is created but we add the labels
 
-
-# Label variables and values
-
-Check and add only if necessary
-
-```{r labels}
-# Check all variable labels
-# db_pre_post |> look_for(details = "full")
-
-# Add variable label
 var_label(db_pre_post$q1009_sex) <- "Sex"
 var_label(db_pre_post$q1011_age) <- "Age"
 var_label(db_pre_post$q1011_age_cat) <- "Age grouped"
@@ -957,25 +785,17 @@ var_label(db_pre_post$q1016_highest_recat) <- "Education level"
 var_label(db_pre_post$SOLO3) <- "Social relationships changes"
 var_label(db_pre_post$whodas12_pre) <- "Disability pre"
 var_label(db_pre_post$whodas12_post) <- "Disability post"
-# var_label(db_pre_post$social_support_pre) <- "Social support pre"
-# var_label(db_pre_post$social_support_post) <- "Social support post"
 var_label(db_pre_post$living_alone_post) <- "Living alone post"
 var_label(db_pre_post$depression_12m_pre) <- "Depression pre 12 month"
 var_label(db_pre_post$depression_30d_post) <- "Depression post 30 days"
 var_label(db_pre_post$loneliness_pre) <- "Loneliness pre"
 var_label(db_pre_post$loneliness_post) <- "Loneliness post"
-# var_label(db_pre_post$loneliness_pre_cat) <- "Loneliness pre grouped"
-# var_label(db_pre_post$loneliness_post_cat) <- "Loneliness post grouped"
-
 # Check values labels
 val_labels(db_pre_post$q1009_sex)
 # Change values labels
 val_label(db_pre_post$q1009_sex, 2) <- "Female"
 # Age
 val_label(db_pre_post$q1011_age, 888) <- NULL
-# Age grouped
-# val_labels(db_pre_post$q1011_age_cat) <- 
-#   c(`18-34` = 1, `35-49` = 2, `50-64` = 3, `65+` = 4)
 # Marital status
 val_labels(db_pre_post$q1012_mar_stat_recat) <- 
   c("Single" = 1, "Married/ Partnership" = 2, "Separated/ Widowed" = 3)
@@ -1011,38 +831,12 @@ val_labels(db_pre_post$depression_30d_post) <-
     "Yes" = 1
   )
 
-# Loneliness pre cat
-# val_labels(db_pre_post$loneliness_pre_cat) <- 
-#   c("No" = 0, 
-#     "Yes" = 1
-#   )
+# Codebook for print
+db_pre_post |> look_for(details = "full") |> 
+  select(-starts_with("na_")) |> gt()
 
-# Loneliness post cat
-# val_labels(db_pre_post$loneliness_post_cat) <- 
-#   c("No" = 0, 
-#     "Yes" = 1
-#   )
+# ---- SAVE DATABASES ---------------------------------------------
 
-
-```
-
-
-Display de database with the prepared variables
-
-```{r display-variables}
-
-# Check all variable labels
-# db_pre_post |> look_for(details = "full")
-
-```
-
-# Save the final data base
-
-```{r}
-# save(db_pre_post, file = "Cleandata/db_pre_post.Rda")
-save(db_pre_post, file = "db_pre_post.Rda")
-save(db_pivot, file = "db_pivot.Rda")
-save(db_pivot_2, file = "db_pivot_2.Rda")
-
-getwd()
-```
+save(db_longer_NA, file = "dat/db_longer_NA.Rda")
+save(db_longer, file = "dat/db_longer.Rda")
+save(db_pre_post, file = "dat/db_pre_post.Rda")

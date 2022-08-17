@@ -38,11 +38,11 @@ vignettes/*.pdf
 # R Environment Variables
 .Renviron
 
-# salidas de archivos knitR, rmd y qmd
+# output for archives knitR, rmd and qmd
 *.html
 *.docx
 *.png
 *.Rda
 
-# carpetas
+# directory
 dat/
