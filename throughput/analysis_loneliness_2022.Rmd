@@ -28,36 +28,19 @@ library(gt)
 library(sjPlot)
 ```
 
-# Codebook
-
-## Format long 1 (with NA)
-
-For the descriptive table.
-
-```{r}
-load(
-  here("Cleandata","db_pivot.Rda")
-)
-
-# Values and Variable Labels 
-db_pivot |> look_for(details = "full")
-
-paged_table(db_pivot, options = list(rows.print = 6))
-```
-
 ## Format long 2 (without NA)
 
 For the mixed model.
 
 ```{r}
 load(
-  here("Cleandata","db_pivot_2.Rda")
+  here("dat","db_longer.Rda")
 )
 
-# Values and Variable Labels 
-db_pivot_2 |> look_for(details = "full")
-
-paged_table(db_pivot_2, options = list(rows.print = 6))
+# # Values and Variable Labels 
+# db_longer |> look_for(details = "full")
+# 
+# paged_table(db_longer, options = list(rows.print = 6))
 ```
 
 ## Format wide
@@ -66,81 +49,43 @@ To apply the weights and the estimation of the models.
 
 ```{r}
 load(
-  here("Cleandata","db_pre_post.Rda")
+  here("dat","db_pre_post.Rda")
 )
 
-# Values and Variable Labels 
-db_pre_post |> look_for(details = "full")
-
-paged_table(db_pre_post, options = list(rows.print = 6))
+# # Values and Variable Labels 
+# db_pre_post |> look_for(details = "full")
+# 
+# paged_table(db_pre_post, options = list(rows.print = 6))
 ```
 
-# Reliability
+<!-- # Comparison of means -->
 
-```{r}
-load(
-  here("Reliability","reliability.Rda")
-)
+<!-- Compare levels between the Age_cat and Assessment (pre-post) -->
 
-paged_table(reliability)
-```
+<!-- ```{r message=FALSE, warning=FALSE} -->
+<!-- db_longer |> group_by(q1011_age_cat, Assessment) |>  -->
+<!--   dplyr::summarise(across(Loneliness, lst(mean, sd), na.rm = TRUE)) |>  -->
+<!--   kableExtra::kable()|>  -->
+<!--   kable_styling(full_width = FALSE) -->
+<!-- ``` -->
 
-# Descriptives
+<!-- # Fit Test for Age cat -->
 
-Paired t-test and McNemar's test. The data is expected in a long format with 2 rows per participant.
+<!-- ```{r message=FALSE, warning=FALSE} -->
+<!-- # Age model test -->
+<!-- Fit_age_test <- lmer(Loneliness ~ 0 + q1011_age_cat * Assessment + (1 | ID_ECS),  -->
+<!--              data = db_longer) -->
+<!-- # Anova -->
+<!-- anova(Fit_age_test) |>  -->
+<!--   round(2) |> gt() -->
 
-```{r message=FALSE, warning=FALSE}
+<!-- summary(Fit_age_test)$coefficients |> round(3)  -->
 
-tbl <- db_pivot %>% 
-  tbl_summary(
-    missing = "no",
-    digits = all_continuous() ~ 2,
-    by = Assessment, include = -c(ID_ECS, wfinal_norm),
-    type = c(Loneliness, neuroticism, extraversion) ~ "continuous",
-    statistic = list(all_continuous() ~ "{mean} ({sd})"),
-  ) %>%
-  add_p(
-    test = list(c(Loneliness, whodas12, social_support) ~ "paired.t.test",
-                c(depression) ~ "mcnemar.test"),
-    group = ID_ECS
-  ) 
-
-tbl[1]$table_body <-tbl[1]$table_body %>%
-      mutate(
-        across(c(stat_1, stat_2), ~gsub("^0.*", "",.)),
-        across(c(stat_1, stat_2), ~gsub("^NA.*", "",.)),
-        );tbl
-
-```
-
-# Comparison of means
-
-Compare levels between the Age_cat and Assessment (pre-post)
-
-```{r message=FALSE, warning=FALSE}
-db_pivot_2 |> group_by(q1011_age_cat, Assessment) |> 
-  dplyr::summarise(across(Loneliness, lst(mean, sd), na.rm = TRUE)) |> 
-  kableExtra::kable()|> 
-  kable_styling(full_width = FALSE)
-```
-
-# Fit Test for Age cat
-
-```{r message=FALSE, warning=FALSE}
-# Age model test
-Fit_age_test <- lmer(Loneliness ~ 0 + q1011_age_cat * Assessment + (1 | ID_ECS), 
-             data = db_pivot_2)
-# Anova
-anova(Fit_age_test) |> 
-  round(2) |> gt()
-
-summary(Fit_age_test)$coefficients |> round(3) 
-
-# tbl regression
-Fit_age_test |> tbl_regression(
-    estimate_fun = function(x) style_ratio(x, digits = 3)
-) |> add_global_p() |> add_vif()
-```
+<!-- # tbl regression -->
+<!-- Fit_age_test |> tbl_regression( -->
+<!--     estimate_fun = function(x) style_ratio(x, digits = 3) -->
+<!-- ) |> add_global_p() |> add_vif() -->
+<!-- ``` -->
 
 # Univariates
 

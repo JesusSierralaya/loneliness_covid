@@ -1,0 +1,89 @@
+---
+title: "Results"
+description: ""
+date: today
+author: 
+ - name: "Jesus Sierralaya"
+   url: https://github.com/JesusSierralaya
+   affiliation: CCOMS-UAM
+   affiliation-url: https://github.com/CCOMS-UAM
+title-block-banner: true
+format:
+  html:
+    theme: flatly
+    code-fold: true
+    # code-tools: true
+    # code-link: true
+    toc: true
+    number-sections: true
+    # # df-print: paged
+    # self-contained: true
+---
+
+```{r}
+#| include: false
+library(here)
+library(gt)
+library(gtsummary)
+
+```
+
+# Reliability
+
+```{r}
+# Load
+load(
+  here("dat", "reliability.Rda")
+)
+# as table 
+reliability |> gt()
+```
+
+# Descriptive table
+
+```{r}
+#| warnings: false
+#| message: false
+
+# Load
+load(
+  here("dat","db_longer_NA.Rda")
+)
+# Table with tbl summary
+tbl <- db_longer_NA %>% 
+  tbl_summary(
+    missing = "no",
+    digits = all_continuous() ~ 2,
+    by = Assessment, include = -c(ID_ECS, wfinal_norm),
+    type = c(Loneliness, neuroticism, extraversion) ~ "continuous",
+    statistic = list(all_continuous() ~ "{mean} ({sd})"),
+  ) %>%
+  add_p(
+    test = list(c(Loneliness, whodas12, social_support) ~ "paired.t.test",
+                c(depression) ~ "mcnemar.test"),
+    group = ID_ECS
+  ) 
+
+# Remove missing values from the table
+tbl[1]$table_body <-tbl[1]$table_body %>%
+  mutate(
+    across(c(stat_1, stat_2), ~gsub("^0.*", "",.)),
+    across(c(stat_1, stat_2), ~gsub("^NA.*", "",.)),
+  );tbl
+```
+
+# Graphs
+
+## Socidemographics
+
+![](images/plot_sociod.png)
+
+## Social
+
+![](images/plot_social.png)
+
+## Health
+
+![](images/plot_health.png)
+
+

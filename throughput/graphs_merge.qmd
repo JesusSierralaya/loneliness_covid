@@ -133,7 +133,6 @@ effects_age_cat <- effect("q1011_age_cat:Assessment", Fit_mix_age) |> as.data.fr
            q1011_age_cat = q1011_age_cat |> fct_relevel("18-34", "35-49", "50-64"))
 ```
 
-
 ## Plots
 
 ```{r}
@@ -197,8 +196,6 @@ plot_sex <- effects_sex |>
 plot_sex
 ```
 
-
-
 # Marital status
 
 ## Fit
@@ -219,7 +216,6 @@ effects_marital <-
              q1012_mar_stat_recat = q1012_mar_stat_recat |> 
                relevel("Never married"))
 ```
-
 
 ## Plots
 
@@ -247,8 +243,7 @@ plot_marital <- effects_marital |>
 plot_marital
 ```
 
-
-# Education level 
+# Education level
 
 ## Fit
 
@@ -266,7 +261,6 @@ effects_ed <-
   as.data.frame() |>
       mutate(Assessment =  Assessment |> relevel("Before"))
 ```
-
 
 ## Plots
 
@@ -291,7 +285,6 @@ plot_ed <- effects_ed |>
   scale_color_manual(values = group.colors)
 plot_ed
 ```
-
 
 # Economy post
 
@@ -340,7 +333,6 @@ plot_econ_post
 #
 ```
 
-
 # Social relationships
 
 ## Fit
@@ -359,7 +351,6 @@ effects_social <-
   as.data.frame() |>
       mutate(Assessment =  Assessment |> relevel("Before"))
 ```
-
 
 ## Plots
 
@@ -429,7 +420,6 @@ plot_liv_alone_post <- effects_liv_alone_post |> # Copy name effects
 plot_liv_alone_post
 ```
 
-
 # Social support before
 
 ## Plots
@@ -485,9 +475,9 @@ plot_soc_sup_post <- db_longer |>
 plot_soc_sup_post
 ```
 
-# Physical activity post, [cat]
+# Physical activity post, \[cat\]
 
-## Fit 
+## Fit
 
 ```{r}
 Fit_mix_physical_post <- lmer(Loneliness ~ 0 + physical_post * Assessment + (1 | ID_ECS), 
@@ -530,9 +520,9 @@ plot_phys_post <- effects_physical_post |>
 plot_phys_post
 ```
 
-# Depresssion pre [cat]
+# Depresssion pre \[cat\]
 
-## Fit 
+## Fit
 
 ```{r}
 Fit_mix_depre_pre <- lmer(Loneliness ~ 0 + depression_12m_pre * Assessment + (1 | ID_ECS), 
@@ -572,9 +562,9 @@ plot_depre_pre <-
 plot_depre_pre
 ```
 
-# Depression during [cat]
+# Depression during \[cat\]
 
-## Fit 
+## Fit
 
 ```{r}
 Fit_mix_depre_post <- lmer(Loneliness ~ 0 + depression_30d_post * Assessment + (1 | ID_ECS), 
@@ -669,7 +659,6 @@ plot_disability_post <- db_longer |> # [Change here]
                        ))
 plot_disability_post # [Change here]
 ```
-
 
 # Neuroticism
 
@@ -809,6 +798,7 @@ png(file = "../images/plot_sociod.png",
 plot_sociod
 dev.off()
 ```
+
 <!-- ![](plot_sociod.png) -->
 
 ## Social aspects

@@ -1,8 +1,24 @@
+# ··············································································
+# FILE NAME:   reliability.R
+# DESCRIPTION: Compute the reability
+# 
+# AUTHOR:      Jesus (jesus.sierralaya@inv.uam.es)
+# 
+# DATE:        17/08/2022
+# 
+# ·············································································· 
+
+## ---- INCLUDES: --------------------------------------------------------------
+
+
 library(haven)
 library(readstata13)
 library(tidyverse)
 library(magrittr)
-# library(stars)
+library(gtsummary)
+
+## ---- PATHS: -----------------------------------------------------------------
+
 # File system:
 # BASE_DIR <- "~/../UAM"
 BASE_DIR <- "~/../../UAM"
@@ -110,8 +126,7 @@ DISABILITY_RECODE_PRE  <- c(
 DISABILITY_RECODE_POST <- "SF2_" %>% paste0(c(2, 4, 8, 10, 11, 12))
 
 
-######################################
-# Load data/ 
+## ---- LOAD: -----------------------------------------------------------------
 
 PRE_ITEMS <- unlist(mget(ls(pattern = "PRE_ITEMS")), use.names = FALSE)
 
@@ -168,8 +183,7 @@ db_1 <- db_1 %>% mutate(
 
 # Missing values
 
-######################################
-# REABILITY
+## ---- REABILITY: -------------------------------------------------------------
 
 # pre
 
@@ -245,5 +259,8 @@ order <- c(
   "extraversion_pre"
 )
 reliability <- reliability |> slice(match(order,Variable))
+reliability$Alpha <- reliability |> pull(Alpha) |> as.numeric() |> round(2)
 
-save(reliability, file = "Reliability/reliability.Rda")
+## ---- SAVE Rda: --------------------------------------------------------------
+
+save(reliability, file = "dat/reliability.Rda")
