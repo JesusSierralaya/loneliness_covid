@@ -8,8 +8,7 @@
 # 
 # ·············································································· 
 
-## ---- INCLUDES: --------------------------------------------------------------
-
+## ---- INCLUDES --------------------------------------------------------------
 
 library(haven)
 library(readstata13)
@@ -17,7 +16,7 @@ library(tidyverse)
 library(magrittr)
 library(gtsummary)
 
-## ---- PATHS: -----------------------------------------------------------------
+## ---- PATHS -----------------------------------------------------------------
 
 # File system:
 # BASE_DIR <- "~/../UAM"
@@ -43,8 +42,6 @@ DB_POST_PATH <- file.path(
 )
 
 # Load data/ Preprocess data
-
-#~[borrar]
 
 # Variable definitions
 
@@ -126,7 +123,7 @@ DISABILITY_RECODE_PRE  <- c(
 DISABILITY_RECODE_POST <- "SF2_" %>% paste0(c(2, 4, 8, 10, 11, 12))
 
 
-## ---- LOAD: -----------------------------------------------------------------
+## ---- LOAD -----------------------------------------------------------------
 
 PRE_ITEMS <- unlist(mget(ls(pattern = "PRE_ITEMS")), use.names = FALSE)
 
@@ -179,11 +176,8 @@ db_1 <- db_1 %>% mutate(
   met2 = AF2A * (AF2B_H_1 + AF2B_M_1) * 4,
   met3 = AF3A * (AF2B_H_1 + AF3B_M_1) * 4
  )
-# Preprocess data
 
-# Missing values
-
-## ---- REABILITY: -------------------------------------------------------------
+## ---- REABILITY -------------------------------------------------------------
 
 # pre
 
@@ -223,17 +217,12 @@ alpha_disability_post <- db_1 %>%
   select(all_of(DISABILITY_POST_ITEMS)) %>%
   psych::alpha(check.keys = TRUE) %>%
   extract2(c("total", "raw_alpha"))
-# 
-# alpha_physical_post <- db_1 %>%
-#   select(all_of(PHYSICAL_POST_ITEMS)) %>%
-#   psych::alpha(check.keys = TRUE) %>%
-#   extract2(c("total", "raw_alpha"))
 
 alpha_resilience_post <- db_1 %>%
   select(all_of(RESILIENCE_POST_ITEMS)) %>%
   psych::alpha(check.keys = TRUE) %>%
   extract2(c("total", "raw_alpha"))
-# 
+
 alpha_social_support_post <- db_1 %>%
   select(all_of(SOCIAL_SUPPORT_POST_ITEMS)) %>%
   psych::alpha(check.keys = TRUE) %>%
@@ -261,6 +250,4 @@ order <- c(
 reliability <- reliability |> slice(match(order,Variable))
 reliability$Alpha <- reliability |> pull(Alpha) |> as.numeric() |> round(2)
 
-## ---- SAVE Rda: --------------------------------------------------------------
-
-save(reliability, file = "dat/reliability.Rda")
+reliability

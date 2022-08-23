@@ -294,29 +294,29 @@ db_pre_post <- full_join(db_pre, db_post, by = "ID_ECS") |>
 
 ## ---- BRIEFLY DESCRIPTIVES: --------------------------------------------------
 
-# Version to print
-describe(db_pre_post)[-(c(1,9,10)), c("n", "mean", "min", "max")] |>
-  rownames_to_column() |> 
-  gt() |> 
-  fmt_number(
-    columns = c("mean", "min", "max"),
-    decimals = 1,
-    use_seps = FALSE
-  ) |>  
-  tab_header(
-    title = md("Briefly descriptives **BEFORE transformation**"),
-    subtitle = md("*Loneliness covid study*")
-  )
+# # Version to print
+# describe(db_pre_post)[-(c(1,9,10)), c("n", "mean", "min", "max")] |>
+#   rownames_to_column() |> 
+#   gt() |> 
+#   fmt_number(
+#     columns = c("mean", "min", "max"),
+#     decimals = 1,
+#     use_seps = FALSE
+#   ) |>  
+#   tab_header(
+#     title = md("Briefly descriptives **BEFORE transformation**"),
+#     subtitle = md("*Loneliness covid study*")
+#   )
 
 ## ---- TREATMENT OF OUTLIERS TO NA --------------------------------------------
 
 # SOLO3: Live alone. Range 1:3
 # Check frequency
-addmargins(table(db_pre_post$SOLO3, useNA = "always"))
+# addmargins(table(db_pre_post$SOLO3, useNA = "always"))
 # Replace >3 to NA 
 db_pre_post$SOLO3 <- db_pre_post$SOLO3 |> na_if(9)
 # Recheck
-addmargins(table(db_pre_post$SOLO3, useNA = "always"))
+# addmargins(table(db_pre_post$SOLO3, useNA = "always"))
 
 # ECON5: recode 9 to missing
 db_pre_post <- db_pre_post |> 
@@ -328,14 +328,14 @@ db_pre_post <- db_pre_post |>
 
 # Check the NA for each variable
 # Version to print
-db_pre_post |> 
-  summarise(across(.fns = ~sum(is.na(.)))) |> 
-  pivot_longer(everything()) |> 
-  gt()  |>  
-  tab_header(
-    title = md("NA **BEFORE transformation**"),
-    subtitle = md("*Loneliness covid study*")
-  )
+# db_pre_post |> 
+#   summarise(across(.fns = ~sum(is.na(.)))) |> 
+#   pivot_longer(everything()) |> 
+#   gt()  |>  
+#   tab_header(
+#     title = md("NA **BEFORE transformation**"),
+#     subtitle = md("*Loneliness covid study*")
+#   )
 
 # Drop NA in the criterion variable loneliness pre and post
 db_pre_post <- db_pre_post |> 
@@ -417,33 +417,33 @@ db_pre_post <- db_pre_post |>
 
 # ---- RECHECK DESCRIPTIVES AND NA ---------------------------------------------
 
-describe(db_pre_post)[-(c(1,9,10)), c("n", "mean", "min", "max")] |>
-  rownames_to_column() |> 
-  gt() |> 
-  fmt_number(
-    columns = c("mean", "min", "max"),
-    decimals = 1,
-    use_seps = FALSE
-  ) |>  
-  tab_header(
-    title = md("Briefly descriptives **AFTER transformation**"),
-    subtitle = md("*Loneliness covid study*")
-  )
+# describe(db_pre_post)[-(c(1,9,10)), c("n", "mean", "min", "max")] |>
+#   rownames_to_column() |> 
+#   gt() |> 
+#   fmt_number(
+#     columns = c("mean", "min", "max"),
+#     decimals = 1,
+#     use_seps = FALSE
+#   ) |>  
+#   tab_header(
+#     title = md("Briefly descriptives **AFTER transformation**"),
+#     subtitle = md("*Loneliness covid study*")
+#   )
 
 # Check the NA for each variable
 # Version to print
-db_pre_post |> 
-  summarise(across(.fns = ~sum(is.na(.)))) |> 
-  pivot_longer(everything()) |> 
-  gt()  |>  
-  tab_header(
-    title = md("NA **AFTER transformation**"),
-    subtitle = md("*Loneliness covid study*")
-  )
+# db_pre_post |> 
+#   summarise(across(.fns = ~sum(is.na(.)))) |> 
+#   pivot_longer(everything()) |> 
+#   gt()  |>  
+#   tab_header(
+#     title = md("NA **AFTER transformation**"),
+#     subtitle = md("*Loneliness covid study*")
+#   )
 
 # Codebook 
-db_pre_post |> look_for(details = "full") |> 
-  select(-starts_with("na_")) |> gt()
+# db_pre_post |> look_for(details = "full") |> 
+#   select(-starts_with("na_")) |> gt()
 
 
 # ---- DATABASE: db_longer_NA ---------------------------------------------
@@ -633,9 +633,9 @@ db_longer_NA <- db_longer_NA |>
     physical_post = physical_post |> to_factor( ),
   )
 
-# Codebook for print
-db_longer_NA |> look_for(details = "full") |> 
-  select(-starts_with("na_")) |> gt()
+# # Codebook for print
+# db_longer_NA |> look_for(details = "full") |> 
+#   select(-starts_with("na_")) |> gt()
 
 # ---- DATABASE: db_longer ---------------------------------------------
 
@@ -769,9 +769,9 @@ val_labels(db_longer$PAN12m_pre) <-
 # sex
 val_label(db_longer$q1009_sex, 2) <- "Female"
 
-# Codebook for print
-db_longer |> look_for(details = "full") |> 
-  select(-starts_with("na_")) |> gt()
+# # Codebook for print
+# db_longer |> look_for(details = "full") |> 
+#   select(-starts_with("na_")) |> gt()
 
 # ---- DATABASE: db_pre_post ---------------------------------------------
 
@@ -791,7 +791,7 @@ var_label(db_pre_post$depression_30d_post) <- "Depression post 30 days"
 var_label(db_pre_post$loneliness_pre) <- "Loneliness pre"
 var_label(db_pre_post$loneliness_post) <- "Loneliness post"
 # Check values labels
-val_labels(db_pre_post$q1009_sex)
+# val_labels(db_pre_post$q1009_sex)
 # Change values labels
 val_label(db_pre_post$q1009_sex, 2) <- "Female"
 # Age
@@ -832,11 +832,11 @@ val_labels(db_pre_post$depression_30d_post) <-
   )
 
 # Codebook for print
-db_pre_post |> look_for(details = "full") |> 
-  select(-starts_with("na_")) |> gt()
+# db_pre_post |> look_for(details = "full") |> 
+#   select(-starts_with("na_")) |> gt()
 
-# ---- SAVE DATABASES ---------------------------------------------
-
-save(db_longer_NA, file = "dat/db_longer_NA.Rda")
-save(db_longer, file = "dat/db_longer.Rda")
-save(db_pre_post, file = "dat/db_pre_post.Rda")
+# # ---- SAVE DATABASES ---------------------------------------------
+# 
+# save(db_longer_NA, file = "dat/db_longer_NA.Rda")
+# save(db_longer, file = "dat/db_longer.Rda")
+# save(db_pre_post, file = "dat/db_pre_post.Rda")

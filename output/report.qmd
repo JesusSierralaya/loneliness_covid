@@ -12,7 +12,7 @@ format:
   html:
     theme: flatly
     code-fold: true
-    # code-tools: true
+    code-tools: true
     # code-link: true
     toc: true
     number-sections: true
@@ -20,185 +20,185 @@ format:
     self-contained: true
 ---
 
-```{r}
+```{r setup}
 #| include: false
-library(here)
-library(gt)
-library(gtsummary)
-library(tidyverse)
-library(survey)
-library(labelled)
-library(sjPlot)
 ```
 
 # Reliability
 
 ```{r}
-# Load
-load(
-  here("dat", "reliability.Rda")
-)
-# as table 
-reliability |> gt()
+#| file: ../throughput/reliability.R
+#| warning: false
 ```
-
-# Descriptive table
+# Import and clean data
 
 ```{r}
-#| warnings: false
-#| message: false
-
-# Load
-load(
-  here("dat","db_longer_NA.Rda")
-)
-# Table with tbl summary
-tbl <- db_longer_NA %>% 
-  tbl_summary(
-    missing = "no",
-    digits = all_continuous() ~ 2,
-    by = Assessment, include = -c(ID_ECS, wfinal_norm),
-    type = c(Loneliness, neuroticism, extraversion) ~ "continuous",
-    statistic = list(all_continuous() ~ "{mean} ({sd})"),
-  ) %>%
-  add_p(
-    test = list(c(Loneliness, whodas12, social_support) ~ "paired.t.test",
-                c(depression) ~ "mcnemar.test"),
-    group = ID_ECS
-  ) 
-
-# Remove missing values from the table
-tbl[1]$table_body <-tbl[1]$table_body %>%
-  mutate(
-    across(c(stat_1, stat_2), ~gsub("^0.*", "",.)),
-    across(c(stat_1, stat_2), ~gsub("^NA.*", "",.)),
-  );tbl
+#| file: ../throughput/import_clean.R
+#| warning: false
 ```
 
-# Graphs
-
-## Socidemographics
-
-![](images/plot_sociod.png)
-
-## Social
-
-![](images/plot_social.png)
-
-## Health
-
-![](images/plot_health.png)
-
-# Univariate
+## db_longer_NA
 
 ```{r}
-## ---- LOAD: -----------------------------------------------------------------
-
-load(
-  here("dat","db_pre_post.Rda")
-)
-
-## ---- UNIVARIATE: ------------------------------------------------------------
-
-# Select the reference group
-db_pre_post <- db_pre_post |> 
-  mutate(
-    q1011_age_cat = q1011_age_cat |> fct_relevel("50-64"),
-    q1012_mar_stat_recat = q1012_mar_stat_recat |> to_factor() |> 
-      fct_relevel("Married/ Partnership"),
-    q1016_highest_recat = q1016_highest_recat |> to_factor() |> fct_relevel("Tertiary"),
-    SOLO3 = SOLO3 |> to_factor() |> fct_relevel("Have had no effect"),
-  )
-
-# As factor
-db_pre_post <- db_pre_post |> 
-  haven::as_factor()
-
-# Univariate with Survey design
-tbl_univ <- survey::svydesign(
-  data = db_pre_post,
-  ids = ~ID_ECS,
-  weights = db_pre_post$wfinal_norm
-) |> 
-  tbl_uvregression(
-    method = survey::svyglm,
-    y = loneliness_post,
-    formula = "{y} ~ {x} + offset(loneliness_pre)",
-    include = -c(q1011_age, ID_ECS, q7008d_cantril, 
-                 loneliness_pre, SOLO2, ECON5,
-                 wfinal_norm),
-    label = list(economy_post ~ "Economy worsened due COVID")
-  ) |> 
-  add_global_p(keep = TRUE) |> 
-  add_significance_stars(hide_ci = FALSE, hide_p = FALSE, hide_se = TRUE) |> 
-  bold_p() |> 
-  italicize_levels()
-
-tbl_univ
+look_for(db_longer_NA, details = "full")
 ```
 
-# Multivariate
-
-```{r message=FALSE, warning=FALSE}
-fit_multi <- survey::svydesign(
-  data = db_pre_post,
-  ids = ~ID_ECS,
-  weights = db_pre_post$wfinal_norm
-) |> 
-  svyglm(
-    formula = loneliness_post ~ offset(loneliness_pre) #+ 0
-    # Fix
-    + q1009_sex
-    + q1011_age_cat
-    + q1012_mar_stat_recat   
-    + q1016_highest_recat 
-    # random
-    + SOLO3
-    + economy_post         
-    + neuroticism        
-    + extraversion        
-    + whodas12_pre 
-    + depression_12m_pre 
-    + depression_30d_post 
-    # ,
-    # design  = svy_design
-  )
-
-# # Quick review of significant factors
-# summary(fit_multi)
-# 
-# Table
-fit_multi |>
-  tbl_regression(
-    pvalue_fun = purrr::partial(style_sigfig, digits = 3)
-  ) |>
-  bold_p(t = 0.05) |>
-  add_vif()|>
-  add_global_p(keep = TRUE)
-```
-
-## Plot Multivariate
+## db_longer
 
 ```{r}
-#| fig-height: 10
-fit_multi |> plot_models(show.values = TRUE, axis.labels = c(
-    "Sex (Female)", 
-    "Age (18-34)",
-    "Age (35-49)",
-    "Age (+65)",
-    "Marital status (Single)",
-    "Marital status (Separated/ Widowed)",
-    "Education level (Less than primary)",
-    "Education level (Primary)",
-    "Education level (Secondary)",
-    "Social relationships changes (Improved)",
-    "Social relationships changes (Worsened)",
-    "Economic situation worsened due to COVID-19",
-    "Neuroticism",
-    "Extraversion",
-    "Disability (Before)",
-    "Depression 12 months (Before)",
-    "Depression 30 days (During)"
-)|> rev(), show.legend = FALSE, colors = "Dark2") +
-    font_size(title =20, labels.y = 10, axis_title.x = 15)
+look_for(db_longer, details = "full")
 ```
+
+## db_pre_post
+
+```{r}
+look_for(db_pre_post, details = "full")
+```
+
+# Descriptives
+
+## Table descriptives
+
+```{r}
+#| file: ../throughput/descriptives.R
+#| warning: false
+```
+
+## Graphs 
+
+```{r}
+#| file: ../throughput/graphs.R
+#| warning: false
+```
+
+### Socidemographics
+
+```{r}
+plot_sociod 
+```
+
+
+
+<!-- ![](images/plot_sociod.png) -->
+
+<!-- ## Social -->
+
+<!-- ![](images/plot_social.png) -->
+
+<!-- ## Health -->
+
+<!-- ![](images/plot_health.png) -->
+
+<!-- # Univariate -->
+
+<!-- ```{r} -->
+<!-- ## ---- LOAD: ----------------------------------------------------------------- -->
+
+<!-- load( -->
+<!--   here("dat","db_pre_post.Rda") -->
+<!-- ) -->
+
+<!-- ## ---- UNIVARIATE: ------------------------------------------------------------ -->
+
+<!-- # Select the reference group -->
+<!-- db_pre_post <- db_pre_post |>  -->
+<!--   mutate( -->
+<!--     q1011_age_cat = q1011_age_cat |> fct_relevel("50-64"), -->
+<!--     q1012_mar_stat_recat = q1012_mar_stat_recat |> to_factor() |>  -->
+<!--       fct_relevel("Married/ Partnership"), -->
+<!--     q1016_highest_recat = q1016_highest_recat |> to_factor() |> fct_relevel("Tertiary"), -->
+<!--     SOLO3 = SOLO3 |> to_factor() |> fct_relevel("Have had no effect"), -->
+<!--   ) -->
+
+<!-- # As factor -->
+<!-- db_pre_post <- db_pre_post |>  -->
+<!--   haven::as_factor() -->
+
+<!-- # Univariate with Survey design -->
+<!-- tbl_univ <- survey::svydesign( -->
+<!--   data = db_pre_post, -->
+<!--   ids = ~ID_ECS, -->
+<!--   weights = db_pre_post$wfinal_norm -->
+<!-- ) |>  -->
+<!--   tbl_uvregression( -->
+<!--     method = survey::svyglm, -->
+<!--     y = loneliness_post, -->
+<!--     formula = "{y} ~ {x} + offset(loneliness_pre)", -->
+<!--     include = -c(q1011_age, ID_ECS, q7008d_cantril,  -->
+<!--                  loneliness_pre, SOLO2, ECON5, -->
+<!--                  wfinal_norm), -->
+<!--     label = list(economy_post ~ "Economy worsened due COVID") -->
+<!--   ) |>  -->
+<!--   add_global_p(keep = TRUE) |>  -->
+<!--   add_significance_stars(hide_ci = FALSE, hide_p = FALSE, hide_se = TRUE) |>  -->
+<!--   bold_p() |>  -->
+<!--   italicize_levels() -->
+
+<!-- tbl_univ -->
+<!-- ``` -->
+
+<!-- # Multivariate -->
+
+<!-- ```{r message=FALSE, warning=FALSE} -->
+<!-- fit_multi <- survey::svydesign( -->
+<!--   data = db_pre_post, -->
+<!--   ids = ~ID_ECS, -->
+<!--   weights = db_pre_post$wfinal_norm -->
+<!-- ) |>  -->
+<!--   svyglm( -->
+<!--     formula = loneliness_post ~ offset(loneliness_pre) #+ 0 -->
+<!--     # Fix -->
+<!--     + q1009_sex -->
+<!--     + q1011_age_cat -->
+<!--     + q1012_mar_stat_recat    -->
+<!--     + q1016_highest_recat  -->
+<!--     # random -->
+<!--     + SOLO3 -->
+<!--     + economy_post          -->
+<!--     + neuroticism         -->
+<!--     + extraversion         -->
+<!--     + whodas12_pre  -->
+<!--     + depression_12m_pre  -->
+<!--     + depression_30d_post  -->
+<!--     # , -->
+<!--     # design  = svy_design -->
+<!--   ) -->
+
+<!-- # # Quick review of significant factors -->
+<!-- # summary(fit_multi) -->
+<!-- #  -->
+<!-- # Table -->
+<!-- fit_multi |> -->
+<!--   tbl_regression( -->
+<!--     pvalue_fun = purrr::partial(style_sigfig, digits = 3) -->
+<!--   ) |> -->
+<!--   bold_p(t = 0.05) |> -->
+<!--   add_vif()|> -->
+<!--   add_global_p(keep = TRUE) -->
+<!-- ``` -->
+
+<!-- ## Plot Multivariate -->
+
+<!-- ```{r} -->
+<!-- #| fig-height: 10 -->
+<!-- fit_multi |> plot_models(show.values = TRUE, axis.labels = c( -->
+<!--     "Sex (Female)",  -->
+<!--     "Age (18-34)", -->
+<!--     "Age (35-49)", -->
+<!--     "Age (+65)", -->
+<!--     "Marital status (Single)", -->
+<!--     "Marital status (Separated/ Widowed)", -->
+<!--     "Education level (Less than primary)", -->
+<!--     "Education level (Primary)", -->
+<!--     "Education level (Secondary)", -->
+<!--     "Social relationships changes (Improved)", -->
+<!--     "Social relationships changes (Worsened)", -->
+<!--     "Economic situation worsened due to COVID-19", -->
+<!--     "Neuroticism", -->
+<!--     "Extraversion", -->
+<!--     "Disability (Before)", -->
+<!--     "Depression 12 months (Before)", -->
+<!--     "Depression 30 days (During)" -->
+<!-- )|> rev(), show.legend = FALSE, colors = "Dark2") + -->
+<!--     font_size(title =20, labels.y = 10, axis_title.x = 15) -->
+<!-- ``` -->

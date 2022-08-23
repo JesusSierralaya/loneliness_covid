@@ -14,7 +14,7 @@ Where we will keep the images of the tables and figures to generate the report t
 
 ## notebooks
 
-Where we test o explore things not contemplated in the analysis plan. 
+Where we test o explore things not contemplated in the analysis plan
 
 ## throughput
 
