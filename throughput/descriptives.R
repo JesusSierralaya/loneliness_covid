@@ -10,18 +10,18 @@
 
 ## ---- INCLUDES: --------------------------------------------------------------
 
-library(here)
+# library(here)
 library(gtsummary)
 
 ## ---- TABLE 1: --------------------------------------------------------------
 
-# Load
-load(
-  here("dat","db_longer_NA.Rda")
-)
+# # Load
+# load(
+#   here("dat","db_longer_NA.Rda")
+# )
 
 # Table with tbl summary
-tbl <- db_longer_NA %>%
+tbl_descriptive <- db_longer_NA %>%
   tbl_summary(
     missing = "no",
     digits = all_continuous() ~ 2,
@@ -36,10 +36,10 @@ tbl <- db_longer_NA %>%
   )
 
 # Remove missing values from the table
-tbl[1]$table_body <-tbl[1]$table_body %>%
+tbl_descriptive[1]$table_body <-
+  tbl_descriptive[1]$table_body %>%
   mutate(
     across(c(stat_1, stat_2), ~gsub("^0.*", "",.)),
     across(c(stat_1, stat_2), ~gsub("^NA.*", "",.)),
   )
 
-tbl

@@ -17,9 +17,9 @@ library(survey)
 
 ## ---- LOAD: -----------------------------------------------------------------
 
-load(
-  here("dat","db_pre_post.Rda")
-)
+# load(
+#   here("dat","db_pre_post.Rda")
+# )
 
 ## ---- UNIVARIATE: ------------------------------------------------------------
 
@@ -57,7 +57,7 @@ tbl_univ <- survey::svydesign(
   bold_p() |>
   italicize_levels()
 
-## ---- UNIVARIATE: ------------------------------------------------------------
+## ---- MULTIVARIATE: ------------------------------------------------------------
 
 fit_multi <- survey::svydesign(
   data = db_pre_post,

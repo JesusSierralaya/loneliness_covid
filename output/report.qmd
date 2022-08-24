@@ -65,7 +65,11 @@ look_for(db_pre_post, details = "full")
 #| warning: false
 ```
 
-## Graphs 
+```{r}
+tbl_descriptive
+```
+
+## Graphs
 
 ```{r}
 #| file: ../throughput/graphs.R
@@ -75,24 +79,24 @@ look_for(db_pre_post, details = "full")
 ### Socidemographics
 
 ```{r}
-#| label: fig-sociod 
+#| label: fig-sociod
 #| fig-cap: Sociodemographics
 #| fig-width: 12
 #| fig-height: 10
 
-plot_sociod 
+plot_sociod
 ```
 
 ### Social Aspects
 
 ```{r}
-#| label: fig-social 
+#| label: fig-social
 #| fig-cap: Social aspects
 #| fig-width: 12
 #| fig-height: 10
 #| warning: false
 
-plot_social 
+plot_social
 ```
 
 ### Health and wellbeing
@@ -104,23 +108,30 @@ plot_social
 #| fig-height: 12
 #| warning: false
 
-plot_health 
-```
-
-# Univariate
-
-```{r}
-#| file: ../throughput/multivariate.R
-tbl_univ
+plot_health
 ```
 
 # Multivariate
 
 ```{r}
+#| file: ../throughput/multivariate.R
+#| warning: false
+```
+
+## Univariate
+
+```{r}
+tbl_univ
+```
+
+
+## Multivariate table
+
+```{r}
 tbl_multi
 ```
 
-## Plot Multivariate
+## Multivariate Plot
 
 ```{r}
 #| fig-height: 10
