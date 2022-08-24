@@ -484,6 +484,31 @@ plot_disability_pre <- db_longer |> # [Change here]
                        hjust = 0.5
                        ))
 
+
+## ---- Disability pre ----------------------------------------------------
+
+# plot
+
+plot_disability_post <- db_longer |> # [Change here]
+  drop_na(whodas12_post) |> 
+  ggplot(aes(x = whodas12_post, # [Change here]
+             y = Loneliness)) + 
+  geom_smooth(method = "lm") +
+  facet_grid(~Assessment, switch = "both") +
+  scale_x_continuous(limits = c(0,100),         # [Change here]
+                     breaks = c(10, 50, 100))  + # [Change here]
+  theme(#plot.title = element_markdown(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(), 
+    strip.placement = "outside"
+  ) +
+  coord_cartesian(ylim = c(lim_inf, lim_sup)) +
+  ggtitle("Disability<br>(During)") +
+  theme(plot.title = 
+          element_markdown(face = "bold",
+                           hjust = 0.5
+          ))
+
 ## ---- Neuroticism ----------------------------------------------------
 
 # plot
@@ -600,3 +625,99 @@ plot_econ_post <- plot_econ_post +
 # plot
 plot_sociod <- (plot_total + plot_age + plot_sex) / 
   (plot_marital + plot_ed + plot_econ_post)
+
+## ---- Merge social aspects ---------------------------------------------------
+
+# Remove axis ticks from second and third subplot
+plot_liv_alone_post <- plot_liv_alone_post + 
+  scale_y_continuous(position = "right")
+plot_soc_sup_post <- plot_soc_sup_post +
+  scale_y_continuous(position = "right")
+
+# Add spacing between row subplots
+plot_social <- plot_social + 
+  theme(plot.margin = unit(c(0,0,50,0), "pt"))
+plot_liv_alone_post <- plot_liv_alone_post +
+  theme(plot.margin = unit(c(0,0,50,0), "pt"))
+
+# Text size 
+text_size <- 19
+
+plot_social <- plot_social + 
+  theme(text = element_text(size = text_size)) 
+
+plot_liv_alone_post <- plot_liv_alone_post +
+  theme(text = element_text(size = text_size)) 
+
+plot_soc_sup_pre <- plot_soc_sup_pre +
+  theme(text = element_text(size = text_size)) 
+
+plot_soc_sup_post <- plot_soc_sup_post +
+  theme(text = element_text(size = text_size))
+
+# Plot
+plot_social <- (plot_social + plot_liv_alone_post) / 
+  (plot_soc_sup_pre + plot_soc_sup_post)
+
+## ---- Merge Health and wellbeing ---------------------------------------------
+
+# Text axis without or to the right
+plot_depre_pre <- plot_depre_pre + 
+  theme(axis.text.y = element_blank())
+plot_depre_post <- plot_depre_post + 
+  scale_y_continuous(position = "right")
+
+plot_disability_post <- plot_disability_post + 
+  theme(axis.text.y = element_blank())
+plot_neuroticism <- plot_neuroticism + 
+  scale_y_continuous(position = "right")
+
+plot_resilience <- plot_resilience + 
+  theme(axis.text.y = element_blank())
+
+# Add spacing between row subplots
+plot_phys_post <- plot_phys_post + 
+  theme(plot.margin = unit(c(0,0,50,0), "pt"))
+plot_depre_pre <- plot_depre_pre +
+  theme(plot.margin = unit(c(0,0,50,0), "pt"))
+plot_depre_post <- plot_depre_post +
+  theme(plot.margin = unit(c(0,0,50,0), "pt"))
+plot_disability_pre <- plot_disability_pre + 
+  theme(plot.margin = unit(c(0,0,50,0), "pt"))
+plot_disability_post <- plot_disability_post +
+  theme(plot.margin = unit(c(0,0,50,0), "pt"))
+plot_neuroticism <- plot_neuroticism +
+  theme(plot.margin = unit(c(0,0,50,0), "pt"))
+
+# Text size 
+text_size <- 19
+
+plot_phys_post <- plot_phys_post + 
+  theme(text = element_text(size = text_size)) 
+
+plot_depre_pre <- plot_depre_pre + 
+  theme(text = element_text(size = text_size)) 
+
+plot_depre_post <- plot_depre_post + 
+  theme(text = element_text(size = text_size)) 
+
+plot_disability_pre <- plot_disability_pre + 
+  theme(text = element_text(size = text_size)) 
+
+plot_disability_post <- plot_disability_post + 
+  theme(text = element_text(size = text_size)) 
+
+plot_neuroticism <- plot_neuroticism + 
+  theme(text = element_text(size = text_size)) 
+
+plot_extraversion <- plot_extraversion + 
+  theme(text = element_text(size = text_size)) 
+
+plot_resilience <- plot_resilience + 
+  theme(text = element_text(size = text_size)) 
+
+# plot
+plot_health <- 
+  (plot_phys_post + plot_depre_pre + plot_depre_post) /
+  (plot_disability_pre + plot_disability_post + plot_neuroticism) /
+  (plot_extraversion + plot_resilience + plot_spacer()) 
