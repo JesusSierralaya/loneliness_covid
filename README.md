@@ -4,21 +4,21 @@ We evaluate the changes in loneliness before and during the first wave. We study
 
 # Directory organization
 
-## dat
-
-Where we will keep the database
-
-## images 
-
-Where we will keep the images of the tables and figures to generate the report to be delivered
-
 ## notebooks
 
-Where we test o explore things not contemplated in the analysis plan
+Where we test, explore or explain things not contemplated in the analysis plan.
+
 
 ## throughput
 
-Is where the intermediate analyzes are made to obtain the main results
+Is where the intermediate analyzes are made to obtain the main results. Today August 24, 2001, the files are run (in output) in the following order:
+
+1. `reliability.R`
+2. `import_clean.R`
+3. `descriptives.R`
+4. `graphs.R`
+5. `multivariate.R`
+
 
 ## output
 
