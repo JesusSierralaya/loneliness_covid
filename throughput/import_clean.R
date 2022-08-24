@@ -1,6 +1,6 @@
 # ··············································································
 # FILE NAME:   import_clean.R
-# DESCRIPTION: Importing and clean of the data
+# DESCRIPTION: Import, clean and transform the database
 # 
 # AUTHOR:      Jesus (jesus.sierralaya@inv.uam.es)
 # 
@@ -187,7 +187,7 @@ col_health_pre <-  c("ID_ECS", # Id
 # Check all cols selected
 # ls(pat = "col_")
 
-## ---- LOAD: -----------------------------------------------------------------
+## ---- READ: -----------------------------------------------------------------
 
 # Load file pre
 db_pre <- DB_FILE_PRE |> 
