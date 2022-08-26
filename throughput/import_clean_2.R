@@ -7,8 +7,9 @@
 # DATE:        17/08/2022
 # 
 # ·············································································· 
-# NOTES 
+# NOTES: 
 # - db_* databases that will collapse have the prefix db_*
+# - DB_* Final databases have the prefix DB_*
 # ·············································································· 
 
 # INCLUDES ---------------------------------------------------------------------
@@ -21,8 +22,13 @@ library(labelled)
 library(readstata13)
 library(gt)
 library(magrittr)
+library(paint)
 
 # PARAMETERS -------------------------------------------------------------------
+
+  ## PROGRAM ----------------
+  
+  options(warn=-1)
 
   ## PATHS BASES ------------
   
@@ -141,12 +147,13 @@ library(magrittr)
   ### READ ---
   
   db_sex <- PATH_FILE_PRE %>% 
-    read_dta(col_select = all_of(c("ID_ECS", # Id 
-                                   "q1009_sex")))
+    read.dta13(select.cols = all_of(c("ID_ECS", "q1009_sex")))
   
   ### TRANSFORMATION ---
   
-  db_sex %<>% rename(sex = q1009_sex) # Change name
+  db_sex %<>% 
+    mutate(sex = q1009_sex %>% as_factor())
+  
 
 ## AGE -------------------------------------------------------------------------
 
@@ -169,20 +176,225 @@ library(magrittr)
                      right = FALSE),
            .keep = "unused")
 
+  ## EDUCATIONAL LEVEL -------------------------------------------------------
+  
+  ### PATH ---
+  
+  # PATH_FILE_PRE
+  
+  ### READ ---
+  
+  db_educ <- PATH_FILE_PRE %>%
+    read_dta(col_select = all_of(c("ID_ECS", # Id
+                                   "q1016_highest")))
+  
+  ### TRANSFORMATION ---
+  
+  db_educ  %<>% 
+    mutate(educ_level =
+             case_when(
+               q1016_highest <= 1 ~ 1, 
+               q1016_highest == 2 ~ 2, 
+               q1016_highest == 3 | q1016_highest == 4 ~ 3,
+               q1016_highest >= 5 ~ 4) %>% as_factor()     
+           , .keep = "unused"
+           ) 
+  
+  ## DISABILITY PRE-POST----------------------------------------------------------
+  
+  ### PATH ---
+  
+  PATH_PRE_DISABILITY <- file.path(PATH_OUTCOMES_PRE,
+                                   "Outcome_disability.dta")
+  PATH_POST_DISABILITY <- file.path(PATH_OUTCOMES_POST,
+                                    "Outcome_disability.dta")
+  
+  ### READ ---
+  
+  disability_pre <- PATH_PRE_DISABILITY %>%
+    read_dta(col_select = all_of(c("ID_ECS", "whodas12"))) %>% 
+    rename(disability_pre = whodas12)
+  
+  disability_post <- PATH_POST_DISABILITY %>%
+    read_dta(col_select = all_of(c("ID_ECS", "whodas12"))) %>% 
+    rename(disability_post = whodas12)
+  
+  ### TRANSFORMATION ---
+  
+  # Merge
+  db_disability <- full_join(disability_pre, disability_post,
+                             by = "ID_ECS")
+  
+  ## SOCIAL SUPPORT PRE-POST -------------------------------------------------
+  
+  ### PATH ---
+  
+  # PATH_FILE_PRE
+  # PATH_FILE_POST
+  
+  ### READ ---
+  
+  social_support_pre <- PATH_FILE_PRE %>% 
+    read.dta13(select.cols = all_of(c("ID_ECS",
+                                   "q6320_close", 
+                                   "q6310_help_neig", 
+                                   "q6330_concern")))
+  
+  social_support_post <- PATH_FILE_POST %>% 
+    read.dta13(select.cols = all_of(c("ID_ECS", 
+                                   "SOLO9A", 
+                                   "SOLO9C", 
+                                   "SOLO9B")))
+  
+  ### TRANSFORMATION ---
+  
+  # +888 to NA
+  social_support_pre %<>%
+    mutate(q6320_close = 
+             if_else(q6320_close > 887, NA_real_, q6320_close),
+           q6310_help_neig = 
+             if_else(q6310_help_neig > 887, NA_real_, q6310_help_neig),
+           q6330_concern = 
+             if_else(q6330_concern > 887, NA_real_, q6330_concern)
+           )
+  
+  social_support_post %<>%
+    mutate(SOLO9A  = if_else(SOLO9A  > 887, NA_real_, SOLO9A ),
+           SOLO9C = if_else(SOLO9C > 887, NA_real_, SOLO9C),
+           SOLO9B = if_else(SOLO9B > 887, NA_real_, SOLO9B)
+           )
 
+  # Transformation 
+  social_support_pre %<>%
+    mutate(social_support_pre = 
+             q6320_close + (6 - q6310_help_neig) + (6 - q6330_concern), 
+           .keep = "unused") # delete the column no longer need
+  
+  social_support_post %<>%
+    mutate(social_support_post = 
+             SOLO9A + (6 - SOLO9C) + (6 - SOLO9B), 
+           .keep = "unused") # delete the column no longer need
+
+  # Merge
+  db_social_support <- full_join(social_support_pre, social_support_post,
+                             by = "ID_ECS")
+  
+  # db_<var> %<>% 
+  #   mutate(age = cut(q1011_age, 
+  #                    breaks = c(-Inf, 35, 50, 65 ,Inf),
+  #                    labels = c("18-34", "35-49", "50-64", "+65"), 
+  #                    right = FALSE),
+  #          .keep = "unused")
+  
+  ## <VAR> --------------------------------------------------------------------
+  
+  ### PATH ---
+  
+  # none
+  
+  ### READ ---
+  
+  # db_<var> <- <PATH> %>% 
+  #   read_dta(col_select = all_of(c("ID_ECS", # Id 
+  #                                  "<VAR>")))
+  
+  ### TRANSFORMATION ---
+  
+  # db_<var> %<>% 
+  #   mutate(age = cut(q1011_age, 
+  #                    breaks = c(-Inf, 35, 50, 65 ,Inf),
+  #                    labels = c("18-34", "35-49", "50-64", "+65"), 
+  #                    right = FALSE),
+  #          .keep = "unused")
+  
+  ## <VAR> --------------------------------------------------------------------
+  
+  ### PATH ---
+  
+  # none
+  
+  ### READ ---
+  
+  # db_<var> <- <PATH> %>% 
+  #   read_dta(col_select = all_of(c("ID_ECS", # Id 
+  #                                  "<VAR>")))
+  
+  ### TRANSFORMATION ---
+  
+  # db_<var> %<>% 
+  #   mutate(age = cut(q1011_age, 
+  #                    breaks = c(-Inf, 35, 50, 65 ,Inf),
+  #                    labels = c("18-34", "35-49", "50-64", "+65"), 
+  #                    right = FALSE),
+  #          .keep = "unused")
+  
+  ## <VAR> --------------------------------------------------------------------
+  
+  ### PATH ---
+  
+  # none
+  
+  ### READ ---
+  
+  # db_<var> <- <PATH> %>% 
+  #   read_dta(col_select = all_of(c("ID_ECS", # Id 
+  #                                  "<VAR>")))
+  
+  ### TRANSFORMATION ---
+  
+  # db_<var> %<>% 
+  #   mutate(age = cut(q1011_age, 
+  #                    breaks = c(-Inf, 35, 50, 65 ,Inf),
+  #                    labels = c("18-34", "35-49", "50-64", "+65"), 
+  #                    right = FALSE),
+  #          .keep = "unused")
+  
+  ## <VAR> --------------------------------------------------------------------
+  
+  ### PATH ---
+  
+  # none
+  
+  ### READ ---
+  
+  # db_<var> <- <PATH> %>% 
+  #   read_dta(col_select = all_of(c("ID_ECS", # Id 
+  #                                  "<VAR>")))
+  
+  ### TRANSFORMATION ---
+  
+  # db_<var> %<>% 
+  #   mutate(age = cut(q1011_age, 
+  #                    breaks = c(-Inf, 35, 50, 65 ,Inf),
+  #                    labels = c("18-34", "35-49", "50-64", "+65"), 
+  #                    right = FALSE),
+  #          .keep = "unused")
+  
 # MERGE ------------------------------------------------------------------------
   
   # Remove all no db_ 
   rm(list=setdiff(ls(), ls(pattern = "db_")))
   
   # Merge
-  # full_join(list(db_age, db_filter, db_loneliness), by = "ID_ECS")
-  # list(db_age, db_filter, db_loneliness) %>% reduce(full_join, by = "ID_ECS")
+  DB_pre_post_full <- 
+    lapply(ls(pattern="db_"), get) %>% 
+    reduce(full_join, by = "ID_ECS")
   
-  DB_pre_post_full <- lapply(ls(pattern="db_"), get) %>% reduce(full_join, by = "ID_ECS")
-  
+  # Remove all db_
   rm(list=setdiff(ls(), ls(pattern = "DB_")))
-  # Test with: map_dfr() 
+  
+  # Apply filters and remove them
+  DB_pre_post_full %<>% 
+    filter(subsample_pre == 1 & ESTADO_ENTREVISTA == 1) %>% 
+    select(-c(subsample_pre, ESTADO_ENTREVISTA))
+  
+  # SHOW
+  DB_pre_post_full %>% paint()
+  
+  # DESCRIBE
+  # DB_pre_post_full %>% describe() %>% select(c("n", "mean", "min", "max"))
+  DB_pre_post_full %>% summary()
+  # DB_pre_post_full %>% summarytools::dfSummary() %>% print(method = "render") 
 
 # CLEAN DATA -------------------------------------------------------------------
 
