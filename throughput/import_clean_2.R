@@ -626,6 +626,53 @@ library(paint)
   #                names_to = c("Time", ".value"),
   #                names_pattern = "(\\w+)_(pre|post)"
   #                ) 
+  
+  # DB_pre_post %>% 
+  #   select(ID_ECS, loneliness_pre, loneliness_post) %>% 
+  #   pivot_longer(cols = !ID_ECS, 
+  #                names_to = "Time",
+  #                names_prefix = "loneliness_",
+  #                values_to = "Loneliness"
+  #                )
+  # # Other type
+  # DB_pre_post %>% 
+  #   select(ID_ECS, loneliness_pre, loneliness_post,
+  #          disability_pre, disability_post) %>% 
+  #   pivot_longer(cols = !ID_ECS,
+  #                names_to = c("Variable", "Time"),
+  #                names_sep = "_",
+  #                values_to = "Score")
+  
+  # DB_pre_post %>% 
+  #   select(ID_ECS,
+  #          pre_loneliness = loneliness_pre,
+  #          post_loneliness = loneliness_post,
+  #          pre_disability = disability_pre,
+  #          post_disability = disability_post,
+  #          pre_sex = sex) %>% 
+  #   pivot_longer(
+  #     cols = !ID_ECS,
+  #     names_to = c("Time", ".value"),
+  #     names_sep = "_"
+  #   )
+  
+  DB_pre_post %>% 
+    # Here we add the variables we want to pivot
+    # The variable duplicates dont duplicate
+    # If we want NA so we 
+    select(ID_ECS, weights, 
+           age_pre = age,sex_pre = sex,
+           loneliness_pre,loneliness_post, 
+           disability_pre, disability_post, 
+           resilience_post) %>% 
+    pivot_longer(
+      # Here we add the variables we DONT want to pivot
+      # The variable duplicates 
+      cols = !c(ID_ECS, weights), 
+      names_to = c(".value", "Time"),
+      names_sep = "_"
+    )
+    
     
 # LABELS ---not at the moment
 # no assign yet 
