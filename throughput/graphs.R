@@ -19,39 +19,35 @@ library(ggtext)
 library(patchwork)
 
 
-## ---- PRE-PROCESS: --------------------------------------------------------------
+## ---- PRE-PROCESS: -----------------------------------------------------------
 
-# # Load data
-# load(
-#   here("dat","db_longer.Rda")
-# )
-
-# Recode
-db_longer <- db_longer |> 
-  to_factor() |> 
-  mutate(Assessment =  Assessment |> 
-           recode(`Pre-confinement` = "Before",
-                  `Post-confinement` = "During"),
-         SOLO2 = SOLO2 |> to_factor(),
-         material = material |> to_factor(),
-         ECON5 = ECON5 |> to_factor()
-  )
-
-# Parameters
-
-# Axis limits
-lim_inf <- 3.1
-lim_sup <- 6.5
-# Legend 
-leg_dist <- 0
-# Theme
-theme_set(theme_minimal())
-# color group
-group.colors <- c("#D13D39", 
-                  "#4070AE", 
-                  "#C39C11",
-                  "#3F706D",
-                  "#705A81")
+  # Re-code
+  db_longer <- db_longer |> 
+    to_factor() |> 
+    mutate(Assessment =  Assessment |> 
+             recode(`Pre-confinement` = "Before",
+                    `Post-confinement` = "During"),
+           SOLO2 = SOLO2 |> to_factor(),
+           material = material |> to_factor(),
+           ECON5 = ECON5 |> to_factor()
+    )
+  
+  # Axis limits
+  lim_inf <- 3.1
+  lim_sup <- 6.5
+  
+  # Legend 
+  leg_dist <- 0
+  
+  # Theme
+  theme_set(theme_minimal())
+  
+  # color groups
+  group.colors <- c("#D13D39", 
+                    "#4070AE", 
+                    "#C39C11",
+                    "#3F706D",
+                    "#705A81")
 
 ## ---- Loneliness total ----------------------------------------------------
 

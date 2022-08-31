@@ -1,0 +1,51 @@
+---
+title: "First descriptives"
+description: ""
+date: today
+author: 
+ - name: "Jesus Sierralaya"
+   url: https://github.com/JesusSierralaya
+   affiliation: CCOMS-UAM
+   affiliation-url: https://github.com/CCOMS-UAM
+title-block-banner: true
+format:
+  html:
+    theme: flatly
+    code-fold: true
+    code-tools: true
+    # code-link: true
+    toc: true
+    number-sections: true
+    # # df-print: paged
+    self-contained: true
+---
+
+```{r setup}
+#| include: false
+library(summarytools)
+library(magrittr)
+library(tidyverse)
+library(skimr)
+library(naniar)
+```
+
+# Descriptives
+
+```{r}
+#| file: ../throughput/import_clean_2.R
+#| warning: false
+```
+
+```{r}
+DB_pre_post %>% dfSummary(plain.ascii = FALSE, 
+                          labels.col = FALSE,
+                          na.col = FALSE
+                          ) %>% 
+  print(method = "render")
+```
+
+# Missing
+
+```{r}
+DB_longer %>% gg_miss_var(facet = Time)
+```

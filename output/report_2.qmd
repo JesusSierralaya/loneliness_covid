@@ -1,0 +1,45 @@
+---
+title: "Results"
+description: ""
+date: today
+author: 
+ - name: "Jesus Sierralaya"
+   url: https://github.com/JesusSierralaya
+   affiliation: CCOMS-UAM
+   affiliation-url: https://github.com/CCOMS-UAM
+title-block-banner: true
+format:
+  html:
+    theme: flatly
+    code-fold: true
+    code-tools: true
+    # code-link: true
+    toc: true
+    number-sections: true
+    # # df-print: paged
+    self-contained: true
+---
+
+```{r setup}
+#| include: false
+# knitr::opts_chunk$set(fig.width=12, fig.height=10) 
+```
+
+# Import and clean data
+
+```{r}
+#| file: ../throughput/import_clean_2.R
+#| warning: false
+```
+
+# Descriptives
+
+```{r}
+#| file: ../throughput/descriptives_2.R
+#| warning: false
+```
+
+```{r}
+tbl_descriptive
+```
+
