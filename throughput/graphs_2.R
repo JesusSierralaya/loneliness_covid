@@ -16,21 +16,11 @@ library(effects)
 library(lme4)
 library(ggtext)
 library(patchwork)
+library(magrittr)
 
 
 ## ---- PRE-PROCESS: -----------------------------------------------------------
 
-  # # Re-code
-  # DB_graphs <- DB_graphs |> 
-  #   to_factor() |> 
-  #   mutate(Time =  Time |> 
-  #            recode(`Pre-confinement` = "Before",
-  #                   `Post-confinement` = "During"),
-  #          SOLO2 = SOLO2 |> to_factor(),
-  #          material = material |> to_factor(),
-  #          ECON5 = ECON5 |> to_factor()
-  #   )
-  
   # Axis limits
   lim_inf <- 3.1
   lim_sup <- 6.5
@@ -48,7 +38,7 @@ library(patchwork)
                     "#3F706D",
                     "#705A81")
 
-## ---- loneliness total ----------------------------------------------------
+## ---- LONELINESS TOTAL ----------------------------------------------------
 
   # Fit
   Fit_total <- lmer(loneliness ~ 0 + Time + (1 | ID_ECS), 
@@ -66,13 +56,13 @@ library(patchwork)
     geom_errorbar(aes(ymin = lower, ymax = upper), 
                   position = position_dodge(.5), width = .2) + 
     theme(axis.title.x = element_blank()) +
-    coord_cartesian(ylim = c(lim_inf, lim_sup)) +
-    ggtitle("Lonelines Total") +   
-    ylab("Loneliness") +
-    theme(plot.title = element_text(hjust = 0.5, 
-                                    face = "bold", 
-                                    vjust = -7))
-## ---- Age grouped ----------------------------------------------------
+    # coord_cartesian(ylim = c(lim_inf, lim_sup)) +
+    # ggtitle("Lonelines Total") +   
+    ylab("Loneliness") #+
+    # theme(plot.title = element_text(hjust = 0.5, 
+    #                                 face = "bold", 
+    #                                 vjust = -7))
+## ---- AGE ----------------------------------------------------
 
   # Fit
   Fit_age <- lmer(loneliness ~ 0 + age * Time + (1 | ID_ECS),
@@ -82,9 +72,7 @@ library(patchwork)
   # Effects
   effects_age_cat <- effect("age:Time", Fit_age) |>
     as.data.frame() #|>
-  #   mutate(Time =  Time |> relevel("Before"),
-  #          q1011_age_cat = q1011_age_cat |> fct_relevel("18-34", "35-49", "50-64"))
-  
+
   # plot
   plot_age <- effects_age_cat %>% 
     ggplot(aes(x = Time, y = fit,
@@ -96,16 +84,17 @@ library(patchwork)
     theme(legend.position = "top",
           legend.title = element_markdown(),
           axis.title.x = element_blank(),
-          axis.title.y = element_blank(),
+          # axis.title.y = element_blank(),
           legend.margin = margin(t = leg_dist)
     ) +
     coord_cartesian(ylim = c(lim_inf, lim_sup)) +
     guides(colour = guide_legend(title.position = "top",
                                  title.hjust = .5, nrow = 2)) +
     labs(color = "**Age grouped**")  +
+    ylab("Loneliness") +
     scale_color_manual(values = group.colors)
 
-## ---- Sex ----------------------------------------------------
+## ---- SEX ----------------------------------------------------
 
   # Fit 
   Fit_sex <- lmer(loneliness ~ 0 + sex * Time + (1 | ID_ECS), 
@@ -133,7 +122,7 @@ library(patchwork)
     labs(color = "**Sex**")  +
     scale_color_manual(values = group.colors)
 
-## ---- Education level ----------------------------------------------------
+## ---- EDUCACION LEVEL ----------------------------------------------------
   
   # Fit 
   Fit_educlevel <- lmer(loneliness ~ 0 + educlevel * Time + (1 | ID_ECS), 
@@ -164,7 +153,7 @@ library(patchwork)
     labs(color = "**Education level**") +
     scale_color_manual(values = group.colors)
 
-## ---- Marital status ----------------------------------------------------
+## ---- MARITAL STATUS ----------------------------------------------------
 
   # Fit 
   Fit_marital <- lmer(loneliness ~ 0 + maritalstatus * Time + (1 | ID_ECS), 
@@ -290,13 +279,14 @@ library(patchwork)
     theme(legend.position = "top",
           legend.title = element_markdown(),
           axis.title.x = element_blank(),
-          axis.title.y = element_blank(),
+          # axis.title.y = element_blank(),
           legend.margin = margin(t = leg_dist)
     ) + 
     coord_cartesian(ylim = c(lim_inf,lim_sup)) +
     guides(colour = guide_legend(title.position = "top", 
                                  title.hjust = .5, ncol = 1)) +
     labs(color = "**Economy<br>Worsening (During)**") +
+    ylab("Loneliness")
     scale_color_manual(values = group.colors)
 
 ## ---- UNEMPLOYMENT POST ----------------------------------------------
@@ -358,452 +348,472 @@ library(patchwork)
     theme(legend.position = "top",
           legend.title = element_markdown(),
           axis.title.x = element_blank(),
-          axis.title.y = element_blank(),
+          # axis.title.y = element_blank(),
           legend.margin = margin(t = leg_dist)
     ) + 
     coord_cartesian(ylim = c(lim_inf,lim_sup)) +
     guides(colour = guide_legend(title.position = "top", 
                                  title.hjust = .5, ncol = 1)) +
     labs(color = "**Material<br>Deprivation  (Before)**") +
+    ylab("Loneliness")
     scale_color_manual(values = group.colors)
   
 ## ---- LIVING ALONE POST ----------------------------------------------------
 
-# Fit 
-Fit_mix_liv_alone_post <- lmer(loneliness ~ 0 + living_alone_post * Time + (1 | ID_ECS), 
-                               data = DB_graphs, 
-                               weights = DB_graphs %>% pull(weights))
+  # Fit 
+  Fit_livingalone_post <- lmer(loneliness ~ 0 + livingalone_post * Time + 
+                                 (1 | ID_ECS), 
+                                 data = DB_graphs, 
+                                 weights = DB_graphs %>% pull(weights))
+  
+  # Effects
+  effects_livingalone_post <- # Change name effects_var
+    effect("livingalone_post:Time", Fit_livingalone_post) |> 
+    as.data.frame()
+  
+  # plot
+  plot_livingalone_post <- effects_livingalone_post |> # Copy name effects
+    ggplot(aes(x = Time, y = fit, 
+               group = livingalone_post, 
+               color = livingalone_post)) + 
+    geom_point(position = position_dodge(.5)) + 
+    geom_errorbar(aes(ymin = lower, ymax = upper), 
+                  position = position_dodge(.5), width = .2) + 
+    theme(legend.position = "top",
+          legend.title = element_markdown(),
+          axis.title.x = element_blank(),
+          axis.title.y = element_blank(),
+          legend.margin = margin(t = leg_dist)
+    ) + 
+    coord_cartesian(ylim = c(lim_inf, lim_sup)) +
+    guides(colour = guide_legend(title.position = "top", 
+                                 title.hjust = .5, nrow = 2)) +
+    labs(color = "**Living Alone<br>(During)**")+
+    scale_color_manual(values = group.colors)  
 
-# Effects
-effects_liv_alone_post <- # Change name effects_var
-  effect("living_alone_post:Time", Fit_mix_liv_alone_post) |> 
-  as.data.frame() |>
-  mutate(Time =  Time |> relevel("Before"))
+## ---- PHYSICAL ACTIVITY PRE ----------------------------------------
+  
+  # Fit 
+  Fit_physicalactivity_pre <- 
+    lmer(loneliness ~ 0 + physicalactivity_pre * Time + (1 | ID_ECS), 
+                                data = DB_graphs,
+                                weights = DB_graphs %>% pull(weights))
+  
+  # Effects
+  effects_physicalactivity_pre <-
+    effect("physicalactivity_pre:Time", Fit_physicalactivity_pre) |>
+    as.data.frame()
+  
+  # plot
+  plot_physicalactivity_pre <- effects_physicalactivity_pre |>
+    ggplot(aes(x = Time, y = fit,
+               group = physicalactivity_pre, 
+               color = physicalactivity_pre)) + 
+    geom_point(position = position_dodge(.5)) + 
+    geom_errorbar(aes(ymin = lower, ymax = upper), 
+                  position = position_dodge(.5), width = .2) + 
+    theme(legend.position = "top",
+          legend.title = element_markdown(),
+          axis.title.x = element_blank(),
+          # axis.title.y = element_blank(),
+          legend.margin = margin(t = leg_dist)
+    ) + 
+    coord_cartesian(ylim = c(lim_inf, lim_sup)) +
+    guides(colour = guide_legend(title.position = "top", 
+                                 title.hjust = .5, ncol = 1)) +
+    labs(color = "**Physical Activity<br>(During)**")+
+    ylab("Loneliness") +
+    scale_color_manual(values = group.colors) 
+  
+## ---- PHYSICAL ACTIVITY PRE ----------------------------------------
+  
+  # Fit 
+  Fit_physicalactivity_post <- 
+    lmer(loneliness ~ 0 + physicalactivity_post * Time + (1 | ID_ECS), 
+         data = DB_graphs,
+         weights = DB_graphs %>% pull(weights))
+  
+  # Effects
+  effects_physicalactivity_post <-
+    effect("physicalactivity_post:Time", Fit_physicalactivity_post) |>
+    as.data.frame()
+  
+  # plot
+  plot_physicalactivity_post <- effects_physicalactivity_post |>
+    ggplot(aes(x = Time, y = fit,
+               group = physicalactivity_post, 
+               color = physicalactivity_post)) + 
+    geom_point(position = position_dodge(.5)) + 
+    geom_errorbar(aes(ymin = lower, ymax = upper), 
+                  position = position_dodge(.5), width = .2) + 
+    theme(legend.position = "top",
+          legend.title = element_markdown(),
+          axis.title.x = element_blank(),
+          # axis.title.y = element_blank(),
+          legend.margin = margin(t = leg_dist)
+    ) + 
+    coord_cartesian(ylim = c(lim_inf, lim_sup)) +
+    guides(colour = guide_legend(title.position = "top", 
+                                 title.hjust = .5, ncol = 1)) +
+    labs(color = "**Physical Activity<br>(During)**")+
+    ylab("Loneliness") +
+    scale_color_manual(values = group.colors) 
+  
+## ---- DEPRESSION PRE --------------------------------------------
+  
+  # Fit 
+  Fit_depression_pre <- 
+    lmer(loneliness ~ 0 + depression_pre * Time + (1 | ID_ECS), 
+                            data = DB_graphs,
+                            weights = DB_graphs %>% pull(weights))
+  
+  # Effects
+  effects_depression_pre <- # Change name effects_var
+    effect("depression_pre:Time", Fit_depression_pre) |> # Change Here [2]
+    as.data.frame()
+  
+  # plot
+  plot_depression_pre <- 
+    effects_depression_pre |> 
+    ggplot(aes(x = Time, y = fit, 
+               group = depression_pre, 
+               color = depression_pre)) + 
+    geom_point(position = position_dodge(.5)) + 
+    geom_errorbar(aes(ymin = lower, ymax = upper), 
+                  position = position_dodge(.5), width = .2) + 
+    theme(legend.position = "top",
+          legend.title = element_markdown(),
+          axis.title.x = element_blank(),
+          axis.title.y = element_blank(),
+          legend.margin = margin(t = leg_dist)
+    ) + 
+    coord_cartesian(ylim = c(lim_inf,lim_sup)) +
+    guides(colour = guide_legend(title.position = "top", 
+                                 title.hjust = .5, nrow = 2)) +
+    labs(color = "**Depression<br>(Before)**")+
+    scale_color_manual(values = group.colors) 
+  
+## ---- DEPRESSION POST --------------------------------------------
+  
+  # Fit 
+  Fit_depression_post <- 
+    lmer(loneliness ~ 0 + depression_post * Time + (1 | ID_ECS), 
+         data = DB_graphs,
+         weights = DB_graphs %>% pull(weights))
+  
+  # Effects
+  effects_depression_post <- # Change name effects_var
+    effect("depression_post:Time", Fit_depression_post) |> # Change Here [2]
+    as.data.frame()
+  
+  # Plot
+  plot_depression_post <- 
+    effects_depression_post |> 
+    ggplot(aes(x = Time, y = fit, 
+               group = depression_post, 
+               color = depression_post)) + 
+    geom_point(position = position_dodge(.5)) + 
+    geom_errorbar(aes(ymin = lower, ymax = upper), 
+                  position = position_dodge(.5), width = .2) + 
+    theme(legend.position = "top",
+          legend.title = element_markdown(),
+          axis.title.x = element_blank(),
+          axis.title.y = element_blank(),
+          legend.margin = margin(t = leg_dist)
+    ) + 
+    coord_cartesian(ylim = c(lim_inf,lim_sup)) +
+    guides(colour = guide_legend(title.position = "top", title.hjust = .5, nrow = 2)) +
+    labs(color = "**Depression<br>(During)**")+
+    scale_color_manual(values = group.colors) 
+  
 
-# plot
-plot_liv_alone_post <- effects_liv_alone_post |> # Copy name effects
-  ggplot(aes(x = Time, y = fit, 
-             group = living_alone_post, color = living_alone_post)) + # Change Here [2]
-  # This stay the same
-  geom_point(position = position_dodge(.5)) + 
-  geom_errorbar(aes(ymin = lower, ymax = upper), 
-                position = position_dodge(.5), width = .2) + 
-  theme(legend.position = "top",
-        legend.title = element_markdown(),
-        axis.title.x = element_blank(),
-        axis.title.y = element_blank(),
-        legend.margin = margin(t = leg_dist)
-  ) + 
-  coord_cartesian(ylim = c(lim_inf, lim_sup)) +
-  guides(colour = guide_legend(title.position = "top", 
-                               title.hjust = .5, nrow = 2)) +
-  labs(color = "**Living alone<br>(During)**")+
-  scale_color_manual(values = group.colors)  
+ 
+  
 
-## ---- Social support before ----------------------------------------------------
+## ---- NEUROTICISM PRE ----------------------------------------------------
+  
+  # Mew graph
+  plot_neuroticism_pre <- DB_graphs  %>%  
+    ggplot(aes(x = neuroticism_pre, 
+               y = loneliness, 
+               color = Time)) + 
+    geom_smooth(formula = "y ~ x", method = "lm") +
+    scale_color_manual(values = group.colors) +
+    xlab("Neuroticism") + ylab("Loneliness") +
+    coord_cartesian(ylim = c(lim_inf, lim_sup)) 
+  
+  
+## ---- EXTRAVERSION PRE ----------------------------------------------------
+  
+  plot_extraversion_pre <- DB_graphs |> 
+    ggplot(aes(x = extraversion_pre, # [Change here]
+               y = loneliness,
+               color = Time)) + 
+    geom_smooth(formula = "y ~ x", method = "lm") +
+    scale_color_manual(values = group.colors) +
+    xlab("Extraversion") + ylab("Loneliness") +
+    coord_cartesian(ylim = c(lim_inf, lim_sup)) 
+  
+## ---- DISABILITY PRE ----------------------------------------------------
 
-# plot
-plot_soc_sup_pre <- DB_graphs |> 
-  drop_na() |> 
-  ggplot(aes(x = social_support_pre_original, 
-             y = loneliness)) + 
-  geom_smooth(method = "lm") +
-  facet_grid(~Time, switch = "both") +
-  scale_x_continuous(#position = "top",
-    breaks = seq(3, 13, 3))  +
-  theme(axis.title.x = element_blank(),
-        # axis.title.y = element_blank(), 
-        strip.placement = "outside"
-  ) +
-  coord_cartesian(ylim = c(lim_inf, lim_sup)) +
-  ggtitle("Social support<br>(Before)") +  
-  ylab("Loneliness") +
-  theme(plot.title = 
-          element_markdown(face = "bold",
-                           hjust = 0.5,
-                           # vjust = -7
-          ))
-
-## ---- Social support during ----------------------------------------------------
-
-# plot
-plot_soc_sup_post <- DB_graphs |> 
-  drop_na() |> 
-  ggplot(aes(x = social_support_post_original, 
-             y = loneliness)) + 
-  geom_smooth(method = "lm") +
-  facet_grid(~Time, switch = "both") +
-  scale_x_continuous(#position = "top",
-    breaks = seq(3, 13, 3))  +
-  theme(axis.title.x = element_blank(),
-        axis.title.y = element_blank(), 
-        strip.placement = "outside"
-  ) +
-  coord_cartesian(ylim = c(lim_inf, lim_sup)) +
-  ggtitle("Social support<br>(During)") +   
-  theme(plot.title = 
-          element_markdown(face = "bold",
-                           hjust = 0.5,
-                           # vjust = -7
-          ))
-
-## ---- Physical activity post, (cat) ----------------------------------------------------
-
-# Fit 
-Fit_mix_physical_post <- lmer(loneliness ~ 0 + physical_post * Time + (1 | ID_ECS), 
-                              data = DB_graphs,
-                              weights = DB_graphs %>% pull(weights))
-
-# Effects
-effects_physical_post <-
-  effect("physical_post:Time", Fit_mix_physical_post) |>
-  as.data.frame() |>
-  mutate(Time =  Time |> recode_factor(
-    `Pre-confinement` = "Pre",
-    `Post-confinement` = "Post",
-    .ordered = TRUE))
-
-# plot
-plot_phys_post <- effects_physical_post |>
-  ggplot(aes(x = Time, y = fit,
-             group = physical_post, color = physical_post)) +   geom_point(position = position_dodge(.5)) + 
-  geom_errorbar(aes(ymin = lower, ymax = upper), 
-                position = position_dodge(.5), width = .2) + 
-  theme(legend.position = "top",
-        legend.title = element_markdown(),
-        axis.title.x = element_blank(),
-        # axis.title.y = element_blank(),
-        legend.margin = margin(t = leg_dist)
-  ) + 
-  coord_cartesian(ylim = c(lim_inf, lim_sup)) +
-  guides(colour = guide_legend(title.position = "top", 
-                               title.hjust = .5, ncol = 1)) +
-  labs(color = "**Physical activity<br>(During)**")+
-  ylab("Loneliness") +
-  scale_color_manual(values = group.colors)  
-
-## ---- Depresssion pre \[cat\] ---------------------------------------------------
-
-# Fit 
-Fit_mix_depre_pre <- lmer(loneliness ~ 0 + depression_12m_pre * Time + (1 | ID_ECS), 
-                          data = DB_graphs,
-                          weights = DB_graphs %>% pull(weights))
-
-# Effects
-effects_depre_pre <- # Change name effects_var
-  effect("depression_12m_pre:Time", Fit_mix_depre_pre) |> # Change Here [2]
-  as.data.frame() |>
-  mutate(Time =  Time |> relevel("Before"))
-
-# plot
-plot_depre_pre <- 
-  effects_depre_pre |> 
-  ggplot(aes(x = Time, y = fit, 
-             group = depression_12m_pre, color = depression_12m_pre)) + 
-  geom_point(position = position_dodge(.5)) + 
-  geom_errorbar(aes(ymin = lower, ymax = upper), 
-                position = position_dodge(.5), width = .2) + 
-  theme(legend.position = "top",
-        legend.title = element_markdown(),
-        axis.title.x = element_blank(),
-        axis.title.y = element_blank(),
-        legend.margin = margin(t = leg_dist)
-  ) + 
-  coord_cartesian(ylim = c(lim_inf,lim_sup)) +
-  guides(colour = guide_legend(title.position = "top", title.hjust = .5, nrow = 2)) +
-  labs(color = "**Depression<br>(Before)**")+
-  scale_color_manual(values = group.colors) 
-
-## ---- Depression during \[cat\] ----------------------------------------------------
-
-# Fit 
-Fit_mix_depre_post <- lmer(loneliness ~ 0 + depression_30d_post * Time + (1 | ID_ECS), 
-                           data = DB_graphs,
-                           weights = DB_graphs %>% pull(weights))
-
-# Effects
-effects_depre_post <- # Change name effects_var
-  effect("depression_30d_post:Time", Fit_mix_depre_post) |> # Change Here [2]
-  as.data.frame() |>
-  mutate(Time =  Time |> relevel("Before"))
-
-# plot
-plot_depre_post <- effects_depre_post |> # Copy name effects
-  ggplot(aes(x = Time, y = fit, 
-             group = depression_30d_post, 
-             color = depression_30d_post)) + 
-  geom_point(position = position_dodge(.5)) + 
-  geom_errorbar(aes(ymin = lower, ymax = upper), 
-                position = position_dodge(.5), width = .2) + 
-  theme(legend.position = "top",
-        legend.title = element_markdown(),
-        axis.title.x = element_blank(),
-        axis.title.y = element_blank(),
-        legend.margin = margin(t = leg_dist)
-  ) + 
-  coord_cartesian(ylim = c(lim_inf,lim_sup)) +
-  guides(colour = guide_legend(title.position = "top", title.hjust = .5, nrow = 2)) +
-  labs(color = "**Depression<br>(During)**")+
-  scale_color_manual(values = group.colors) 
-
-## ---- Disability pre ----------------------------------------------------
-
-# plot 
-plot_disability_pre <- DB_graphs |> # [Change here]
-  ggplot(aes(x = whodas12_pre, # [Change here]
-             y = loneliness)) + 
-  geom_smooth(method = "lm") +
-  facet_grid(~Time, switch = "both") +
-  scale_x_continuous(limits = c(0,100), 
-                     breaks = c(10, 50, 100))  +
-  theme(#plot.title = element_markdown(),
-    axis.title.x = element_blank(),
-    # axis.title.y = element_blank(), 
-    strip.placement = "outside"
-  ) +
-  coord_cartesian(ylim = c(lim_inf, lim_sup)) +
-  ggtitle("Disability<br>(Before)") +
-  ylab("Loneliness") +
-  # labs(title = "Disability<br>(Before)") +
-  theme(plot.title = 
-          element_markdown(face = "bold",
-                           hjust = 0.5
-          ))
-
-
-## ---- Disability pre ----------------------------------------------------
-
-# plot
-
-plot_disability_post <- DB_graphs |> # [Change here]
-  drop_na(whodas12_post) |> 
-  ggplot(aes(x = whodas12_post, # [Change here]
-             y = loneliness)) + 
-  geom_smooth(method = "lm") +
-  facet_grid(~Time, switch = "both") +
-  scale_x_continuous(limits = c(0,100),         # [Change here]
-                     breaks = c(10, 50, 100))  + # [Change here]
-  theme(#plot.title = element_markdown(),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank(), 
-    strip.placement = "outside"
-  ) +
-  coord_cartesian(ylim = c(lim_inf, lim_sup)) +
-  ggtitle("Disability<br>(During)") +
-  theme(plot.title = 
-          element_markdown(face = "bold",
-                           hjust = 0.5
-          ))
-
-## ---- Neuroticism ----------------------------------------------------
-
-# plot
-plot_neuroticism <- DB_graphs |> # [Change here]
-  # drop_na(whodas12_post) |> 
-  ggplot(aes(x = neuroticism, # [Change here]
-             y = loneliness)) + 
-  geom_smooth(method = "lm") +
-  facet_grid(~Time, switch = "both") +
-  # scale_x_continuous(limits = c(0,100),         # [Change here]
-  #                    breaks = c(10, 50, 100))  + # [Change here]
-  theme(#plot.title = element_markdown(),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank(), 
-    strip.placement = "outside"
-  ) +
-  coord_cartesian(ylim = c(lim_inf, lim_sup)) +
-  ggtitle("Neuroticism") +
-  theme(plot.title = 
-          element_markdown(face = "bold",
-                           hjust = 0.5
-          ))
+  plot_disability_pre <-
+    DB_graphs |> # [Change here]
+    ggplot(aes(x = disability_pre,
+               y = loneliness, 
+               color = Time)) + 
+    geom_smooth(formula = "y ~ x", method = "lm") +
+    scale_color_manual(values = group.colors) +
+    xlab("Disability (Before)") + ylab("Loneliness") +
+    coord_cartesian(ylim = c(lim_inf, lim_sup)) 
 
 
-## ---- Extraversion ----------------------------------------------------
+## ---- DISABILITY POST ----------------------------------------------------
+  
+  plot_disability_post <-
+    DB_graphs |> # [Change here]
+    ggplot(aes(x = disability_post,
+               y = loneliness, 
+               color = Time)) + 
+    geom_smooth(formula = "y ~ x", method = "lm") +
+    scale_color_manual(values = group.colors) +
+    xlab("Disability (During)") + ylab("Loneliness") +
+    coord_cartesian(ylim = c(lim_inf, lim_sup)) 
 
-# plot
-plot_extraversion <- DB_graphs |> # [Change here]
-  # drop_na(whodas12_post) |> 
-  ggplot(aes(x = extraversion, # [Change here]
-             y = loneliness)) + 
-  geom_smooth(method = "lm") +
-  facet_grid(~Time, switch = "both") +
-  # scale_x_continuous(limits = c(0,100),         # [Change here]
-  #                    breaks = c(10, 50, 100))  + # [Change here]
-  theme(#plot.title = element_markdown(),
-    axis.title.x = element_blank(),
-    # axis.title.y = element_blank(), 
-    strip.placement = "outside"
-  ) +
-  coord_cartesian(ylim = c(lim_inf, lim_sup)) +
-  ggtitle("Extraversion") +
-  ylab("Loneliness") +
-  theme(plot.title = 
-          element_markdown(face = "bold",
-                           hjust = 0.5
-          ))
+## ---- RESILIENCE POST ----------------------------------------------------
+  
+  plot_resilience_post <-
+    DB_graphs |> 
+    ggplot(aes(x = resilience_post,
+               y = loneliness, 
+               color = Time)) + 
+    geom_smooth(formula = "y ~ x", method = "lm") +
+    scale_color_manual(values = group.colors) +
+    xlab("Resilience (During)") + ylab("Loneliness") +
+    coord_cartesian(ylim = c(lim_inf, lim_sup)) 
 
-## ---- Resilience ----------------------------------------------------
+## ---- SOCIAL SUPPORT PRE -------------------------------------------------
 
-# plot
-plot_resilience <- DB_graphs |> # [Change here]
-  # drop_na(whodas12_post) |> 
-  ggplot(aes(x = resilience_scale_post, # [Change here]
-             y = loneliness)) + 
-  geom_smooth(method = "lm") +
-  facet_grid(~Time, switch = "both") +
-  # scale_x_continuous(limits = c(0,100),         # [Change here]
-  #                    breaks = c(10, 50, 100))  + # [Change here]
-  theme(#plot.title = element_markdown(),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank(), 
-    strip.placement = "outside"
-  ) +
-  coord_cartesian(ylim = c(lim_inf, lim_sup)) +
-  ggtitle("Resilience<br>(During)") +
-  # ylab("Loneliness") +
-  theme(plot.title = 
-          element_markdown(face = "bold",
-                           hjust = 0.5
-          ))
+  plot_socialsupport_pre <-
+    DB_graphs |> 
+    ggplot(aes(x = socialsupport_pre,
+               y = loneliness, 
+               color = Time)) + 
+    geom_smooth(formula = "y ~ x", method = "lm") +
+    scale_color_manual(values = group.colors) +
+    xlab("Social Support (Before)") + ylab("Loneliness") +
+    coord_cartesian(ylim = c(lim_inf, lim_sup)) 
 
-## ---- Merge Sociodemographics ----------------------------------------------------
+## ---- SOCIAL SUPPORT POST -------------------------------------------------
+  
+  plot_socialsupport_post <-
+    DB_graphs |> 
+    ggplot(aes(x = socialsupport_post,
+               y = loneliness, 
+               color = Time)) + 
+    geom_smooth(formula = "y ~ x", method = "lm") +
+    scale_color_manual(values = group.colors) +
+    xlab("Social Support (During)") + ylab("Loneliness") +
+    coord_cartesian(ylim = c(lim_inf, lim_sup)) 
+  
+## ---- WELLBEING CANTRIL PRE -------------------------------------------------
+  
+  plot_wellbeingcantril_pre <-
+    DB_graphs |> 
+    ggplot(aes(x = wellbeingcantril_pre,
+               y = loneliness, 
+               color = Time)) + 
+    geom_smooth(formula = "y ~ x", method = "lm") +
+    scale_color_manual(values = group.colors) +
+    xlab("Wellbeing Cantril (Before)") + ylab("Loneliness") +
+    coord_cartesian(ylim = c(lim_inf, lim_sup)) 
+  
+  
 
-# Remove axis ticks from second and third subplot
-plot_age <- plot_age + 
-  theme(axis.text.y = element_blank())
-plot_sex <- plot_sex +   
-  scale_y_continuous(position = "right")
-plot_ed <- plot_ed + 
-  theme(axis.text.y = element_blank())
-plot_econ_post <- plot_econ_post +   
-  scale_y_continuous(position = "right")
+# LONELINESS TOTAL
+  
+# plot_total
+  
+## ---- MERGE SOCIODEMOGRAPHICS ---------------------------------
 
-# Add spacing between row subplots
-plot_total <- plot_total + 
-  theme(plot.margin = unit(c(0,0,50,0), "pt"))
-plot_age <- plot_age +
-  theme(plot.margin = unit(c(0,0,50,0), "pt"))
-plot_sex <- plot_sex +
-  theme(plot.margin = unit(c(0,0,50,0), "pt"))
+  # Add spacing between row subplots
+  Spacing <- theme(plot.margin = unit(c(0,0,50,0), "pt"))
+  plot_age %<>% + Spacing
+  plot_sex %<>% + Spacing
+  plot_marital %<>% + Spacing
+  plot_ed %<>% + Spacing
+  plot_material_pre %<>% + Spacing
+  plot_unemployment_post %<>% + Spacing
+  
+  # Plot merge 
+  plot_sociod <- 
+    (plot_age + plot_sex) /
+    (plot_marital + plot_ed) /
+    (plot_material_pre + plot_unemployment_post) / 
+    (plot_econ_post + plot_spacer())
+  
+## ---- MERGE SOCIAL ASPECTS ---------------------------------
+  
+  # Add spacing between row subplots
+  plot_socialsupport_pre %<>% + Spacing
+  plot_socialsupport_post %>% + Spacing
+  plot_livingalone_post %>% + Spacing
+  plot_virtual %>% + Spacing
 
-# Text size 
+  # Plot
+  (plot_socialsupport_pre + plot_socialsupport_post) /
+    (plot_livingalone_post + plot_virtual) /
+    (plot_social_changes + plot_spacer())
+  
+  # Spacing <- theme(plot.margin = unit(c(0,0,50,0), "pt"))
+  # plot_age %<>% + Spacing
+  # plot_sex %<>% + Spacing
+  # plot_marital %<>% + Spacing
+  # plot_ed %<>% + Spacing
+  # plot_material_pre %<>% + Spacing
+  # plot_unemployment_post %<>% + Spacing
+  # Plot merge 
+  # plot_sociod <- 
+  #   (plot_age + plot_sex) /
+  #   (plot_marital + plot_ed) /
+  #   (plot_material_pre + plot_unemployment_post) / 
+  #   (plot_econ_post + plot_spacer())
+  # 
+  
+# # Remove axis ticks from second and third subplot
+# plot_age <- plot_age + 
+#   theme(axis.text.y = element_blank())
+# plot_sex <- plot_sex +   
+#   scale_y_continuous(position = "right")
+# plot_ed <- plot_ed + 
+#   theme(axis.text.y = element_blank())
+# plot_econ_post <- plot_econ_post +   
+#   scale_y_continuous(position = "right")
+# 
+# # Add spacing between row subplots
+# plot_total <- plot_total + 
+#   theme(plot.margin = unit(c(0,0,50,0), "pt"))
+# plot_age <- plot_age +
+#   theme(plot.margin = unit(c(0,0,50,0), "pt"))
+# plot_sex <- plot_sex +
+#   theme(plot.margin = unit(c(0,0,50,0), "pt"))
+# 
+# # Text size 
+# text_size <- 19
+# 
+# plot_total <- plot_total + 
+#   theme(text = element_text(size = text_size)) 
+# 
+# plot_age <- plot_age +
+#   theme(text = element_text(size = text_size)) 
+# 
+# plot_sex <- plot_sex +
+#   theme(text = element_text(size = text_size)) 
+# 
+# plot_marital <- plot_marital + 
+#   theme(text = element_text(size = text_size))  
+# 
+# plot_ed <- plot_ed + 
+#   theme(text = element_text(size = text_size)) 
+# 
+# plot_econ_post <- plot_econ_post + 
+#   theme(text = element_text(size = text_size)) 
+# 
+# # plot
+# plot_sociod <- (plot_total + plot_age + plot_sex) /
+#   (plot_marital + plot_ed + plot_econ_post)
+# 
+# ## ---- Merge social aspects ---------------------------------------------------
+# 
+# # Remove axis ticks from second and third subplot
+# plot_liv_alone_post <- plot_liv_alone_post + 
+#   scale_y_continuous(position = "right")
+# plot_soc_sup_post <- plot_soc_sup_post +
+#   scale_y_continuous(position = "right")
+# 
+# # Add spacing between row subplots
+# plot_social <- plot_social + 
+#   theme(plot.margin = unit(c(0,0,50,0), "pt"))
+# plot_liv_alone_post <- plot_liv_alone_post +
+#   theme(plot.margin = unit(c(0,0,50,0), "pt"))
+# 
+# Text size
 text_size <- 19
-
-plot_total <- plot_total + 
-  theme(text = element_text(size = text_size)) 
-
-plot_age <- plot_age +
-  theme(text = element_text(size = text_size)) 
-
-plot_sex <- plot_sex +
-  theme(text = element_text(size = text_size)) 
-
-plot_marital <- plot_marital + 
-  theme(text = element_text(size = text_size))  
-
-plot_ed <- plot_ed + 
-  theme(text = element_text(size = text_size)) 
-
-plot_econ_post <- plot_econ_post + 
-  theme(text = element_text(size = text_size)) 
-
-# plot
-plot_sociod <- (plot_total + plot_age + plot_sex) / 
-  (plot_marital + plot_ed + plot_econ_post)
-
-## ---- Merge social aspects ---------------------------------------------------
-
-# Remove axis ticks from second and third subplot
-plot_liv_alone_post <- plot_liv_alone_post + 
-  scale_y_continuous(position = "right")
-plot_soc_sup_post <- plot_soc_sup_post +
-  scale_y_continuous(position = "right")
-
-# Add spacing between row subplots
-plot_social <- plot_social + 
-  theme(plot.margin = unit(c(0,0,50,0), "pt"))
-plot_liv_alone_post <- plot_liv_alone_post +
-  theme(plot.margin = unit(c(0,0,50,0), "pt"))
-
-# Text size 
-text_size <- 19
-
-plot_social <- plot_social + 
-  theme(text = element_text(size = text_size)) 
-
-plot_liv_alone_post <- plot_liv_alone_post +
-  theme(text = element_text(size = text_size)) 
-
-plot_soc_sup_pre <- plot_soc_sup_pre +
-  theme(text = element_text(size = text_size)) 
-
-plot_soc_sup_post <- plot_soc_sup_post +
-  theme(text = element_text(size = text_size))
-
-# Plot
-plot_social <- (plot_social + plot_liv_alone_post) / 
-  (plot_soc_sup_pre + plot_soc_sup_post)
-
-## ---- Merge Health and wellbeing ---------------------------------------------
-
-# Text axis without or to the right
-plot_depre_pre <- plot_depre_pre + 
-  theme(axis.text.y = element_blank())
-plot_depre_post <- plot_depre_post + 
-  scale_y_continuous(position = "right")
-
-plot_disability_post <- plot_disability_post + 
-  theme(axis.text.y = element_blank())
-plot_neuroticism <- plot_neuroticism + 
-  scale_y_continuous(position = "right")
-
-plot_resilience <- plot_resilience + 
-  theme(axis.text.y = element_blank())
-
-# Add spacing between row subplots
-plot_phys_post <- plot_phys_post + 
-  theme(plot.margin = unit(c(0,0,50,0), "pt"))
-plot_depre_pre <- plot_depre_pre +
-  theme(plot.margin = unit(c(0,0,50,0), "pt"))
-plot_depre_post <- plot_depre_post +
-  theme(plot.margin = unit(c(0,0,50,0), "pt"))
-plot_disability_pre <- plot_disability_pre + 
-  theme(plot.margin = unit(c(0,0,50,0), "pt"))
-plot_disability_post <- plot_disability_post +
-  theme(plot.margin = unit(c(0,0,50,0), "pt"))
-plot_neuroticism <- plot_neuroticism +
-  theme(plot.margin = unit(c(0,0,50,0), "pt"))
-
-# Text size 
-text_size <- 19
-
-plot_phys_post <- plot_phys_post + 
-  theme(text = element_text(size = text_size)) 
-
-plot_depre_pre <- plot_depre_pre + 
-  theme(text = element_text(size = text_size)) 
-
-plot_depre_post <- plot_depre_post + 
-  theme(text = element_text(size = text_size)) 
-
-plot_disability_pre <- plot_disability_pre + 
-  theme(text = element_text(size = text_size)) 
-
-plot_disability_post <- plot_disability_post + 
-  theme(text = element_text(size = text_size)) 
-
-plot_neuroticism <- plot_neuroticism + 
-  theme(text = element_text(size = text_size)) 
-
-plot_extraversion <- plot_extraversion + 
-  theme(text = element_text(size = text_size)) 
-
-plot_resilience <- plot_resilience + 
-  theme(text = element_text(size = text_size)) 
-
-# plot
-plot_health <- 
-  (plot_phys_post + plot_depre_pre + plot_depre_post) /
-  (plot_disability_pre + plot_disability_post + plot_neuroticism) /
-  (plot_extraversion + plot_resilience + plot_spacer()) 
+# 
+# plot_social <- plot_social + 
+#   theme(text = element_text(size = text_size)) 
+# 
+# plot_liv_alone_post <- plot_liv_alone_post +
+#   theme(text = element_text(size = text_size)) 
+# 
+# plot_soc_sup_pre <- plot_soc_sup_pre +
+#   theme(text = element_text(size = text_size)) 
+# 
+# plot_soc_sup_post <- plot_soc_sup_post +
+#   theme(text = element_text(size = text_size))
+# 
+# # Plot
+# plot_social <- (plot_social + plot_liv_alone_post) / 
+#   (plot_soc_sup_pre + plot_soc_sup_post)
+# 
+# ## ---- Merge Health and wellbeing ---------------------------------------------
+# 
+# # Text axis without or to the right
+# plot_depre_pre <- plot_depre_pre + 
+#   theme(axis.text.y = element_blank())
+# plot_depre_post <- plot_depre_post + 
+#   scale_y_continuous(position = "right")
+# 
+# plot_disability_post <- plot_disability_post + 
+#   theme(axis.text.y = element_blank())
+# plot_neuroticism <- plot_neuroticism + 
+#   scale_y_continuous(position = "right")
+# 
+# plot_resilience <- plot_resilience + 
+#   theme(axis.text.y = element_blank())
+# 
+# # Add spacing between row subplots
+# plot_phys_post <- plot_phys_post + 
+#   theme(plot.margin = unit(c(0,0,50,0), "pt"))
+# plot_depre_pre <- plot_depre_pre +
+#   theme(plot.margin = unit(c(0,0,50,0), "pt"))
+# plot_depre_post <- plot_depre_post +
+#   theme(plot.margin = unit(c(0,0,50,0), "pt"))
+# plot_disability_pre <- plot_disability_pre + 
+#   theme(plot.margin = unit(c(0,0,50,0), "pt"))
+# plot_disability_post <- plot_disability_post +
+#   theme(plot.margin = unit(c(0,0,50,0), "pt"))
+# plot_neuroticism <- plot_neuroticism +
+#   theme(plot.margin = unit(c(0,0,50,0), "pt"))
+# 
+# # Text size 
+# text_size <- 19
+# 
+# plot_phys_post <- plot_phys_post + 
+#   theme(text = element_text(size = text_size)) 
+# 
+# plot_depre_pre <- plot_depre_pre + 
+#   theme(text = element_text(size = text_size)) 
+# 
+# plot_depre_post <- plot_depre_post + 
+#   theme(text = element_text(size = text_size)) 
+# 
+# plot_disability_pre <- plot_disability_pre + 
+#   theme(text = element_text(size = text_size)) 
+# 
+# plot_disability_post <- plot_disability_post + 
+#   theme(text = element_text(size = text_size)) 
+# 
+# plot_neuroticism <- plot_neuroticism + 
+#   theme(text = element_text(size = text_size)) 
+# 
+# plot_extraversion <- plot_extraversion + 
+#   theme(text = element_text(size = text_size)) 
+# 
+# plot_resilience <- plot_resilience + 
+#   theme(text = element_text(size = text_size)) 
+# 
+# # plot
+# plot_health <- 
+#   (plot_phys_post + plot_depre_pre + plot_depre_post) /
+#   (plot_disability_pre + plot_disability_post + plot_neuroticism) /
+#   (plot_extraversion + plot_resilience + plot_spacer()) 

@@ -633,9 +633,7 @@ library(paint)
     pivot_longer(
       # Here we add the variables we DONT want to pivot
       # The variable duplicates 
-      cols = !c(ID_ECS, weights, age, sex, maritalstatus, educlevel,
-                virtualcontact_post, socialchanges_post, economyworsened_post,
-                unemployment_post, materialdeprivation_pre), 
+      cols = c(loneliness_pre, loneliness_post, !everything()), 
       names_to = c(".value", "Time"),
       names_sep = "_"
     ) %>% 
@@ -645,7 +643,7 @@ library(paint)
     
 # LABELS ---not at the moment
 # no assign yet 
-# Check if is not necessary
+# Check if is necessary
 # try to assign labels inside the analysis
 # CREATE DATABASE WITH LABELS BUT NO ASSIGN IT 
 # DB_pre_post %>% labelled::look_for(details = "full")
