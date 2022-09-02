@@ -685,5 +685,3 @@ library(magrittr)
     (plot_disability_pre + plot_disability_post) /
     (plot_neuroticism_pre + plot_extraversion_pre) /
     (plot_resilience_post + plot_wellbeingcantril_pre)
-  
-
