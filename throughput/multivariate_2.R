@@ -1,0 +1,126 @@
+# ··············································································
+# FILE NAME:   multivariate.R
+# DESCRIPTION: Analysis multivariate
+# 
+# AUTHOR:      Jesus (jesus.sierralaya@inv.uam.es)
+# 
+# DATE:        23/08/2022
+# 
+# ·············································································· 
+
+## ---- INCLUDES: --------------------------------------------------------------
+
+library(here)
+library(gtsummary)
+library(sjPlot)
+library(survey)
+library(magrittr)
+
+## ---- UNIVARIATE: ------------------------------------------------------------
+
+# Reference level by group
+
+DB_pre_post %<>% 
+  mutate(
+    age = age %>% 
+      fct_relevel("50-64"),
+    maritalstatus = maritalstatus %>% 
+      fct_relevel("Married or in partnership Divorced"),
+    educlevel = educlevel %>% 
+      fct_relevel("Tertiary"),
+    socialchanges_post = socialchanges_post %>% 
+      fct_relevel("No")
+  )
+
+# db_pre_post <- db_pre_post |>
+#   mutate(
+#     q1011_age_cat = q1011_age_cat |> fct_relevel("50-64"),
+#     q1012_mar_stat_recat = q1012_mar_stat_recat |> to_factor() |>
+#       fct_relevel("Married/ Partnership"),
+#     q1016_highest_recat = q1016_highest_recat |> to_factor() |> fct_relevel("Tertiary"),
+#     SOLO3 = SOLO3 |> to_factor() |> fct_relevel("Have had no effect"),
+#   )
+
+# # As factor
+# db_pre_post <- db_pre_post |>
+#   haven::as_factor()
+
+# Univariate with Survey design
+tbl_univ <-
+  svydesign(
+  data = DB_pre_post,
+  ids = ~ID_ECS,
+  weights = DB_pre_post %>% pull(weights)
+) |>
+  tbl_uvregression(
+    method = survey::svyglm,
+    y = loneliness_post,
+    formula = "{y} ~ {x} + offset(loneliness_pre)",
+    include = -c(ID_ECS, loneliness_pre, weights),
+    # label = list(economy_post ~ "Economy worsened due COVID")
+  ) |>
+  add_global_p(keep = TRUE) |>
+  add_significance_stars(hide_ci = FALSE, hide_p = FALSE, hide_se = TRUE) |>
+  bold_p() |>
+  italicize_levels() %>% 
+  bold_labels()
+
+## ---- MULTIVARIATE: ------------------------------------------------------------
+
+fit_multi <-
+  svydesign(
+  data = DB_pre_post,
+  ids = ~ID_ECS,
+  weights = DB_pre_post %>% pull(weights)
+  ) %>% 
+  svyglm(
+    formula = loneliness_post ~ offset(loneliness_pre) 
+    # Fix
+    + age
+    + sex
+    + educlevel
+    + maritalstatus
+    # random
+    + virtualcontact_post
+    + socialchanges_post
+    + economyworsened_post
+    + unemployment_post
+    + depression_pre
+    + depression_post
+    + neuroticism_pre
+    + extraversion_pre
+    + disability_pre
+    ) 
+
+tbl_multi <- fit_multi %>% 
+  tbl_regression(
+    pvalue_fun = purrr::partial(style_sigfig, digits = 3)
+  ) |>
+  bold_p(t = 0.05) |>
+  add_vif()|>
+  add_global_p(keep = TRUE)
+
+# Plot
+
+fit_multi %>% plot_models(show.values = TRUE) 
+
+# plot_multi <- fit_multi |> plot_models(show.values = TRUE, axis.labels = c(
+#   "Sex (Female)",
+#   "Age (18-34)",
+#   "Age (35-49)",
+#   "Age (+65)",
+#   "Marital status (Single)",
+#   "Marital status (Separated/ Widowed)",
+#   "Education level (Less than primary)",
+#   "Education level (Primary)",
+#   "Education level (Secondary)",
+#   "Social relationships changes (Improved)",
+#   "Social relationships changes (Worsened)",
+#   "Economic situation worsened due to COVID-19",
+#   "Neuroticism",
+#   "Extraversion",
+#   "Disability (Before)",
+#   "Depression 12 months (Before)",
+#   "Depression 30 days (During)"
+# )|> rev(), show.legend = FALSE, colors = "Dark2") +
+#   font_size(title =20, labels.y = 10, axis_title.x = 15)

@@ -382,13 +382,14 @@ library(magrittr)
     theme(legend.position = "top",
           legend.title = element_markdown(),
           axis.title.x = element_blank(),
-          axis.title.y = element_blank(),
+          # axis.title.y = element_blank(),
           legend.margin = margin(t = leg_dist)
     ) + 
     coord_cartesian(ylim = c(lim_inf, lim_sup)) +
     guides(colour = guide_legend(title.position = "top", 
                                  title.hjust = .5, nrow = 2)) +
     labs(color = "**Living Alone<br>(During)**")+
+    ylab("Loneliness") +
     scale_color_manual(values = group.colors)  
 
 ## ---- PHYSICAL ACTIVITY PRE ----------------------------------------
@@ -645,7 +646,11 @@ library(magrittr)
   plot_unemployment_post %<>% + Spacing
   
   # Plot merge 
+<<<<<<< HEAD
   plots_sociod <- 
+=======
+  plot_sociod <-
+>>>>>>> cd6227b2e6e7118485a6fff9522c5cb2b61af5de
     (plot_age + plot_sex) /
     (plot_marital + plot_ed) /
     (plot_material_pre + plot_unemployment_post) / 
@@ -661,148 +666,35 @@ library(magrittr)
   plot_social_changes %>% theme(plot.margin = unit(c(0,0,0,50), "pt"))
 
   # Plot
+<<<<<<< HEAD
   plots_social <- 
+=======
+  plot_social <- 
+>>>>>>> cd6227b2e6e7118485a6fff9522c5cb2b61af5de
     (plot_socialsupport_pre + plot_socialsupport_post) /
     (plot_livingalone_post + plot_virtual) /
     (plot_social_changes + plot_spacer())
   
+<<<<<<< HEAD
 
+=======
+# ----- MERGE HEALTH AND WELLBEING ---------------------------------------------
+>>>>>>> cd6227b2e6e7118485a6fff9522c5cb2b61af5de
   
-# # Remove axis ticks from second and third subplot
-# plot_age <- plot_age + 
-#   theme(axis.text.y = element_blank())
-# plot_sex <- plot_sex +   
-#   scale_y_continuous(position = "right")
-# plot_ed <- plot_ed + 
-#   theme(axis.text.y = element_blank())
-# plot_econ_post <- plot_econ_post +   
-#   scale_y_continuous(position = "right")
-# 
-# # Add spacing between row subplots
-# plot_total <- plot_total + 
-#   theme(plot.margin = unit(c(0,0,50,0), "pt"))
-# plot_age <- plot_age +
-#   theme(plot.margin = unit(c(0,0,50,0), "pt"))
-# plot_sex <- plot_sex +
-#   theme(plot.margin = unit(c(0,0,50,0), "pt"))
-# 
-# # Text size 
-# text_size <- 19
-# 
-# plot_total <- plot_total + 
-#   theme(text = element_text(size = text_size)) 
-# 
-# plot_age <- plot_age +
-#   theme(text = element_text(size = text_size)) 
-# 
-# plot_sex <- plot_sex +
-#   theme(text = element_text(size = text_size)) 
-# 
-# plot_marital <- plot_marital + 
-#   theme(text = element_text(size = text_size))  
-# 
-# plot_ed <- plot_ed + 
-#   theme(text = element_text(size = text_size)) 
-# 
-# plot_econ_post <- plot_econ_post + 
-#   theme(text = element_text(size = text_size)) 
-# 
-# # plot
-# plot_sociod <- (plot_total + plot_age + plot_sex) /
-#   (plot_marital + plot_ed + plot_econ_post)
-# 
-# ## ---- Merge social aspects ---------------------------------------------------
-# 
-# # Remove axis ticks from second and third subplot
-# plot_liv_alone_post <- plot_liv_alone_post + 
-#   scale_y_continuous(position = "right")
-# plot_soc_sup_post <- plot_soc_sup_post +
-#   scale_y_continuous(position = "right")
-# 
-# # Add spacing between row subplots
-# plot_social <- plot_social + 
-#   theme(plot.margin = unit(c(0,0,50,0), "pt"))
-# plot_liv_alone_post <- plot_liv_alone_post +
-#   theme(plot.margin = unit(c(0,0,50,0), "pt"))
-# 
-# Text size
-text_size <- 19
-# 
-# plot_social <- plot_social + 
-#   theme(text = element_text(size = text_size)) 
-# 
-# plot_liv_alone_post <- plot_liv_alone_post +
-#   theme(text = element_text(size = text_size)) 
-# 
-# plot_soc_sup_pre <- plot_soc_sup_pre +
-#   theme(text = element_text(size = text_size)) 
-# 
-# plot_soc_sup_post <- plot_soc_sup_post +
-#   theme(text = element_text(size = text_size))
-# 
-# # Plot
-# plot_social <- (plot_social + plot_liv_alone_post) / 
-#   (plot_soc_sup_pre + plot_soc_sup_post)
-# 
-# ## ---- Merge Health and wellbeing ---------------------------------------------
-# 
-# # Text axis without or to the right
-# plot_depre_pre <- plot_depre_pre + 
-#   theme(axis.text.y = element_blank())
-# plot_depre_post <- plot_depre_post + 
-#   scale_y_continuous(position = "right")
-# 
-# plot_disability_post <- plot_disability_post + 
-#   theme(axis.text.y = element_blank())
-# plot_neuroticism <- plot_neuroticism + 
-#   scale_y_continuous(position = "right")
-# 
-# plot_resilience <- plot_resilience + 
-#   theme(axis.text.y = element_blank())
-# 
-# # Add spacing between row subplots
-# plot_phys_post <- plot_phys_post + 
-#   theme(plot.margin = unit(c(0,0,50,0), "pt"))
-# plot_depre_pre <- plot_depre_pre +
-#   theme(plot.margin = unit(c(0,0,50,0), "pt"))
-# plot_depre_post <- plot_depre_post +
-#   theme(plot.margin = unit(c(0,0,50,0), "pt"))
-# plot_disability_pre <- plot_disability_pre + 
-#   theme(plot.margin = unit(c(0,0,50,0), "pt"))
-# plot_disability_post <- plot_disability_post +
-#   theme(plot.margin = unit(c(0,0,50,0), "pt"))
-# plot_neuroticism <- plot_neuroticism +
-#   theme(plot.margin = unit(c(0,0,50,0), "pt"))
-# 
-# # Text size 
-# text_size <- 19
-# 
-# plot_phys_post <- plot_phys_post + 
-#   theme(text = element_text(size = text_size)) 
-# 
-# plot_depre_pre <- plot_depre_pre + 
-#   theme(text = element_text(size = text_size)) 
-# 
-# plot_depre_post <- plot_depre_post + 
-#   theme(text = element_text(size = text_size)) 
-# 
-# plot_disability_pre <- plot_disability_pre + 
-#   theme(text = element_text(size = text_size)) 
-# 
-# plot_disability_post <- plot_disability_post + 
-#   theme(text = element_text(size = text_size)) 
-# 
-# plot_neuroticism <- plot_neuroticism + 
-#   theme(text = element_text(size = text_size)) 
-# 
-# plot_extraversion <- plot_extraversion + 
-#   theme(text = element_text(size = text_size)) 
-# 
-# plot_resilience <- plot_resilience + 
-#   theme(text = element_text(size = text_size)) 
-# 
-# # plot
-# plot_health <- 
-#   (plot_phys_post + plot_depre_pre + plot_depre_post) /
-#   (plot_disability_pre + plot_disability_post + plot_neuroticism) /
-#   (plot_extraversion + plot_resilience + plot_spacer()) 
+  # Add spacing between row subplots
+  plot_depression_pre %<>% + Spacing
+  plot_depression_post %<>% + Spacing
+  plot_physicalactivity_pre %<>% + Spacing
+  plot_physicalactivity_post %<>% + Spacing
+  plot_disability_pre %<>% + Spacing
+  plot_disability_post %<>% + Spacing
+  plot_neuroticism_pre %<>% + Spacing
+  plot_extraversion_pre %<>% + Spacing
+  
+  # PLOT
+  plot_health <- 
+    (plot_depression_pre + plot_depression_post) / 
+    (plot_physicalactivity_pre + plot_physicalactivity_post) /
+    (plot_disability_pre + plot_disability_post) /
+    (plot_neuroticism_pre + plot_extraversion_pre) /
+    (plot_resilience_post + plot_wellbeingcantril_pre)
