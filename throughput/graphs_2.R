@@ -646,11 +646,7 @@ library(magrittr)
   plot_unemployment_post %<>% + Spacing
   
   # Plot merge 
-<<<<<<< HEAD
   plots_sociod <- 
-=======
-  plot_sociod <-
->>>>>>> cd6227b2e6e7118485a6fff9522c5cb2b61af5de
     (plot_age + plot_sex) /
     (plot_marital + plot_ed) /
     (plot_material_pre + plot_unemployment_post) / 
@@ -663,24 +659,15 @@ library(magrittr)
   plot_socialsupport_post %>% + Spacing
   plot_livingalone_post %>% + Spacing
   plot_virtual %>% + Spacing
-  plot_social_changes %>% theme(plot.margin = unit(c(0,0,0,50), "pt"))
 
   # Plot
-<<<<<<< HEAD
   plots_social <- 
-=======
-  plot_social <- 
->>>>>>> cd6227b2e6e7118485a6fff9522c5cb2b61af5de
     (plot_socialsupport_pre + plot_socialsupport_post) /
     (plot_livingalone_post + plot_virtual) /
     (plot_social_changes + plot_spacer())
   
-<<<<<<< HEAD
-
-=======
 # ----- MERGE HEALTH AND WELLBEING ---------------------------------------------
->>>>>>> cd6227b2e6e7118485a6fff9522c5cb2b61af5de
-  
+
   # Add spacing between row subplots
   plot_depression_pre %<>% + Spacing
   plot_depression_post %<>% + Spacing
@@ -692,7 +679,7 @@ library(magrittr)
   plot_extraversion_pre %<>% + Spacing
   
   # PLOT
-  plot_health <- 
+  plots_health <- 
     (plot_depression_pre + plot_depression_post) / 
     (plot_physicalactivity_pre + plot_physicalactivity_post) /
     (plot_disability_pre + plot_disability_post) /

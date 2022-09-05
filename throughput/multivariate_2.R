@@ -29,21 +29,16 @@ DB_pre_post %<>%
     educlevel = educlevel %>% 
       fct_relevel("Tertiary"),
     socialchanges_post = socialchanges_post %>% 
+      fct_relevel("No"),
+    economyworsened_post = economyworsened_post %>% 
+      fct_relevel("No"),
+    unemployment_post = unemployment_post %>% 
+      fct_relevel("No"),
+    materialdeprivation_pre = materialdeprivation_pre %>% 
+      fct_relevel("No"),
+    livingalone_post = livingalone_post %>% 
       fct_relevel("No")
   )
-
-# db_pre_post <- db_pre_post |>
-#   mutate(
-#     q1011_age_cat = q1011_age_cat |> fct_relevel("50-64"),
-#     q1012_mar_stat_recat = q1012_mar_stat_recat |> to_factor() |>
-#       fct_relevel("Married/ Partnership"),
-#     q1016_highest_recat = q1016_highest_recat |> to_factor() |> fct_relevel("Tertiary"),
-#     SOLO3 = SOLO3 |> to_factor() |> fct_relevel("Have had no effect"),
-#   )
-
-# # As factor
-# db_pre_post <- db_pre_post |>
-#   haven::as_factor()
 
 # Univariate with Survey design
 tbl_univ <-
@@ -101,19 +96,38 @@ tbl_multi <- fit_multi %>%
   add_global_p(keep = TRUE)
 
 # Plot
-
-fit_multi %>% plot_models(show.values = TRUE) 
+plot_multi <-
+  fit_multi %>% 
+  plot_models(show.values = TRUE, 
+                            show.legend = FALSE, 
+                            colors = "Dark2",
+                            axis.labels = rev(c(
+                              "Age (18-34)",
+                              "Age (35-49)",
+                              "Age (+65)", 
+                              "Sex (Female)",
+                              "Education level (No formal)",
+                              "Education level (Secundary)",
+                              "Education level (Primary)",
+                              "Marital status (Divorced, separated or widowed)",
+                              "Marital status (Single)",
+                              "Virtual contact (Once a week)",
+                              "Virtual contact (Less than once a week)",
+                              "Virtual contact (Never)",
+                              "Social changes (Improved)",
+                              "Social changes (Worsened)",
+                              "Economy worsened",
+                              "Unemployment",
+                              "Depression 12 months (Before)",
+                              "Depression 30 days (During)",
+                              "Neuroticism",
+                              "Extraversion",
+                              "Disability (Before)"
+                            ))) + 
+  font_size(labels.y = 10)
 
 # plot_multi <- fit_multi |> plot_models(show.values = TRUE, axis.labels = c(
-#   "Sex (Female)",
-#   "Age (18-34)",
-#   "Age (35-49)",
-#   "Age (+65)",
-#   "Marital status (Single)",
-#   "Marital status (Separated/ Widowed)",
-#   "Education level (Less than primary)",
-#   "Education level (Primary)",
-#   "Education level (Secondary)",
+
 #   "Social relationships changes (Improved)",
 #   "Social relationships changes (Worsened)",
 #   "Economic situation worsened due to COVID-19",
