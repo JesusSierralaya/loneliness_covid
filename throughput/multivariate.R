@@ -14,107 +14,127 @@ library(here)
 library(gtsummary)
 library(sjPlot)
 library(survey)
-
-## ---- LOAD: -----------------------------------------------------------------
-
-# load(
-#   here("dat","db_pre_post.Rda")
-# )
+library(magrittr)
 
 ## ---- UNIVARIATE: ------------------------------------------------------------
 
-# Select the reference group
-db_pre_post <- db_pre_post |>
+# Reference level by group
+
+DB_pre_post %<>% 
   mutate(
-    q1011_age_cat = q1011_age_cat |> fct_relevel("50-64"),
-    q1012_mar_stat_recat = q1012_mar_stat_recat |> to_factor() |>
-      fct_relevel("Married/ Partnership"),
-    q1016_highest_recat = q1016_highest_recat |> to_factor() |> fct_relevel("Tertiary"),
-    SOLO3 = SOLO3 |> to_factor() |> fct_relevel("Have had no effect"),
+    age = age %>% 
+      fct_relevel("50-64"),
+    maritalstatus = maritalstatus %>% 
+      fct_relevel("Married or in partnership Divorced"),
+    educlevel = educlevel %>% 
+      fct_relevel("Tertiary"),
+    socialchanges_post = socialchanges_post %>% 
+      fct_relevel("No"),
+    economyworsened_post = economyworsened_post %>% 
+      fct_relevel("No"),
+    unemployment_post = unemployment_post %>% 
+      fct_relevel("No"),
+    materialdeprivation_pre = materialdeprivation_pre %>% 
+      fct_relevel("No"),
+    livingalone_post = livingalone_post %>% 
+      fct_relevel("No")
   )
 
-# As factor
-db_pre_post <- db_pre_post |>
-  haven::as_factor()
-
 # Univariate with Survey design
-tbl_univ <- survey::svydesign(
-  data = db_pre_post,
+tbl_univ <-
+  svydesign(
+  data = DB_pre_post,
   ids = ~ID_ECS,
-  weights = db_pre_post$wfinal_norm
+  weights = DB_pre_post %>% pull(weights)
 ) |>
   tbl_uvregression(
     method = survey::svyglm,
     y = loneliness_post,
     formula = "{y} ~ {x} + offset(loneliness_pre)",
-    include = -c(q1011_age, ID_ECS, q7008d_cantril,
-                 loneliness_pre, SOLO2, ECON5,
-                 wfinal_norm),
-    label = list(economy_post ~ "Economy worsened due COVID")
+    include = -c(ID_ECS, loneliness_pre, weights),
+    # label = list(economy_post ~ "Economy worsened due COVID")
   ) |>
   add_global_p(keep = TRUE) |>
   add_significance_stars(hide_ci = FALSE, hide_p = FALSE, hide_se = TRUE) |>
   bold_p() |>
-  italicize_levels()
+  italicize_levels() %>% 
+  bold_labels()
 
 ## ---- MULTIVARIATE: ------------------------------------------------------------
 
-fit_multi <- survey::svydesign(
-  data = db_pre_post,
+fit_multi <-
+  svydesign(
+  data = DB_pre_post,
   ids = ~ID_ECS,
-  weights = db_pre_post$wfinal_norm
-) |>
+  weights = DB_pre_post %>% pull(weights)
+  ) %>% 
   svyglm(
-    formula = loneliness_post ~ offset(loneliness_pre) #+ 0
+    formula = loneliness_post ~ offset(loneliness_pre) 
     # Fix
-    + q1009_sex
-    + q1011_age_cat
-    + q1012_mar_stat_recat
-    + q1016_highest_recat
+    + age
+    + sex
+    + educlevel
+    + maritalstatus
     # random
-    + SOLO3
-    + economy_post
-    + neuroticism
-    + extraversion
-    + whodas12_pre
-    + depression_12m_pre
-    + depression_30d_post
-    # ,
-    # design  = svy_design
-  )
+    + virtualcontact_post
+    + socialchanges_post
+    + economyworsened_post
+    + unemployment_post
+    + depression_pre
+    + depression_post
+    + neuroticism_pre
+    + extraversion_pre
+    + disability_pre
+    ) 
 
-# # Quick review of significant factors
-# summary(fit_multi)
-#
-# Table
-tbl_multi <- 
-  fit_multi |>
-    tbl_regression(
-      pvalue_fun = purrr::partial(style_sigfig, digits = 3)
-    ) |>
-    bold_p(t = 0.05) |>
-    add_vif()|>
-    add_global_p(keep = TRUE)
+tbl_multi <- fit_multi %>% 
+  tbl_regression(
+    pvalue_fun = purrr::partial(style_sigfig, digits = 3)
+  ) |>
+  bold_p(t = 0.05) |>
+  add_vif()|>
+  add_global_p(keep = TRUE)
 
 # Plot
+plot_multi <-
+  fit_multi %>% 
+  plot_models(show.values = TRUE, 
+                            show.legend = FALSE, 
+                            colors = "Dark2",
+                            axis.labels = rev(c(
+                              "Age (18-34)",
+                              "Age (35-49)",
+                              "Age (+65)", 
+                              "Sex (Female)",
+                              "Education level (No formal)",
+                              "Education level (Secundary)",
+                              "Education level (Primary)",
+                              "Marital status (Divorced, separated or widowed)",
+                              "Marital status (Single)",
+                              "Virtual contact (Once a week)",
+                              "Virtual contact (Less than once a week)",
+                              "Virtual contact (Never)",
+                              "Social changes (Improved)",
+                              "Social changes (Worsened)",
+                              "Economy worsened",
+                              "Unemployment",
+                              "Depression 12 months (Before)",
+                              "Depression 30 days (During)",
+                              "Neuroticism",
+                              "Extraversion",
+                              "Disability (Before)"
+                            ))) + 
+  font_size(labels.y = 10)
 
-plot_multi <- fit_multi |> plot_models(show.values = TRUE, axis.labels = c(
-  "Sex (Female)",
-  "Age (18-34)",
-  "Age (35-49)",
-  "Age (+65)",
-  "Marital status (Single)",
-  "Marital status (Separated/ Widowed)",
-  "Education level (Less than primary)",
-  "Education level (Primary)",
-  "Education level (Secondary)",
-  "Social relationships changes (Improved)",
-  "Social relationships changes (Worsened)",
-  "Economic situation worsened due to COVID-19",
-  "Neuroticism",
-  "Extraversion",
-  "Disability (Before)",
-  "Depression 12 months (Before)",
-  "Depression 30 days (During)"
-)|> rev(), show.legend = FALSE, colors = "Dark2") +
-  font_size(title =20, labels.y = 10, axis_title.x = 15)
+# plot_multi <- fit_multi |> plot_models(show.values = TRUE, axis.labels = c(
+
+#   "Social relationships changes (Improved)",
+#   "Social relationships changes (Worsened)",
+#   "Economic situation worsened due to COVID-19",
+#   "Neuroticism",
+#   "Extraversion",
+#   "Disability (Before)",
+#   "Depression 12 months (Before)",
+#   "Depression 30 days (During)"
+# )|> rev(), show.legend = FALSE, colors = "Dark2") +
+#   font_size(title =20, labels.y = 10, axis_title.x = 15)

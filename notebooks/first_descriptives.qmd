@@ -32,7 +32,7 @@ library(naniar)
 # Descriptives
 
 ```{r}
-#| file: ../throughput/import_clean_2.R
+#| file: ../throughput/import_clean.R
 #| warning: false
 ```
 
