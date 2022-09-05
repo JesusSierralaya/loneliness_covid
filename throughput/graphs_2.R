@@ -645,7 +645,7 @@ library(magrittr)
   plot_unemployment_post %<>% + Spacing
   
   # Plot merge 
-  plot_sociod <- 
+  plots_sociod <- 
     (plot_age + plot_sex) /
     (plot_marital + plot_ed) /
     (plot_material_pre + plot_unemployment_post) / 
@@ -658,26 +658,15 @@ library(magrittr)
   plot_socialsupport_post %>% + Spacing
   plot_livingalone_post %>% + Spacing
   plot_virtual %>% + Spacing
+  plot_social_changes %>% theme(plot.margin = unit(c(0,0,0,50), "pt"))
 
   # Plot
-  (plot_socialsupport_pre + plot_socialsupport_post) /
+  plots_social <- 
+    (plot_socialsupport_pre + plot_socialsupport_post) /
     (plot_livingalone_post + plot_virtual) /
     (plot_social_changes + plot_spacer())
   
-  # Spacing <- theme(plot.margin = unit(c(0,0,50,0), "pt"))
-  # plot_age %<>% + Spacing
-  # plot_sex %<>% + Spacing
-  # plot_marital %<>% + Spacing
-  # plot_ed %<>% + Spacing
-  # plot_material_pre %<>% + Spacing
-  # plot_unemployment_post %<>% + Spacing
-  # Plot merge 
-  # plot_sociod <- 
-  #   (plot_age + plot_sex) /
-  #   (plot_marital + plot_ed) /
-  #   (plot_material_pre + plot_unemployment_post) / 
-  #   (plot_econ_post + plot_spacer())
-  # 
+
   
 # # Remove axis ticks from second and third subplot
 # plot_age <- plot_age + 
