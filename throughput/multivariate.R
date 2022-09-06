@@ -41,7 +41,7 @@ DB_pre_post %<>%
   )
 
 # Univariate with Survey design
-# tbl_univ <-
+tbl_univ <-
   svydesign(
   data = DB_pre_post,
   ids = ~ID_ECS,
