@@ -41,24 +41,24 @@ DB_pre_post %<>%
   )
 
 # Univariate with Survey design
-tbl_univ <-
+# tbl_univ <-
   svydesign(
   data = DB_pre_post,
   ids = ~ID_ECS,
   weights = DB_pre_post %>% pull(weights)
-) |>
+) %>% 
   tbl_uvregression(
-    method = survey::svyglm,
     y = loneliness_post,
+    method = survey::svyglm,
     formula = "{y} ~ {x} + offset(loneliness_pre)",
-    include = -c(ID_ECS, loneliness_pre, weights),
-    # label = list(economy_post ~ "Economy worsened due COVID")
-  ) |>
-  add_global_p(keep = TRUE) |>
-  add_significance_stars(hide_ci = FALSE, hide_p = FALSE, hide_se = TRUE) |>
-  bold_p() |>
+    include = -c(ID_ECS, loneliness_pre, weights)
+    ) %>% 
+  add_global_p(keep = TRUE)  %>% 
+  add_significance_stars(hide_ci = FALSE, hide_p = FALSE, hide_se = TRUE) %>% 
+  bold_p() %>% 
   italicize_levels() %>% 
-  bold_labels()
+  bold_labels() %>% 
+  modify_column_hide(stat_n)
 
 ## ---- MULTIVARIATE: ------------------------------------------------------------
 

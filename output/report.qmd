@@ -48,7 +48,7 @@ tbl_descriptive
 ```{r}
 #| file: ../throughput/graphs.R
 #| warning: false
-#| include: false
+#| message: false
 ```
 
 ```{r}

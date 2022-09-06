@@ -18,7 +18,6 @@ library(ggtext)
 library(patchwork)
 library(magrittr)
 
-
 ## ---- PRE-PROCESS: -----------------------------------------------------------
 
   # Axis limits
@@ -268,7 +267,8 @@ library(magrittr)
     as.data.frame() 
   
   # plot
-  plot_econ_post <- effects_economy_post |> # Copy name effects
+  plot_econ_post <- 
+    effects_economy_post  %>%  # Copy name effects
     ggplot(aes(x = Time, y = fit,
                group = economyworsened_post, 
                color = economyworsened_post)) +
@@ -279,14 +279,14 @@ library(magrittr)
     theme(legend.position = "top",
           legend.title = element_markdown(),
           axis.title.x = element_blank(),
-          # axis.title.y = element_blank(),
+          axis.title.y = element_blank(),
           legend.margin = margin(t = leg_dist)
     ) + 
     coord_cartesian(ylim = c(lim_inf,lim_sup)) +
     guides(colour = guide_legend(title.position = "top", 
                                  title.hjust = .5, ncol = 1)) +
-    labs(color = "**Economy<br>Worsening (During)**") +
-    ylab("Loneliness")
+    labs(color = "**Economy Worsening (During)**") +
+    ylab("Loneliness") +
     scale_color_manual(values = group.colors)
 
 ## ---- UNEMPLOYMENT POST ----------------------------------------------
@@ -355,7 +355,7 @@ library(magrittr)
     guides(colour = guide_legend(title.position = "top", 
                                  title.hjust = .5, ncol = 1)) +
     labs(color = "**Material<br>Deprivation  (Before)**") +
-    ylab("Loneliness")
+    ylab("Loneliness") +
     scale_color_manual(values = group.colors)
   
 ## ---- LIVING ALONE POST ----------------------------------------------------
@@ -656,9 +656,9 @@ library(magrittr)
   
   # Add spacing between row subplots
   plot_socialsupport_pre %<>% + Spacing
-  plot_socialsupport_post %>% + Spacing
-  plot_livingalone_post %>% + Spacing
-  plot_virtual %>% + Spacing
+  plot_socialsupport_post %<>% + Spacing
+  plot_livingalone_post %<>% + Spacing
+  plot_virtual %<>% + Spacing
 
   # Plot
   plots_social <- 
