@@ -178,8 +178,8 @@ liv_alone <- DB_graphs %>%
   (socialsupport_post  + plot_spacer())  +
   # https://patchwork.data-imaginist.com/articles/guides/annotation.html
   plot_annotation(
-    title = 'The surprising truth about mtcars',
-    subtitle = 'These 3 plots will reveal yet-untold secrets about our beloved data-set',
+    title = 'Test test test test test test test test test',
+    subtitle = 'Tesr test test test test test test test',
     caption = "*B*: Before the lockdown<br>
     *D*: During the lockdown"
   ) + 
