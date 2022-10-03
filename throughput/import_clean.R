@@ -91,7 +91,7 @@ library(paint)
     ### PATH ---
     
     PATH_WEIGHTS <- file.path(PATH_MASTER, 
-                              "Ola_3/Cohorte_2019/Pesos", "pesos_norm.dta")
+                              "Ola_3/Cohorte_2019/Pesos", "pesos_norm_v2.dta")
     
     ### READ ---
     
@@ -629,10 +629,7 @@ library(paint)
   # DB graphs
   
   DB_graphs <- DB_pre_post %>% 
-    # Here we add the variables we want to pivot (end with _pre or _post)
     pivot_longer(
-      # Here we add the variables we DONT want to pivot
-      # The variable duplicates 
       cols = c(loneliness_pre, loneliness_post, !everything()), 
       names_to = c(".value", "Time"),
       names_sep = "_"
