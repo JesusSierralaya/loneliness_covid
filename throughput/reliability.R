@@ -72,7 +72,7 @@ DISABILITY_PRE_ITEMS  <- c(
   "q2014_friend",
   "q2039_daily"
 )
-DISABILITY_POST_ITEMS <- "SF2_" %>% paste0(1:12)
+DISABILITY_POST_ITEMS <- "SF2_" |> paste0(1:12)
 
 DISABILITY_RECODE_PRE  <- c(
   "q2032_hh_resp",
@@ -82,7 +82,7 @@ DISABILITY_RECODE_PRE  <- c(
   "q2014_friend",
   "q2039_daily"
 )
-DISABILITY_RECODE_POST <- "SF2_" %>% paste0(c(2, 4, 8, 10, 11, 12))
+DISABILITY_RECODE_POST <- "SF2_" |> paste0(c(2, 4, 8, 10, 11, 12))
 
 
 PHYSICAL_ACTIVITY_PRE_ITEMS  <- c(
@@ -96,19 +96,28 @@ PHYSICAL_ACTIVITY_POST_ITEMS <- c(
   "AF3A", "AF3B_H_1", "AF3B_M_1"
 )
 
+PERSONALITY_PRE_ITEMS <- c(
+  # neuroticism
+  "q4641_mood", "q4646_fedup" , "q4648_nervous", 
+  "q4650_worried", "q4653_nerves", "q4656_alone", 
+  # extraversion
+  "q4642_talkative", "q4643_lively", "q4649_party", 
+  "q4651_meetings", "q4655_quiet", "q4657_livelyothers"
+)
+
 ITEMS_WITH_MISSING_PRE  <- c(SOCIAL_SUPPORT_PRE_ITEMS,  DISABILITY_PRE_ITEMS)
 ITEMS_WITH_MISSING_POST <- c(SOCIAL_SUPPORT_POST_ITEMS, DISABILITY_POST_ITEMS)
 
 
 ## ----load-data----
 
-dataset_pre  <- DB_PRE_PATH  %>% read_dta() |> filter(subsample_pre == 1)
-dataset_post <- DB_POST_PATH %>% read_dta()
+dataset_pre  <- DB_PRE_PATH  |> read_dta() |> filter(subsample_pre == 1)
+dataset_post <- DB_POST_PATH |> read_dta()
 
 
 ## ----preprocess-data----
 
-dataset_pre <- dataset_pre %>% mutate(
+dataset_pre <- dataset_pre |> mutate(
   # Missing values:
   across(all_of(ITEMS_WITH_MISSING_PRE), na_if, 888),
   across(all_of(ITEMS_WITH_MISSING_PRE), na_if, 999),
@@ -129,10 +138,13 @@ dataset_pre <- dataset_pre %>% mutate(
   across(all_of(PHYSICAL_ACTIVITY_PRE_ITEMS) & matches("hours$"), `*`, 60),
   met1 = q3017_days * (q3018_hours + q3018_mins) * 8,
   met2 = q3020_days * (q3021_hours + q3021_mins) * 4,
-  met3 = q3023_days * (q3024_hours + q3024_mins) * 4
+  met3 = q3023_days * (q3024_hours + q3024_mins) * 4,
+  # Recode personality
+  across(all_of(PERSONALITY_PRE_ITEMS), as.numeric)
+  # across(all_of(PERSONALITY_PRE_ITEMS), recode, `2` = 3, `4` = 5),
 )
 
-dataset_post <- dataset_post %>% mutate(
+dataset_post <- dataset_post |> mutate(
   # Missing values:
   across(all_of(ITEMS_WITH_MISSING_POST), na_if, 8),
   across(all_of(ITEMS_WITH_MISSING_POST), na_if, 9),
@@ -161,55 +173,65 @@ dataset_post <- dataset_post %>% mutate(
 
 ## ----reliabilities----
 
-alpha_social_support_pre <- dataset_pre %>%
-  select(all_of(SOCIAL_SUPPORT_PRE_ITEMS)) %>%
-  psych::alpha(check.keys = TRUE) %>%
+alpha_social_support_pre <- dataset_pre |>
+  select(all_of(SOCIAL_SUPPORT_PRE_ITEMS)) |>
+  psych::alpha(check.keys = TRUE) |>
   extract2(c("total", "raw_alpha")) 
 
-alpha_loneliness_pre <- dataset_pre %>%
-  select(all_of(LONELINESS_PRE_ITEMS)) %>%
-  psych::alpha(check.keys = TRUE) %>%
+alpha_loneliness_pre <- dataset_pre |>
+  select(all_of(LONELINESS_PRE_ITEMS)) |>
+  psych::alpha(check.keys = TRUE) |>
   extract2(c("total", "raw_alpha"))
 
-alpha_disability_pre <- dataset_pre %>%
-  select(all_of(DISABILITY_PRE_ITEMS)) %>%
-  psych::alpha(check.keys = TRUE) %>%
+alpha_disability_pre <- dataset_pre |>
+  select(all_of(DISABILITY_PRE_ITEMS)) |>
+  psych::alpha(check.keys = TRUE) |>
   extract2(c("total", "raw_alpha")) 
 
-alpha_physical_activity_pre <- dataset_pre %>%
-  select(met1:met3) %>%
-  psych::alpha() %>%
+alpha_physical_activity_pre <- dataset_pre |>
+  select(met1:met3) |>
+  psych::alpha() |>
   extract2(c("total", "raw_alpha")) 
 
 
-alpha_resilience_post <- dataset_post %>%
-  select(all_of(RESILIENCE_POST_ITEMS)) %>%
-  psych::alpha(check.keys = TRUE) %>%
+alpha_resilience_post <- dataset_post |>
+  select(all_of(RESILIENCE_POST_ITEMS)) |>
+  psych::alpha(check.keys = TRUE) |>
   extract2(c("total", "raw_alpha")) 
 
-alpha_social_support_post <- dataset_post %>%
-  select(all_of(SOCIAL_SUPPORT_POST_ITEMS)) %>%
-  psych::alpha(check.keys = TRUE) %>%
+alpha_social_support_post <- dataset_post |>
+  select(all_of(SOCIAL_SUPPORT_POST_ITEMS)) |>
+  psych::alpha(check.keys = TRUE) |>
   extract2(c("total", "raw_alpha")) 
 
-alpha_loneliness_post <- dataset_post %>%
-  select(all_of(LONELINESS_POST_ITEMS)) %>%
-  psych::alpha(check.keys = TRUE) %>%
+alpha_loneliness_post <- dataset_post |>
+  select(all_of(LONELINESS_POST_ITEMS)) |>
+  psych::alpha(check.keys = TRUE) |>
   extract2(c("total", "raw_alpha")) 
 
-alpha_disability_post <- dataset_post %>%
-  select(all_of(DISABILITY_POST_ITEMS)) %>%
-  psych::alpha(check.keys = TRUE) %>%
+alpha_disability_post <- dataset_post |>
+  select(all_of(DISABILITY_POST_ITEMS)) |>
+  psych::alpha(check.keys = TRUE) |>
   extract2(c("total", "raw_alpha")) 
 
-alpha_physical_activity_post <- dataset_post %>%
-  select(met1:met3) %>%
-  psych::alpha(check.keys = TRUE) %>%
+alpha_physical_activity_post <- dataset_post |>
+  select(met1:met3) |>
+  psych::alpha(check.keys = TRUE) |>
+  extract2(c("total", "raw_alpha")) 
+
+alpha_neuroticism_pre <- dataset_pre |> 
+  select(all_of(PERSONALITY_PRE_ITEMS |> head(6))) |> 
+  psych::alpha(check.keys = TRUE) |>
+  extract2(c("total", "raw_alpha")) 
+
+alpha_extraversion_pre <- dataset_pre |> 
+  select(all_of(PERSONALITY_PRE_ITEMS |> tail(6))) |> 
+  psych::alpha(check.keys = TRUE) |>
   extract2(c("total", "raw_alpha")) 
 
 # --Alpha data frame----
 
 reliability <- data.frame(
   name = str_replace(ls(pattern = "alpha_"), "alpha_",""),
-  alpha = unlist(mget(ls(pattern = "alpha_")), use.names = FALSE) %>% round(2)
+  alpha = unlist(mget(ls(pattern = "alpha_")), use.names = FALSE) |> round(2)
 )
