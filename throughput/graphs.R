@@ -55,7 +55,7 @@ library(magrittr)
     geom_errorbar(aes(ymin = lower, ymax = upper), 
                   position = position_dodge(.5), width = .2) + 
     theme(axis.title.x = element_blank()) +
-    # coord_cartesian(ylim = c(lim_inf, lim_sup)) +
+    coord_cartesian(ylim = c(lim_inf, lim_sup)) +
     # ggtitle("Lonelines Total") +   
     ylab("Loneliness") #+
     # theme(plot.title = element_text(hjust = 0.5, 
@@ -638,19 +638,25 @@ library(magrittr)
 
   # Add spacing between row subplots
   Spacing <- theme(plot.margin = unit(c(0,0,50,0), "pt"))
+  plot_total <- plot_total + Spacing
   plot_age %<>% + Spacing
   plot_sex %<>% + Spacing
   plot_marital %<>% + Spacing
   plot_ed %<>% + Spacing
   plot_material_pre %<>% + Spacing
-  plot_unemployment_post %<>% + Spacing
   
   # Plot merge 
+  # plots_sociod <- 
+  #   (plot_age + plot_sex) /
+  #   (plot_marital + plot_ed) /
+  #   (plot_material_pre + plot_unemployment_post) / 
+  #   (plot_econ_post + plot_spacer())
+  
   plots_sociod <- 
-    (plot_age + plot_sex) /
-    (plot_marital + plot_ed) /
-    (plot_material_pre + plot_unemployment_post) / 
-    (plot_econ_post + plot_spacer())
+    (plot_total + plot_age) /
+    (plot_sex + plot_marital) /
+    (plot_ed + plot_material_pre) / 
+    (plot_unemployment_post + plot_econ_post)
   
 ## ---- MERGE SOCIAL ASPECTS ---------------------------------
   
