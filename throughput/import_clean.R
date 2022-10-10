@@ -215,7 +215,7 @@ db_educ  %<>%
         q1016_highest == 3 |
           q1016_highest == 4 ~ "Secundary",
         q1016_highest >= 5 ~ "Tertiary"
-      ) %>% as_factor()
+      ) %>% as_factor() |> fct_relevel("Primary", after = 1)
     ,
     .keep = "unused"
   )
@@ -699,3 +699,74 @@ DB_graphs <- DB_pre_post %>%
 # CREATE DATABASE WITH LABELS BUT NO ASSIGN IT
 # DB_pre_post %>% labelled::look_for(details = "full")
 # DB_longer %>% labelled::look_for(details = "full")
+
+# Labels pre-post data
+
+var_names <- DB_pre_post |> variable.names() 
+var_names <- var_names[! var_names  %in% c("ID_ECS", "weights")]
+
+var_labels <- c(
+  "Age grouped",
+  "Sex", 
+  "Education level",
+  "Marital Status", 
+  "Virtual contact (During)",
+  "Social changes (During)",
+  "Economy Worsening (During)",
+  "Unemployment (During)",   
+  "Material Deprivation (Before)",
+  "Living Alone (During)",
+  "Physical activity (Before)",
+  "Physical activity (During)",
+  "Depression (Before)",
+  "Depression (During)",
+  "Neuroticism",
+  "Extraversion", 
+  "Disability (Before)",
+  "Disability (During)",
+  "Loneliness (Before)",
+  "Loneliness (During)",
+  "Resilience (During)",
+  "Social support (Before)",
+  "Social support (During)",
+  "Wellbeing (Before)"  
+)
+
+labels_pre_post <- 
+  data.frame(
+    var_names, 
+    var_labels
+  )
+
+# Labels pre-post data
+
+var_names <- DB_longer |> variable.names() 
+var_names <- var_names[! var_names  %in% c("ID_ECS", "weights", "Time")]
+
+var_labels <- c(
+  "Age grouped",
+  "Sex", 
+  "Education level",
+  "Marital Status", 
+  "Virtual contact (During)",
+  "Social changes (During)",
+  "Economy Worsening (During)",
+  "Unemployment (During)",   
+  "Material Deprivation (Before)",
+  "Living Alone (During)",
+  "Physical activity",
+  "Depression",
+  "Neuroticism",
+  "Extraversion",
+  "Disability",
+  "Loneliness",
+  "Resilience",
+  "Social support ",
+  "Wellbeing (Before)"
+)
+
+labels_longer <- 
+  data.frame(
+    var_names, 
+    var_labels
+  )
