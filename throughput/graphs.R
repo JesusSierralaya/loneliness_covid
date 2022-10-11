@@ -526,10 +526,6 @@ library(magrittr)
     guides(colour = guide_legend(title.position = "top", title.hjust = .5, nrow = 2)) +
     labs(color = "**Depression<br>(During)**")+
     scale_color_manual(values = group.colors) 
-  
-
- 
-  
 
 ## ---- NEUROTICISM PRE ----------------------------------------------------
   

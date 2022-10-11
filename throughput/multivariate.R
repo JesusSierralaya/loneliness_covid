@@ -87,7 +87,8 @@ fit_multi <-
     + disability_pre
     ) 
 
-tbl_multi <- fit_multi %>% 
+tbl_multi <- 
+  fit_multi %>% 
   tbl_regression(
     label = list(age ~ labels_pre_post[labels_pre_post == "age",2],
                  sex ~ labels_pre_post[labels_pre_post == "sex",2],
@@ -103,14 +104,19 @@ tbl_multi <- fit_multi %>%
                  extraversion_pre ~ labels_pre_post[labels_pre_post == "extraversion_pre",2],
                  disability_pre ~ labels_pre_post[labels_pre_post == "disability_pre",2]
                  ),
-    pvalue_fun = purrr::partial(style_sigfig, digits = 3)
+    # pvalue_fun = purrr::partial(style_sigfig, digits = 3),
+    pvalue_fun = function(x) style_pvalue(x, digits = 3),
+    show_single_row = c(economyworsened_post, unemployment_post,
+                        depression_pre, depression_post)
   ) |>
-  bold_p(t = 0.05) |>
-  add_vif()|>
-  add_global_p(keep = TRUE)  |> 
+  # add_global_p(keep = TRUE)  |> 
   add_q(
-    method = "bonferroni"
-  )
+    method = "bonferroni",
+    pvalue_fun = function(x) style_pvalue(x, digits = 3)
+  ) |> 
+  bold_p(t = 0.05, q = TRUE) |> 
+  add_vif()
+
 
 # Plot
 plot_multi <-
