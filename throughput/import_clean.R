@@ -94,15 +94,14 @@ db_filter <- full_join(filter_pre, filter_post, by = "ID_ECS")
 #                           "Ola_3/Cohorte_2019/Pesos/antiguos", "pesos_norm_v2.dta")
 
 PATH_WEIGHTS <- file.path(PATH_MASTER,
-                          "Ola_3/Cohorte_2019/Pesos/antiguos", "pesos_norm_1165_labels.dta")
+                          "Ola_3/Cohorte_2019/Pesos", "pesos_norm.dta")
 ### READ ---
 
 # db_weights <- PATH_WEIGHTS |>
 #   read_dta(col_select = c("ID_ECS", "wfinal_norm"))
 
 db_weights <- PATH_WEIGHTS |>
-  read_dta(col_select = c("id_ecs", "wfinal_norm")) |> 
-  rename(ID_ECS = id_ecs)
+  read_dta(col_select = c("ID_ECS", "wfinal_norm"))
 
 ### TRANSFORMATION ---
 
