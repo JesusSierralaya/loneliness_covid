@@ -6,12 +6,20 @@ author:
    affiliation: CCOMS-UAM
    affiliation-url: https://github.com/CCOMS-UAM
 date: today
-format: 
-  revealjs:
-    # footer: "Changes in loneliness during the first wave in Spain"
-    chalkboard: true
-    transition: slide
-    embed-resources: true
+# format: 
+#   revealjs:
+#     # footer: "Changes in loneliness during the first wave in Spain"
+#     slide-number: true
+#     transition: slide
+#     embed-resources: true
+format:
+  revealjs: 
+    slide-number: true
+    chalkboard: 
+      buttons: false
+    preview-links: auto
+    css: styles.css
+    footer: <https://www.ccomsuam.org>
 ---
 
 ## Loneliness
@@ -51,3 +59,5 @@ format:
 -   Baseline: From June 17, 2019 to May 14, 2020
 
 -   Follow-up: From May 21, 2020 to Jun 20, 2020
+
+![](images/paste-A0948446.png)
