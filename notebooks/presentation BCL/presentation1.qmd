@@ -16,39 +16,38 @@ format:
 
 ## Loneliness
 
-Quality and quantity of relationships desired
+-   Quality and quantity of relationships desired
 
-Sustained loneliness results in depression, sleep disturbances, cognitive decline, cardiovascular disease and risk-taking behaviors
+-   Sustained loneliness results in depression, sleep disturbances, cognitive decline, cardiovascular disease and risk-taking behaviors
 
 ## Loneliness in lockdown
 
-Social restrain due to COVID-19
+-   Social restrain due to COVID-19
 
-Is there a change in loneliness?
+-   Is there a change in loneliness?
 
-Other studies have different results but those do not have pandemic information (ad hoc questions)
-
+-   Other studies have different results but those do not have pandemic information (ad hoc questions)
 
 ## Difference in loneliness by group
 
-Risk factors: younger age, being woman, unemployment, financial concerns, pre-existing mental disorders, low sleep quality
+-   Risk factors: younger age, being woman, unemployment, financial concerns, pre-existing mental disorders, low sleep quality
 
-Protective factors: being married or in partnership, living with others, or a greater social support
+-   Protective factors: being married or in partnership, living with others, or a greater social support
 
 ## Aims
 
-Explore factor related with changes in loneliness
+-   Explore factor related with changes in loneliness
 
-Estimate a multivariate model that explain this change
+-   Estimate a multivariate model that explain this change
 
 # Method
 
 ## Sample
 
-Project: Edad con Salud
+-   Project: Edad con Salud
 
-n = 1002; 18+ from regions of Madrid and Barcelona
+-   n = 1002; 18+ from regions of Madrid and Barcelona
 
-Baseline: From June 17, 2019 to May 14, 2020
+-   Baseline: From June 17, 2019 to May 14, 2020
 
-Follow-up: From May 21, 2020 to Jun 20, 2020
+-   Follow-up: From May 21, 2020 to Jun 20, 2020
