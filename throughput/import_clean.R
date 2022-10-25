@@ -43,7 +43,7 @@ library(paint)
   # Path master directory
   PATH_MASTER <- 
     file.path(BASE_DIR, 
-              "marta.miret@uam.es - Bases de datos maestras Edad con Salud")
+              "Marta Miret Garcia - Bases de datos maestras Edad con Salud")
   # File pre
   PATH_FILE_PRE <- 
     file.path(PATH_MASTER, 
@@ -57,7 +57,7 @@ library(paint)
   
   PATH_OUTCOMES <- 
     file.path(BASE_DIR, 
-              "marta.miret@uam.es - Documentacion Edad con Salud")
+              "Marta Miret Garcia - Documentacion Edad con Salud")
   PATH_OUTCOMES_PRE <- 
     file.path(PATH_OUTCOMES, 
               "Edad con salud - Ola 3/Outcomes/Cohorte 2019/Outcome datasets")

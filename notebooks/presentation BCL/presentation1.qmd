@@ -14,21 +14,19 @@ date: today
 #     embed-resources: true
 format:
   revealjs: 
-    slide-number: true
-    chalkboard: 
-      buttons: false
     preview-links: auto
     css: styles.css
     footer: <https://www.ccomsuam.org>
+    slide-number: true
 ---
 
-## Loneliness
+### Loneliness
 
 -   Quality and quantity of relationships desired
 
 -   Sustained loneliness results in depression, sleep disturbances, cognitive decline, cardiovascular disease and risk-taking behaviors
 
-## Loneliness in lockdown
+### Loneliness in lockdown
 
 -   Social restrain due to COVID-19
 
@@ -36,17 +34,19 @@ format:
 
 -   Other studies have different results but those do not have pandemic information (ad hoc questions)
 
-## Difference in loneliness by group
+------------------------------------------------------------------------
 
--   Risk factors: younger age, being woman, unemployment, financial concerns, pre-existing mental disorders, low sleep quality
+### Difference in loneliness by group
 
--   Protective factors: being married or in partnership, living with others, or a greater social support
+-   **Risk factors**: younger age, being woman, unemployment, financial concerns, pre-existing mental disorders, low sleep quality
 
-## Aims
+-   **Protective factors**: being married or in partnership, living with others, or a greater social support
 
--   Explore factor related with changes in loneliness
+### Aims
 
--   Estimate a multivariate model that explain this change
+-   **Explore factors** related with changes in loneliness
+
+-   Estimate a **multivariate model** that explain this change
 
 # Method
 
@@ -60,4 +60,66 @@ format:
 
 -   Follow-up: From May 21, 2020 to Jun 20, 2020
 
-![](images/paste-A0948446.png)
+\[draw time-line\]
+
+## Measurements
+
+-   **Loneliness** UCLA (Pancho et al, 2020)
+
+### Sociodemographic covariates
+
+-   Age
+
+-   Sex
+
+-   Marital status
+
+-   Education level
+
+### Ad hoc COVID-questions
+
+-   Social relationship change
+
+-   Worsening in economy
+
+-   Living alone
+
+## Validated scales
+
+-   **Resilience** (Rodríguez-Rey et al., 2016)
+
+-   **Eysenck's personality traits** (Sandín et al., 2002)
+
+-   **Physical activity** (Armstrong y Bull, 2006)
+
+-   **Disability** (Luciano et al., 2010)
+
+-   **Anxiety** (Kessler & Üstun, 2004)
+
+-   **Panic** (Kessler & Üstun, 2004)
+
+-   **Depression** (Kessler & Üstun, 2004).
+
+# Results
+
+## Loneliness total
+
+<!-- Import and clean data -->
+
+```{r}
+#| file: ../../throughput/import_clean.R
+#| warning: false
+```
+
+<!-- Graphs -->
+
+```{r}
+#| file: ../../throughput/graphs.R
+#| warning: false
+#| message: false
+```
+
+```{r}
+plot_total + theme(text = element_text(size = 20))
+```
+
