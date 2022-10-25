@@ -202,7 +202,7 @@ library(magrittr)
              case_when(
                q1016_highest <= 1 ~ "No formal", 
                q1016_highest == 2 ~ "Primary", 
-               q1016_highest == 3 | q1016_highest == 4 ~ "Secundary",
+               q1016_highest == 3 | q1016_highest == 4 ~ "Secondary",
                q1016_highest >= 5 ~ "Tertiary") %>% as_factor()     
            , .keep = "unused"
            ) 
