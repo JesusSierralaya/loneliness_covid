@@ -23,6 +23,7 @@ library(labelled)
 library(readstata13)
 library(gt)
 library(magrittr)
+library(paint)
 
 # PARAMETERS -------------------------------------------------------------------
 
