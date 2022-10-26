@@ -48,16 +48,23 @@ library(magrittr)
   effects_total <- effect("Time", Fit_total) |> as.data.frame()
   
   # plot 
-  plot_total <- effects_total |>
+  plot_total <-
+    effects_total |>
     ggplot(aes(x = Time, y = fit)) + 
     # This stay the same
-    geom_point(position = position_dodge(.5)) + 
+    geom_point(position = position_dodge(.5), 
+               size = 5) + 
+    geom_line(group = 1, position = position_dodge(.5), 
+              size = 2) +
     geom_errorbar(aes(ymin = lower, ymax = upper), 
-                  position = position_dodge(.5), width = .2) + 
-    theme(axis.title.x = element_blank()) +
-    # coord_cartesian(ylim = c(lim_inf, lim_sup)) +
+                  position = position_dodge(.5), 
+                  width = .1,
+                  size = 2) + 
+    theme(axis.title = element_blank(),
+          text = element_text(size = 40)) +
+    coord_cartesian(ylim = c(lim_inf, lim_sup)) #+
     # ggtitle("Lonelines Total") +   
-    ylab("Loneliness") #+
+    # ylab("Loneliness") #+
     # theme(plot.title = element_text(hjust = 0.5, 
     #                                 face = "bold", 
     #                                 vjust = -7))
@@ -73,24 +80,27 @@ library(magrittr)
     as.data.frame() #|>
 
   # plot
-  plot_age <- effects_age_cat %>% 
+  plot_age <-
+    effects_age_cat %>% 
     ggplot(aes(x = Time, y = fit,
                group = age, color = age)) +
     # This stay the same
-    geom_point(position = position_dodge(.5)) +
-    geom_errorbar(aes(ymin = lower, ymax = upper),
-                  position = position_dodge(.5), width = .2) +
-    theme(legend.position = "top",
-          legend.title = element_markdown(),
-          axis.title.x = element_blank(),
-          # axis.title.y = element_blank(),
+    geom_point(position = position_dodge(.5), 
+               size = 5) + 
+    geom_line(position = position_dodge(.5), 
+              size = 2,
+              alpha = .5) +
+    geom_errorbar(aes(ymin = lower, ymax = upper), 
+                    position = position_dodge(.5), 
+                    width = .1,
+                    size = 2) + 
+    theme(axis.title = element_blank(),
+          text = element_text(size = 40),
+          legend.position = "top",
+          legend.title = element_blank(),
           legend.margin = margin(t = leg_dist)
     ) +
     coord_cartesian(ylim = c(lim_inf, lim_sup)) +
-    guides(colour = guide_legend(title.position = "top",
-                                 title.hjust = .5, nrow = 2)) +
-    labs(color = "**Age grouped**")  +
-    ylab("Loneliness") +
     scale_color_manual(values = group.colors)
 
 ## ---- SEX ----------------------------------------------------
@@ -106,19 +116,23 @@ library(magrittr)
   # plot
   plot_sex <- effects_sex |> 
     ggplot(aes(x = Time, y = fit, group = sex, color = sex)) + 
-    geom_point(position = position_dodge(.5)) + 
+    # This stay the same
+    geom_point(position = position_dodge(.5), 
+               size = 5) + 
+    geom_line(position = position_dodge(.5), 
+              size = 2,
+              alpha = .5) +
     geom_errorbar(aes(ymin = lower, ymax = upper), 
-                  position = position_dodge(.5), width = .2) + 
-    theme(legend.position = "top",
-          legend.title = element_markdown(),
-          axis.title.x = element_blank(),
-          axis.title.y = element_blank(),
+                  position = position_dodge(.5), 
+                  width = .1,
+                  size = 2) + 
+    theme(axis.title = element_blank(),
+          text = element_text(size = 40),
+          legend.position = "top",
+          legend.title = element_blank(),
           legend.margin = margin(t = leg_dist)
-    ) + 
-    coord_cartesian(ylim = c(lim_inf,lim_sup)) +
-    guides(colour = guide_legend(title.position = "top", 
-                                 title.hjust = .5, nrow = 2)) +
-    labs(color = "**Sex**")  +
+    ) +
+    coord_cartesian(ylim = c(lim_inf, lim_sup)) +
     scale_color_manual(values = group.colors)
 
 ## ---- EDUCACION LEVEL ----------------------------------------------------
@@ -137,19 +151,23 @@ library(magrittr)
     ggplot(aes(x = Time, y = fit, 
                group = educlevel, 
                color = educlevel)) + 
-    geom_point(position = position_dodge(.5)) + 
+    # This stay the same
+    geom_point(position = position_dodge(.5), 
+               size = 5) + 
+    geom_line(position = position_dodge(.5), 
+              size = 2,
+              alpha = .5) +
     geom_errorbar(aes(ymin = lower, ymax = upper), 
-                  position = position_dodge(.5), width = .2) + 
-    theme(legend.position = "top",
-          legend.title = element_markdown(),
-          axis.title.x = element_blank(),
-          axis.title.y = element_blank(),
+                  position = position_dodge(.5), 
+                  width = .1,
+                  size = 2) + 
+    theme(axis.title = element_blank(),
+          text = element_text(size = 40),
+          legend.position = "top",
+          legend.title = element_blank(),
           legend.margin = margin(t = leg_dist)
-    ) + 
-    coord_cartesian(ylim = c(lim_inf,lim_sup)) +
-    guides(colour = guide_legend(
-      title.position = "top", title.hjust = .5, nrow = 4)) +
-    labs(color = "**Education level**") +
+    ) +
+    coord_cartesian(ylim = c(lim_inf, lim_sup)) +
     scale_color_manual(values = group.colors)
 
 ## ---- MARITAL STATUS ----------------------------------------------------
@@ -169,20 +187,24 @@ library(magrittr)
     ggplot(aes(x = Time, y = fit, 
                group = maritalstatus, 
                color = maritalstatus)) +
-    geom_point(position = position_dodge(.5)) + 
+    # This stay the same
+    geom_point(position = position_dodge(.5), 
+               size = 5) + 
+    geom_line(position = position_dodge(.5), 
+              size = 2,
+              alpha = .5) +
     geom_errorbar(aes(ymin = lower, ymax = upper), 
-                  position = position_dodge(.5), width = .2) + 
-    theme(legend.position = "top",
-          legend.title = element_markdown(),
-          axis.title.x = element_blank(),
-          # axis.title.y = element_blank(),
+                  position = position_dodge(.5), 
+                  width = .1,
+                  size = 2) + 
+    theme(axis.title = element_blank(),
+          text = element_text(size = 40),
+          legend.position = "top",
+          legend.title = element_blank(),
           legend.margin = margin(t = leg_dist)
-    ) + 
-    coord_cartesian(ylim = c(lim_inf,lim_sup)) +
-    guides(colour = guide_legend(
-      title.position = "top", title.hjust = .5, nrow = 3)) +
-    labs(color = "**Marital status**") +
-    ylab("Loneliness") +
+    ) +
+    guides(colour = guide_legend(nrow = 3)) +
+    coord_cartesian(ylim = c(lim_inf, lim_sup)) +
     scale_color_manual(values = group.colors)
 
 ## ---- VIRTUAL CONTACT POST --------------------------------------------------
@@ -202,20 +224,24 @@ library(magrittr)
     ggplot(aes(x = Time, y = fit, 
                group = virtualcontact_post, 
                color = virtualcontact_post)) +
-    geom_point(position = position_dodge(.5)) + 
+    # This stay the same
+    geom_point(position = position_dodge(.5), 
+               size = 5) + 
+    geom_line(position = position_dodge(.5), 
+              size = 2,
+              alpha = .5) +
     geom_errorbar(aes(ymin = lower, ymax = upper), 
-                  position = position_dodge(.5), width = .2) + 
-    theme(legend.position = "top",
-          legend.title = element_markdown(),
-          axis.title.x = element_blank(),
-          # axis.title.y = element_blank(),
+                  position = position_dodge(.5), 
+                  width = .1,
+                  size = 2) + 
+    theme(axis.title = element_blank(),
+          text = element_text(size = 40),
+          legend.position = "top",
+          legend.title = element_blank(),
           legend.margin = margin(t = leg_dist)
-    ) + 
-    coord_cartesian(ylim = c(lim_inf,lim_sup)) +
-    guides(colour = guide_legend(
-      title.position = "top", title.hjust = .5, nrow = 4)) +
-    labs(color = "**Virtual Contact (During)**") +
-    ylab("Loneliness") +
+    ) +
+    guides(colour = guide_legend(nrow = 4)) +
+    coord_cartesian(ylim = c(lim_inf, lim_sup)) +
     scale_color_manual(values = group.colors)
 
 ## ---- SOCIAL CHANGES POST (SOLO3) --------------------------------------
@@ -236,20 +262,24 @@ library(magrittr)
     ggplot(aes(x = Time, y = fit, 
                group = socialchanges_post, 
                color = socialchanges_post)) + 
-    geom_point(position = position_dodge(.5)) + 
+    # This stay the same
+    geom_point(position = position_dodge(.5), 
+               size = 5) + 
+    geom_line(position = position_dodge(.5), 
+              size = 2,
+              alpha = .5) +
     geom_errorbar(aes(ymin = lower, ymax = upper), 
-                  position = position_dodge(.5), width = .2) + 
-    theme(legend.position = "top",
-          legend.title = element_markdown(),
-          axis.title.x = element_blank(),
-          # axis.title.y = element_blank(),
+                  position = position_dodge(.5), 
+                  width = .1,
+                  size = 2) + 
+    theme(axis.title = element_blank(),
+          text = element_text(size = 40),
+          legend.position = "top",
+          legend.title = element_blank(),
           legend.margin = margin(t = leg_dist)
-    ) + 
-    coord_cartesian(ylim = c(lim_inf,lim_sup)) +
-    guides(colour = guide_legend(title.position = "top", 
-                                 title.hjust = .5, ncol = 1)) +
-    labs(color = "**Social Changes (During)**") +
-    ylab("Loneliness") +
+    ) +
+    # guides(colour = guide_legend(nrow = 4)) +
+    coord_cartesian(ylim = c(lim_inf, lim_sup)) +
     scale_color_manual(values = group.colors)
   
   
@@ -273,22 +303,25 @@ library(magrittr)
                group = economyworsened_post, 
                color = economyworsened_post)) +
     # This stay the same
-    geom_point(position = position_dodge(.5)) +
-    geom_errorbar(aes(ymin = lower, ymax = upper),
-                  position = position_dodge(.5), width = .2) +
-    theme(legend.position = "top",
-          legend.title = element_markdown(),
-          axis.title.x = element_blank(),
-          axis.title.y = element_blank(),
+    geom_point(position = position_dodge(.5), 
+               size = 5) + 
+    geom_line(position = position_dodge(.5), 
+              size = 2,
+              alpha = .5) +
+    geom_errorbar(aes(ymin = lower, ymax = upper), 
+                  position = position_dodge(.5), 
+                  width = .1,
+                  size = 2) + 
+    theme(axis.title = element_blank(),
+          text = element_text(size = 40),
+          legend.position = "top",
+          legend.title = element_blank(),
           legend.margin = margin(t = leg_dist)
-    ) + 
-    coord_cartesian(ylim = c(lim_inf,lim_sup)) +
-    guides(colour = guide_legend(title.position = "top", 
-                                 title.hjust = .5, ncol = 1)) +
-    labs(color = "**Economy Worsening (During)**") +
-    ylab("Loneliness") +
+    ) +
+    # guides(colour = guide_legend(nrow = 4)) +
+    coord_cartesian(ylim = c(lim_inf, lim_sup)) +
     scale_color_manual(values = group.colors)
-
+  
 ## ---- UNEMPLOYMENT POST ----------------------------------------------
   
   # Fit 
@@ -308,19 +341,23 @@ library(magrittr)
                group = unemployment_post, 
                color = unemployment_post)) +
     # This stay the same
-    geom_point(position = position_dodge(.5)) +
-    geom_errorbar(aes(ymin = lower, ymax = upper),
-                  position = position_dodge(.5), width = .2) +
-    theme(legend.position = "top",
-          legend.title = element_markdown(),
-          axis.title.x = element_blank(),
-          axis.title.y = element_blank(),
+    geom_point(position = position_dodge(.5), 
+               size = 5) + 
+    geom_line(position = position_dodge(.5), 
+              size = 2,
+              alpha = .5) +
+    geom_errorbar(aes(ymin = lower, ymax = upper), 
+                  position = position_dodge(.5), 
+                  width = .1,
+                  size = 2) + 
+    theme(axis.title = element_blank(),
+          text = element_text(size = 40),
+          legend.position = "top",
+          legend.title = element_blank(),
           legend.margin = margin(t = leg_dist)
-    ) + 
-    coord_cartesian(ylim = c(lim_inf,lim_sup)) +
-    guides(colour = guide_legend(title.position = "top", 
-                                 title.hjust = .5, ncol = 1)) +
-    labs(color = "**Unemployment (During)**") +
+    ) +
+    # guides(colour = guide_legend(nrow = 4)) +
+    coord_cartesian(ylim = c(lim_inf, lim_sup)) +
     scale_color_manual(values = group.colors)
 
 ## ---- MATERIAL DEPRIVATION --------------------------------------------------
@@ -342,20 +379,23 @@ library(magrittr)
                group = materialdeprivation_pre, 
                color = materialdeprivation_pre)) +
     # This stay the same
-    geom_point(position = position_dodge(.5)) +
-    geom_errorbar(aes(ymin = lower, ymax = upper),
-                  position = position_dodge(.5), width = .2) +
-    theme(legend.position = "top",
-          legend.title = element_markdown(),
-          axis.title.x = element_blank(),
-          # axis.title.y = element_blank(),
+    geom_point(position = position_dodge(.5), 
+               size = 5) + 
+    geom_line(position = position_dodge(.5), 
+              size = 2,
+              alpha = .5) +
+    geom_errorbar(aes(ymin = lower, ymax = upper), 
+                  position = position_dodge(.5), 
+                  width = .1,
+                  size = 2) + 
+    theme(axis.title = element_blank(),
+          text = element_text(size = 40),
+          legend.position = "top",
+          legend.title = element_blank(),
           legend.margin = margin(t = leg_dist)
-    ) + 
-    coord_cartesian(ylim = c(lim_inf,lim_sup)) +
-    guides(colour = guide_legend(title.position = "top", 
-                                 title.hjust = .5, ncol = 1)) +
-    labs(color = "**Material<br>Deprivation  (Before)**") +
-    ylab("Loneliness") +
+    ) +
+    # guides(colour = guide_legend(nrow = 4)) +
+    coord_cartesian(ylim = c(lim_inf, lim_sup)) +
     scale_color_manual(values = group.colors)
   
 ## ---- LIVING ALONE POST ----------------------------------------------------
@@ -376,21 +416,25 @@ library(magrittr)
     ggplot(aes(x = Time, y = fit, 
                group = livingalone_post, 
                color = livingalone_post)) + 
-    geom_point(position = position_dodge(.5)) + 
+    # This stay the same
+    geom_point(position = position_dodge(.5), 
+               size = 5) + 
+    geom_line(position = position_dodge(.5), 
+              size = 2,
+              alpha = .5) +
     geom_errorbar(aes(ymin = lower, ymax = upper), 
-                  position = position_dodge(.5), width = .2) + 
-    theme(legend.position = "top",
-          legend.title = element_markdown(),
-          axis.title.x = element_blank(),
-          # axis.title.y = element_blank(),
+                  position = position_dodge(.5), 
+                  width = .1,
+                  size = 2) + 
+    theme(axis.title = element_blank(),
+          text = element_text(size = 40),
+          legend.position = "top",
+          legend.title = element_blank(),
           legend.margin = margin(t = leg_dist)
-    ) + 
+    ) +
+    # guides(colour = guide_legend(nrow = 4)) +
     coord_cartesian(ylim = c(lim_inf, lim_sup)) +
-    guides(colour = guide_legend(title.position = "top", 
-                                 title.hjust = .5, nrow = 2)) +
-    labs(color = "**Living Alone<br>(During)**")+
-    ylab("Loneliness") +
-    scale_color_manual(values = group.colors)  
+    scale_color_manual(values = group.colors)
 
 ## ---- PHYSICAL ACTIVITY PRE ----------------------------------------
   
@@ -410,21 +454,25 @@ library(magrittr)
     ggplot(aes(x = Time, y = fit,
                group = physicalactivity_pre, 
                color = physicalactivity_pre)) + 
-    geom_point(position = position_dodge(.5)) + 
+    # This stay the same
+    geom_point(position = position_dodge(.5), 
+               size = 5) + 
+    geom_line(position = position_dodge(.5), 
+              size = 2,
+              alpha = .5) +
     geom_errorbar(aes(ymin = lower, ymax = upper), 
-                  position = position_dodge(.5), width = .2) + 
-    theme(legend.position = "top",
-          legend.title = element_markdown(),
-          axis.title.x = element_blank(),
-          # axis.title.y = element_blank(),
+                  position = position_dodge(.5), 
+                  width = .1,
+                  size = 2) + 
+    theme(axis.title = element_blank(),
+          text = element_text(size = 40),
+          legend.position = "top",
+          legend.title = element_blank(),
           legend.margin = margin(t = leg_dist)
-    ) + 
+    ) +
+    # guides(colour = guide_legend(nrow = 4)) +
     coord_cartesian(ylim = c(lim_inf, lim_sup)) +
-    guides(colour = guide_legend(title.position = "top", 
-                                 title.hjust = .5, ncol = 1)) +
-    labs(color = "**Physical Activity<br>(During)**")+
-    ylab("Loneliness") +
-    scale_color_manual(values = group.colors) 
+    scale_color_manual(values = group.colors)
   
 ## ---- PHYSICAL ACTIVITY PRE ----------------------------------------
   
@@ -444,21 +492,25 @@ library(magrittr)
     ggplot(aes(x = Time, y = fit,
                group = physicalactivity_post, 
                color = physicalactivity_post)) + 
-    geom_point(position = position_dodge(.5)) + 
+    # This stay the same
+    geom_point(position = position_dodge(.5), 
+               size = 5) + 
+    geom_line(position = position_dodge(.5), 
+              size = 2,
+              alpha = .5) +
     geom_errorbar(aes(ymin = lower, ymax = upper), 
-                  position = position_dodge(.5), width = .2) + 
-    theme(legend.position = "top",
-          legend.title = element_markdown(),
-          axis.title.x = element_blank(),
-          # axis.title.y = element_blank(),
+                  position = position_dodge(.5), 
+                  width = .1,
+                  size = 2) + 
+    theme(axis.title = element_blank(),
+          text = element_text(size = 40),
+          legend.position = "top",
+          legend.title = element_blank(),
           legend.margin = margin(t = leg_dist)
-    ) + 
+    ) +
+    # guides(colour = guide_legend(nrow = 4)) +
     coord_cartesian(ylim = c(lim_inf, lim_sup)) +
-    guides(colour = guide_legend(title.position = "top", 
-                                 title.hjust = .5, ncol = 1)) +
-    labs(color = "**Physical Activity<br>(During)**")+
-    ylab("Loneliness") +
-    scale_color_manual(values = group.colors) 
+    scale_color_manual(values = group.colors)
   
 ## ---- DEPRESSION PRE --------------------------------------------
   
@@ -479,20 +531,25 @@ library(magrittr)
     ggplot(aes(x = Time, y = fit, 
                group = depression_pre, 
                color = depression_pre)) + 
-    geom_point(position = position_dodge(.5)) + 
+    # This stay the same
+    geom_point(position = position_dodge(.5), 
+               size = 5) + 
+    geom_line(position = position_dodge(.5), 
+              size = 2,
+              alpha = .5) +
     geom_errorbar(aes(ymin = lower, ymax = upper), 
-                  position = position_dodge(.5), width = .2) + 
-    theme(legend.position = "top",
-          legend.title = element_markdown(),
-          axis.title.x = element_blank(),
-          axis.title.y = element_blank(),
+                  position = position_dodge(.5), 
+                  width = .1,
+                  size = 2) + 
+    theme(axis.title = element_blank(),
+          text = element_text(size = 40),
+          legend.position = "top",
+          legend.title = element_blank(),
           legend.margin = margin(t = leg_dist)
-    ) + 
-    coord_cartesian(ylim = c(lim_inf,lim_sup)) +
-    guides(colour = guide_legend(title.position = "top", 
-                                 title.hjust = .5, nrow = 2)) +
-    labs(color = "**Depression<br>(Before)**")+
-    scale_color_manual(values = group.colors) 
+    ) +
+    # guides(colour = guide_legend(nrow = 4)) +
+    coord_cartesian(ylim = c(lim_inf, lim_sup)) +
+    scale_color_manual(values = group.colors)
   
 ## ---- DEPRESSION POST --------------------------------------------
   
@@ -513,22 +570,25 @@ library(magrittr)
     ggplot(aes(x = Time, y = fit, 
                group = depression_post, 
                color = depression_post)) + 
-    geom_point(position = position_dodge(.5)) + 
+    # This stay the same
+    geom_point(position = position_dodge(.5), 
+               size = 5) + 
+    geom_line(position = position_dodge(.5), 
+              size = 2,
+              alpha = .5) +
     geom_errorbar(aes(ymin = lower, ymax = upper), 
-                  position = position_dodge(.5), width = .2) + 
-    theme(legend.position = "top",
-          legend.title = element_markdown(),
-          axis.title.x = element_blank(),
-          axis.title.y = element_blank(),
+                  position = position_dodge(.5), 
+                  width = .1,
+                  size = 2) + 
+    theme(axis.title = element_blank(),
+          text = element_text(size = 40),
+          legend.position = "top",
+          legend.title = element_blank(),
           legend.margin = margin(t = leg_dist)
-    ) + 
-    coord_cartesian(ylim = c(lim_inf,lim_sup)) +
-    guides(colour = guide_legend(title.position = "top", title.hjust = .5, nrow = 2)) +
-    labs(color = "**Depression<br>(During)**")+
-    scale_color_manual(values = group.colors) 
-  
-
- 
+    ) +
+    # guides(colour = guide_legend(nrow = 4)) +
+    coord_cartesian(ylim = c(lim_inf, lim_sup)) +
+    scale_color_manual(values = group.colors)
   
 
 ## ---- NEUROTICISM PRE ----------------------------------------------------
@@ -538,9 +598,22 @@ library(magrittr)
     ggplot(aes(x = neuroticism_pre, 
                y = loneliness, 
                color = Time)) + 
-    geom_smooth(formula = "y ~ x", method = "lm") +
+    geom_smooth(formula = "y ~ x", method = "lm",
+                aes(weight = weights), 
+                size = 2) +
+    # Copy from here
     scale_color_manual(values = group.colors) +
-    xlab("Neuroticism") + ylab("Loneliness") +
+    # xlab("Neuroticism") + 
+    # ylab("Loneliness") +
+    # coord_cartesian(ylim = c(lim_inf, lim_sup)) 
+    # This stay the same
+    theme(axis.title = element_blank(),
+          text = element_text(size = 40),
+          legend.position = "bottom",
+          legend.title = element_blank(),
+          legend.margin = margin(t = leg_dist)
+    ) +
+    # guides(colour = guide_legend(nrow = 4)) +
     coord_cartesian(ylim = c(lim_inf, lim_sup)) 
   
   
@@ -550,9 +623,17 @@ library(magrittr)
     ggplot(aes(x = extraversion_pre, # [Change here]
                y = loneliness,
                color = Time)) + 
-    geom_smooth(formula = "y ~ x", method = "lm") +
+    geom_smooth(formula = "y ~ x", method = "lm",
+                aes(weight = weights),
+                size = 2) +
+    # Copy from here
     scale_color_manual(values = group.colors) +
-    xlab("Extraversion") + ylab("Loneliness") +
+    theme(axis.title = element_blank(),
+          text = element_text(size = 40),
+          legend.position = "bottom",
+          legend.title = element_blank(),
+          legend.margin = margin(t = leg_dist)
+    ) +
     coord_cartesian(ylim = c(lim_inf, lim_sup)) 
   
 ## ---- DISABILITY PRE ----------------------------------------------------
@@ -562,9 +643,17 @@ library(magrittr)
     ggplot(aes(x = disability_pre,
                y = loneliness, 
                color = Time)) + 
-    geom_smooth(formula = "y ~ x", method = "lm") +
+    # Copy from here
+    geom_smooth(formula = "y ~ x", method = "lm",
+                aes(weight = weights),
+                size = 2) +
     scale_color_manual(values = group.colors) +
-    xlab("Disability (Before)") + ylab("Loneliness") +
+    theme(axis.title = element_blank(),
+          text = element_text(size = 40),
+          legend.position = "bottom",
+          legend.title = element_blank(),
+          legend.margin = margin(t = leg_dist)
+    ) +
     coord_cartesian(ylim = c(lim_inf, lim_sup)) 
 
 
@@ -575,9 +664,17 @@ library(magrittr)
     ggplot(aes(x = disability_post,
                y = loneliness, 
                color = Time)) + 
-    geom_smooth(formula = "y ~ x", method = "lm") +
+    # Copy from here
+    geom_smooth(formula = "y ~ x", method = "lm",
+                aes(weight = weights),
+                size = 2) +
     scale_color_manual(values = group.colors) +
-    xlab("Disability (During)") + ylab("Loneliness") +
+    theme(axis.title = element_blank(),
+          text = element_text(size = 40),
+          legend.position = "bottom",
+          legend.title = element_blank(),
+          legend.margin = margin(t = leg_dist)
+    ) +
     coord_cartesian(ylim = c(lim_inf, lim_sup)) 
 
 ## ---- RESILIENCE POST ----------------------------------------------------
@@ -587,9 +684,17 @@ library(magrittr)
     ggplot(aes(x = resilience_post,
                y = loneliness, 
                color = Time)) + 
-    geom_smooth(formula = "y ~ x", method = "lm") +
+    # Copy from here
+    geom_smooth(formula = "y ~ x", method = "lm",
+                aes(weight = weights),
+                size = 2) +
     scale_color_manual(values = group.colors) +
-    xlab("Resilience (During)") + ylab("Loneliness") +
+    theme(axis.title = element_blank(),
+          text = element_text(size = 40),
+          legend.position = "bottom",
+          legend.title = element_blank(),
+          legend.margin = margin(t = leg_dist)
+    ) +
     coord_cartesian(ylim = c(lim_inf, lim_sup)) 
 
 ## ---- SOCIAL SUPPORT PRE -------------------------------------------------
@@ -599,9 +704,17 @@ library(magrittr)
     ggplot(aes(x = socialsupport_pre,
                y = loneliness, 
                color = Time)) + 
-    geom_smooth(formula = "y ~ x", method = "lm") +
+    # Copy from here
+    geom_smooth(formula = "y ~ x", method = "lm",
+                aes(weight = weights),
+                size = 2) +
     scale_color_manual(values = group.colors) +
-    xlab("Social Support (Before)") + ylab("Loneliness") +
+    theme(axis.title = element_blank(),
+          text = element_text(size = 40),
+          legend.position = "bottom",
+          legend.title = element_blank(),
+          legend.margin = margin(t = leg_dist)
+    ) +
     coord_cartesian(ylim = c(lim_inf, lim_sup)) 
 
 ## ---- SOCIAL SUPPORT POST -------------------------------------------------
@@ -611,9 +724,17 @@ library(magrittr)
     ggplot(aes(x = socialsupport_post,
                y = loneliness, 
                color = Time)) + 
-    geom_smooth(formula = "y ~ x", method = "lm") +
+    # Copy from here
+    geom_smooth(formula = "y ~ x", method = "lm",
+                aes(weight = weights),
+                size = 2) +
     scale_color_manual(values = group.colors) +
-    xlab("Social Support (During)") + ylab("Loneliness") +
+    theme(axis.title = element_blank(),
+          text = element_text(size = 40),
+          legend.position = "bottom",
+          legend.title = element_blank(),
+          legend.margin = margin(t = leg_dist)
+    ) +
     coord_cartesian(ylim = c(lim_inf, lim_sup)) 
   
 ## ---- WELLBEING CANTRIL PRE -------------------------------------------------
@@ -623,16 +744,20 @@ library(magrittr)
     ggplot(aes(x = wellbeingcantril_pre,
                y = loneliness, 
                color = Time)) + 
-    geom_smooth(formula = "y ~ x", method = "lm") +
+    # Copy from here
+    geom_smooth(formula = "y ~ x", method = "lm",
+                aes(weight = weights),
+                size = 2) +
     scale_color_manual(values = group.colors) +
-    xlab("Wellbeing Cantril (Before)") + ylab("Loneliness") +
+    theme(axis.title = element_blank(),
+          text = element_text(size = 40),
+          legend.position = "bottom",
+          legend.title = element_blank(),
+          legend.margin = margin(t = leg_dist)
+    ) +
     coord_cartesian(ylim = c(lim_inf, lim_sup)) 
   
-  
 
-# LONELINESS TOTAL
-  
-# plot_total
   
 ## ---- MERGE SOCIODEMOGRAPHICS ---------------------------------
 

@@ -123,3 +123,153 @@ format:
 plot_total 
 ```
 
+## Loneliness by Age
+
+```{r}
+plot_age
+```
+
+## Loneliness by Sex
+
+```{r}
+plot_sex
+```
+
+## Loneliness by Education level reached
+
+```{r}
+plot_ed
+```
+
+## Loneliness by Marital Status
+
+```{r}
+plot_marital
+```
+
+## Loneliness by Virtual Contact
+
+```{r}
+plot_virtual
+```
+
+## Loneliness by Social Changes
+
+```{r}
+plot_social_changes
+```
+
+## Loneliness by Economy Worsened
+
+```{r}
+plot_econ_post
+```
+
+## Loneliness by Unemployment
+
+```{r}
+plot_unemployment_post
+```
+
+## Loneliness by Living Alone
+
+```{r}
+plot_livingalone_post
+```
+
+## Loneliness by Physical Activity (measured before)
+
+```{r}
+plot_physicalactivity_pre
+```
+
+## Loneliness by Physical Activity (measured during)
+
+```{r}
+plot_physicalactivity_post
+```
+
+## Loneliness by Depression (measured before)
+
+```{r}
+plot_depression_pre
+
+```
+
+## Loneliness by Depression (measured during)
+
+```{r}
+plot_depression_post
+```
+
+## Loneliness by Neuroticism 
+
+```{r}
+plot_neuroticism_pre
+```
+
+## Loneliness by Extraversion
+
+```{r}
+plot_extraversion_pre
+```
+
+## Loneliness by Disability (measured before)
+
+```{r}
+plot_disability_pre
+```
+
+## Loneliness by Disability (measured during)
+
+```{r}
+plot_disability_post
+```
+
+## Loneliness by Resilience
+
+```{r}
+plot_resilience_post
+```
+
+## Loneliness by Social Support (measured before)
+
+```{r}
+plot_socialsupport_pre
+```
+
+## Loneliness by Social Support (measured during)
+
+```{r}
+plot_socialsupport_post
+```
+
+## Loneliness by Wellbeing
+
+```{r}
+plot_wellbeingcantril_pre
+```
+
+# Multivariate analysis
+
+## {.scrollable}
+
+<!-- Multi -->
+
+```{r}
+#| file: ../../throughput/multivariate.R
+#| warning: false
+#| message: false
+```
+
+```{r}
+#| echo: false
+
+png("plot_m.png")
+plot_multi
+dev.off()
+```
+
+![](plot_m.png){.absolute top=0 left=0 width="700" height="1000"}
+
+
