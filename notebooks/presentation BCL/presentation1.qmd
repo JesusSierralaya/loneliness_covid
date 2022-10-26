@@ -120,6 +120,6 @@ format:
 ```
 
 ```{r}
-plot_total + theme(text = element_text(size = 20))
+plot_total 
 ```
 
