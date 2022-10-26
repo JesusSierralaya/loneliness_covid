@@ -1,3 +1,5 @@
+NEW BRANCH SLIDES-BCL
+
 # Before and during the lockdown, who were the loneliest people in Spain?
 
 We evaluate the changes in loneliness before and during the first wave. We study the factors associated with these potential changes.
