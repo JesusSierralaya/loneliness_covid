@@ -1,0 +1,36 @@
+---
+title: "Who were the loneliest in the  COVID-19 pandemic?"
+author: 
+ - name: "Jesus Sierralaya"
+format:
+  pptx:
+    slide-number: true
+---
+
+## Sample 
+
+n = 1002 (+18 from Madrid and Barcelona)
+
+[graph cases by 2 samples]
+
+## Conclusion
+
+- Risk factors
+
+- Protective factors
+
+## Changes in loneliness during lockdown
+
+
+
+## Prediction
+
+
+
+## Note
+
+- Data pending for publication. Please do not copy or distribute.
+
+- For more information contact: <jesus.sierralaya@inv.uam.es>
+
+
