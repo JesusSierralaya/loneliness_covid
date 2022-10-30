@@ -1,0 +1,10 @@
+---
+title: "Who were the loneliest in the  COVID-19 pandemic?"
+format: pptx
+---
+
+## Sample
+
+n = 1002 (+18 from Madrid and Barcelona)
+
+
