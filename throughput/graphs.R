@@ -21,8 +21,8 @@ library(magrittr)
 ## ---- PRE-PROCESS: -----------------------------------------------------------
 
   # Axis limits
-  lim_inf <- 3.1
-  lim_sup <- 6.5
+  lim_inf <- 3
+  lim_sup <- 6
   
   # Legend 
   leg_dist <- 0
@@ -73,25 +73,34 @@ library(magrittr)
     as.data.frame() #|>
 
   # plot
-  plot_age <- effects_age_cat %>% 
+  # plot_age <- effects_age_cat %>% 
+  #   ggplot(aes(x = Time, y = fit,
+  #              group = age, color = age)) +
+  #   # This stay the same
+  #   geom_point(position = position_dodge(.5)) +
+  #   geom_errorbar(aes(ymin = lower, ymax = upper),
+  #                 position = position_dodge(.5), width = .2) +
+  #   theme(legend.position = "top",
+  #         legend.title = element_markdown(),
+  #         axis.title.x = element_blank(),
+  #         # axis.title.y = element_blank(),
+  #         legend.margin = margin(t = leg_dist)
+  #   ) +
+  #   coord_cartesian(ylim = c(lim_inf, lim_sup)) +
+  #   guides(colour = guide_legend(title.position = "top",
+  #                                title.hjust = .5, nrow = 2)) +
+  #   labs(color = "**Age grouped**")  +
+  #   ylab("Loneliness") +
+  #   scale_color_manual(values = group.colors)
+  
+  plot_age <-
+    effects_age_cat %>% 
     ggplot(aes(x = Time, y = fit,
                group = age, color = age)) +
-    # This stay the same
-    geom_point(position = position_dodge(.5)) +
-    geom_errorbar(aes(ymin = lower, ymax = upper),
-                  position = position_dodge(.5), width = .2) +
-    theme(legend.position = "top",
-          legend.title = element_markdown(),
-          axis.title.x = element_blank(),
-          # axis.title.y = element_blank(),
-          legend.margin = margin(t = leg_dist)
-    ) +
     coord_cartesian(ylim = c(lim_inf, lim_sup)) +
-    guides(colour = guide_legend(title.position = "top",
-                                 title.hjust = .5, nrow = 2)) +
-    labs(color = "**Age grouped**")  +
-    ylab("Loneliness") +
-    scale_color_manual(values = group.colors)
+    # This stay the same
+    geom_point() +
+    geom_line()
 
 ## ---- SEX ----------------------------------------------------
 

@@ -7,4 +7,37 @@ format: pptx
 
 n = 1002 (+18 from Madrid and Barcelona)
 
+[Graph cases and sample]
 
+-   Baseline: From June 17, 2019 to May 14, 2020
+
+-   Follow-up: From May 21, 2020 to Jun 20, 2020
+
+## Changes in loneliness during lockdown
+
+<!-- Import and clean data -->
+
+```{r}
+#| file: ../../throughput/import_clean.R
+#| warning: false
+```
+
+<!-- Load Graphs -->
+
+```{r}
+#| file: ../../throughput/graphs.R
+#| warning: false
+#| message: false
+```
+
+<!-- Test -->
+
+```{r}
+plot_age
+```
+
+## Notes
+
+- Data pending for publication. Please do not copy or distribute.
+
+- For more information contact: <jesus.sierralaya@inv.uam.es>
