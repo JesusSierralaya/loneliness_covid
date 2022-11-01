@@ -3,7 +3,7 @@ title: "Who were the loneliest in the  COVID-19 pandemic?"
 format: pptx
 ---
 
-## Sample
+## Hello Imelda!
 
 n = 1002 (+18 from Madrid and Barcelona)
 
@@ -36,7 +36,7 @@ n = 1002 (+18 from Madrid and Barcelona)
 plot_age
 ```
 
-## Notes
+## Note information
 
 - Data pending for publication. Please do not copy or distribute.
 
