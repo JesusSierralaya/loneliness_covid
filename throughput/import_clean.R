@@ -31,9 +31,6 @@ library(magrittr)
 # Remove all objects
 rm(list = ls())
 
-# Prevent the warnings
-options(warn=-1)
-
 ## PATHS BASES ------------
 
 # Base directory 
