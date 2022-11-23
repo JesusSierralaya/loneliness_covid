@@ -13,6 +13,8 @@
 # library(here)
 library(gtsummary)
 
+source("throughput/import_clean.R", encoding = 'UTF-8')
+
 ## ---- TABLE 1: --------------------------------------------------------------
 
 tbl_descriptive <- DB_longer %>% 

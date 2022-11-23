@@ -16,6 +16,8 @@ library(sjPlot)
 library(survey)
 library(magrittr)
 
+source("throughput/import_clean.R", encoding = 'UTF-8')
+
 ## ---- UNIVARIATE: ------------------------------------------------------------
 
 # Reference level by group

@@ -18,6 +18,8 @@ library(ggtext)
 library(patchwork)
 library(magrittr)
 
+source("throughput/import_clean.R", encoding = 'UTF-8')
+
 ## ---- PRE-PROCESS: -----------------------------------------------------------
 
 # Axis limits
