@@ -23,6 +23,7 @@ library(labelled)
 library(readstata13)
 library(gt)
 library(magrittr)
+library(ecs.data)
 
 # PARAMETERS -------------------------------------------------------------------
 
@@ -33,13 +34,9 @@ rm(list = ls())
 
 ## PATHS BASES ------------
 
-# Base directory 
-BASE_DIR <- "~/../../UAM"
-
 # Path master directory
-PATH_MASTER <- 
-  file.path(BASE_DIR, 
-            "Marta Miret Garcia - Bases de datos maestras Edad con Salud")
+PATH_MASTER <- read_ecs_folder("DB")
+
 # File pre
 PATH_FILE_PRE <- 
   file.path(PATH_MASTER, 
@@ -51,9 +48,7 @@ PATH_FILE_POST <-
 
 # Covariates outcomes base paths
 
-PATH_OUTCOMES <- 
-  file.path(BASE_DIR, 
-            "Marta Miret Garcia - Documentacion Edad con Salud")
+PATH_OUTCOMES <- read_ecs_folder("DOC")
 PATH_OUTCOMES_PRE <- 
   file.path(PATH_OUTCOMES, 
             "Edad con salud - Ola 3/Outcomes/Cohorte 2019/Outcome datasets")
