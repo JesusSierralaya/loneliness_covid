@@ -185,27 +185,27 @@ library(magrittr)
   
   ## EDUCATIONAL LEVEL -------------------------------------------------------
   
-  ### PATH ---
-  
-  # PATH_FILE_PRE
-  
-  ### READ ---
-  
-  db_educ <- PATH_FILE_PRE %>%
-    read_dta(col_select = all_of(c("ID_ECS", # Id
-                                   "q1016_highest")))
-  
-  ### TRANSFORMATION ---
-  
-  db_educ  %<>% 
-    mutate(educlevel =
-             case_when(
-               q1016_highest <= 1 ~ "No formal", 
-               q1016_highest == 2 ~ "Primary", 
-               q1016_highest == 3 | q1016_highest == 4 ~ "Secondary",
-               q1016_highest >= 5 ~ "Tertiary") %>% as_factor()     
-           , .keep = "unused"
-           ) 
+    ### PATH ---
+    
+    # PATH_FILE_PRE
+    
+    ### READ ---
+    
+    db_educ <- PATH_FILE_PRE %>%
+      read_dta(col_select = all_of(c("ID_ECS", # Id
+                                     "q1016_highest")))
+    
+    ### TRANSFORMATION ---
+    
+    db_educ  %<>% 
+      mutate(educlevel =
+               case_when(
+                 q1016_highest <= 1 ~ "No formal", 
+                 q1016_highest == 2 ~ "Primary", 
+                 q1016_highest == 3 | q1016_highest == 4 ~ "Secondary",
+                 q1016_highest >= 5 ~ "Tertiary") %>% as_factor()     
+             , .keep = "unused"
+             ) 
   
   ## MARITAL STATUS PRE -------------------------------------------------------
   
@@ -466,6 +466,115 @@ library(magrittr)
     
     # none
 
+  ## PHYSICAL ACTIVITY PRE-POST ---------------------------------------------
+    
+    ### PATH ---
+    
+    PATH_PRE_PHYSICAL <- file.path(PATH_OUTCOMES_PRE,
+                                   "Outcome_physicalactivity.dta")
+    PATH_POST_PHYSICAL <- file.path(PATH_OUTCOMES_POST,
+                                    "Outcome_physical_activity.dta")
+    
+    ### READ ---
+    
+    physical_pre <- PATH_PRE_PHYSICAL %>%
+      read.dta13(select.cols = all_of(c("ID_ECS", "physical")))
+    
+    physical_post <- PATH_POST_PHYSICAL %>%
+      read.dta13(select.cols = all_of(c("ID_ECS", "physical")))
+    
+    ### TRANSFORMATION ---
+    
+    physical_pre %<>%
+      mutate(physicalactivity_pre = physical %>% recode_factor(
+        `0` = "High",
+        `1` = "Moderate",
+        `2` = "Low"
+      ), .keep = "unused")
+    
+    physical_post %<>%
+      mutate(physicalactivity_post = physical %>% recode_factor(
+        `0` = "High",
+        `1` = "Moderate",
+        `2` = "Low"
+      ), .keep = "unused")
+    
+    # Merge
+    db_physical_activity <- full_join(physical_pre, physical_post,
+                                      by = "ID_ECS")
+    
+  ## RESILIENCE BRS POST ------------------------------------------------------
+    
+    ### PATH ---
+    PATH_POST_RESILIENCE <- 
+      file.path(PATH_OUTCOMES_POST,
+                "Outcome_brief resilience scale_Subestudio_covid.dta")
+    
+    ### READ ---
+    
+    db_resilience_post <- PATH_POST_RESILIENCE %>% 
+      read.dta13(select.cols = all_of(c("ID_ECS", "resilience_scale"))) %>% 
+      rename(resilience_post = resilience_scale)
+    
+    ### TRANSFORMATION ---
+    
+    # none
+    
+  ## WELLBEING (CANTRIL) PRE --------------------------------------------------
+    
+    ## PATH ---
+    
+    # PATH_FILE_PRE
+    
+    ### READ ---
+    
+    db_wellbeing_pre <- PATH_FILE_PRE %>%
+      read.dta13(select.cols = all_of(c("ID_ECS", # Id
+                                        "q7008d_cantril")))
+    
+    ### TRANSFORMATION ---
+    
+    db_wellbeing_pre %<>%
+      mutate(wellbeingcantril_pre = 
+               if_else(q7008d_cantril > 800, NA_real_, q7008d_cantril),
+             .keep = "unused")
+    
+  ## DEPRESSION PRE-POST ---------------------------------------------
+    
+    ### PATH ---
+    
+    PATH_PRE_DEPRESSION <- file.path(PATH_OUTCOMES_PRE,
+                                     "Outcome_depression_ICD10.dta")
+    PATH_POST_DEPRESSION <- file.path(PATH_OUTCOMES_POST,
+                                      "Outcome_depression_ICD10.dta")
+    
+    ### READ ---
+    
+    depression_pre <- PATH_PRE_DEPRESSION %>%
+      read.dta13(select.cols = all_of(c("ID_ECS", "depression_12m")))
+    
+    depression_post <- PATH_POST_DEPRESSION %>%
+      read.dta13(select.cols = all_of(c("ID_ECS", "depression_30d")))
+    
+    ### TRANSFORMATION ---
+    
+    depression_pre %<>%
+      mutate(depression_pre = depression_12m %>% recode_factor(
+        `0` = "No",
+        `1` = "Yes"
+      ), .keep = "unused")
+    
+    depression_post %<>%
+      mutate(depression_post = depression_30d %>% recode_factor(
+        `0` = "No",
+        `1` = "Yes"
+      ), .keep = "unused")
+    
+    # Merge
+    db_depression <- full_join(depression_pre, depression_post,
+                               by = "ID_ECS")
+    
+    
 # MERGE ------------------------------------------------------------------------
 
 # Remove all no db_
