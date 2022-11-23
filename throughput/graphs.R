@@ -12,7 +12,6 @@
 
 library(tidyverse)
 library(effects)
-# library(labelled)
 library(lme4)
 library(ggtext)
 library(patchwork)
@@ -61,11 +60,8 @@ plot_total <- effects_total |>
                 width = .2) +
   theme(axis.title.x = element_blank()) +
   coord_cartesian(ylim = c(lim_inf, lim_sup)) +
-  # ggtitle("Lonelines Total") +
-  ylab("Loneliness") #+
-# theme(plot.title = element_text(hjust = 0.5,
-#                                 face = "bold",
-#                                 vjust = -7))
+  ylab("Loneliness")
+
 ## ---- AGE ----------------------------------------------------
 
 # Fit
@@ -77,7 +73,7 @@ Fit_age <- lmer(
 
 # Effects
 effects_age_cat <- effect("age:Time", Fit_age) |>
-  as.data.frame() #|>
+  as.data.frame()
 
 # plot
 plot_age <- effects_age_cat %>%
@@ -96,7 +92,6 @@ plot_age <- effects_age_cat %>%
     legend.position = "top",
     legend.title = element_markdown(),
     axis.title.x = element_blank(),
-    # axis.title.y = element_blank(),
     legend.margin = margin(t = leg_dist)
   ) +
   coord_cartesian(ylim = c(lim_inf, lim_sup)) +
@@ -222,7 +217,6 @@ plot_marital <- effects_marital |>
     legend.position = "top",
     legend.title = element_markdown(),
     axis.title.x = element_blank(),
-    # axis.title.y = element_blank(),
     legend.margin = margin(t = leg_dist)
   ) +
   coord_cartesian(ylim = c(lim_inf, lim_sup)) +
@@ -266,7 +260,6 @@ plot_virtual <- effects_virtual |>
     legend.position = "top",
     legend.title = element_markdown(),
     axis.title.x = element_blank(),
-    # axis.title.y = element_blank(),
     legend.margin = margin(t = leg_dist)
   ) +
   coord_cartesian(ylim = c(lim_inf, lim_sup)) +
@@ -311,7 +304,6 @@ plot_social_changes <- effects_social_changes  %>%
     legend.position = "top",
     legend.title = element_markdown(),
     axis.title.x = element_blank(),
-    # axis.title.y = element_blank(),
     legend.margin = margin(t = leg_dist)
   ) +
   coord_cartesian(ylim = c(lim_inf, lim_sup)) +
@@ -451,7 +443,6 @@ plot_material_pre <- effects_material_pre |> # Copy name effects
     legend.position = "top",
     legend.title = element_markdown(),
     axis.title.x = element_blank(),
-    # axis.title.y = element_blank(),
     legend.margin = margin(t = leg_dist)
   ) +
   coord_cartesian(ylim = c(lim_inf, lim_sup)) +
@@ -497,7 +488,6 @@ plot_livingalone_post <-
     legend.position = "top",
     legend.title = element_markdown(),
     axis.title.x = element_blank(),
-    # axis.title.y = element_blank(),
     legend.margin = margin(t = leg_dist)
   ) +
   coord_cartesian(ylim = c(lim_inf, lim_sup)) +
@@ -541,7 +531,6 @@ plot_physicalactivity_pre <- effects_physicalactivity_pre |>
     legend.position = "top",
     legend.title = element_markdown(),
     axis.title.x = element_blank(),
-    # axis.title.y = element_blank(),
     legend.margin = margin(t = leg_dist)
   ) +
   coord_cartesian(ylim = c(lim_inf, lim_sup)) +
@@ -585,7 +574,6 @@ plot_physicalactivity_post <- effects_physicalactivity_post |>
     legend.position = "top",
     legend.title = element_markdown(),
     axis.title.x = element_blank(),
-    # axis.title.y = element_blank(),
     legend.margin = margin(t = leg_dist)
   ) +
   coord_cartesian(ylim = c(lim_inf, lim_sup)) +
@@ -699,42 +687,6 @@ plot_neuroticism_pre <-
   xlab("Neuroticism") + ylab("Loneliness") +
   coord_cartesian(ylim = c(lim_inf, lim_sup))
 
-# #  geom_smooth(formula = "y ~ x + (1|ID_ECS)", method = "lmer", weights = weights)
-#
-# try 1 - works
-# plot_neuroticism_pre <-
-# DB_graphs %>%
-# ggplot(aes(x = neuroticism_pre,
-#            y = loneliness,
-#            color = Time)) +
-# geom_smooth(formula = "y ~ x", method = "lm",
-#             mapping = aes(weight = weights)) +
-# scale_color_manual(values = group.colors) +
-# xlab("Neuroticism") + ylab("Loneliness") +
-# coord_cartesian(ylim = c(lim_inf, lim_sup))
-#
-#   # try 2 - nothing
-#   plot_neuroticism_pre <- DB_graphs  %>%
-#     ggplot(aes(x = neuroticism_pre,
-#                y = loneliness,
-#                color = Time)) +
-#     geom_smooth(formula = "y ~ x", method = "lmer", aes(weight = weights)) +
-#     scale_color_manual(values = group.colors) +
-#     xlab("Neuroticism") + ylab("Loneliness") +
-#     coord_cartesian(ylim = c(lim_inf, lim_sup))
-#   # try 3
-#   model <- lmer(r ~ Myc * N * TRTYEAR + (1|site), data=tempEf)
-#   # Fit
-#   Fit_neuroticism_pre <-
-#     lmer(loneliness ~ 0 + neuroticism_pre * Time + (1 | ID_ECS),
-#          data = DB_graphs,
-#          weights = DB_graphs %>% pull(weights))
-#   # predicted data
-#   predict_neuroticism_pre <- predict(Fit_neuroticism_pre)
-#   # plot
-
-
-
 
 ## ---- EXTRAVERSION PRE ----------------------------------------------------
 
@@ -749,52 +701,6 @@ plot_extraversion_pre <-
   coord_cartesian(ylim = c(lim_inf, lim_sup)) +
   ggtitle("Sin pesos")
 
-# try 1 - works
-# plot_neuroticism_pre <-
-# DB_graphs %>%
-#   ggplot(aes(x = extraversion_pre,
-#              y = loneliness,
-#              color = Time)) +
-#   geom_smooth(formula = "y ~ x", method = "lm",
-#               mapping = aes(weight = weights)) +
-#   scale_color_manual(values = group.colors) +
-#   xlab("Extraversion") + ylab("Loneliness") +
-#   coord_cartesian(ylim = c(lim_inf, lim_sup))+
-#   ggtitle("Con pesos")
-#
-#     lmer(loneliness ~ 0 + neuroticism_pre * Time + (1 | ID_ECS),
-#          data = DB_graphs,
-#          weights = DB_graphs %>% pull(weights))
-
-# try 2
-# DB_graphs %>%
-#   ggplot(aes(x = extraversion_pre,
-#              y = loneliness,
-#              color = Time)) +
-#   geom_smooth(method = "lmer",
-#               method.args = list(
-#                 formula = loneliness ~ 0 + extraversion_pre * Time + (1 | ID_ECS),
-#                 data = DB_graphs,
-#                 weights = DB_graphs %>% pull(weights)
-#               )) +
-#   scale_color_manual(values = group.colors) +
-#   xlab("Extraversion") + ylab("Loneliness") +
-#   coord_cartesian(ylim = c(lim_inf, lim_sup))+
-#   ggtitle("Con method.args =")
-#
-# # try 3
-# DB_graphs %>%
-#   ggplot(aes(x = extraversion_pre,
-#              y = loneliness,
-#              color = Time)) +
-#   geom_smooth(formula = "y ~ x + (1|ID_ECS)", method = "lmer",
-#               method.args = list(
-#                 weights = DB_graphs %>% pull(weights)
-#               )) +
-#   scale_color_manual(values = group.colors) +
-#   xlab("Extraversion") + ylab("Loneliness") +
-#   coord_cartesian(ylim = c(lim_inf, lim_sup))+
-#   ggtitle("Con method.args =")
 ## ---- DISABILITY PRE ----------------------------------------------------
 
 plot_disability_pre <-
@@ -886,11 +792,6 @@ plot_ed %<>% +Spacing
 plot_material_pre %<>% +Spacing
 
 # Plot merge
-# plots_sociod <-
-#   (plot_age + plot_sex) /
-#   (plot_marital + plot_ed) /
-#   (plot_material_pre + plot_unemployment_post) /
-#   (plot_econ_post + plot_spacer())
 
 plots_sociod <-
   (plot_total + plot_age) /

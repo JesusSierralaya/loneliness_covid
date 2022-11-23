@@ -675,14 +675,6 @@ DB_graphs <- DB_pre_post %>%
     .ordered = TRUE
   ))
 
-# LABELS ---not at the moment
-# no assign yet
-# Check if is necessary
-# try to assign labels inside the analysis
-# CREATE DATABASE WITH LABELS BUT NO ASSIGN IT
-# DB_pre_post %>% labelled::look_for(details = "full")
-# DB_longer %>% labelled::look_for(details = "full")
-
 # Labels pre-post data
 
 var_names <- DB_pre_post |> variable.names() 
