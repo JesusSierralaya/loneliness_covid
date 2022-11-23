@@ -26,44 +26,43 @@ library(magrittr)
 
 # PARAMETERS -------------------------------------------------------------------
 
-## PROGRAM ----------------
+  ## PROGRAM ----------------
+  
+  # Remove all objects
+  rm(list = ls())
 
-# Remove all objects
-rm(list = ls())
+  # Prevent the warnings
+  options(warn=-1)
 
-# Prevent the warnings
-options(warn = -1)
-
-## PATHS BASES ------------
-
-# Base directory
-BASE_DIR <- "~/../../UAM"
-
-# Path master directory
-PATH_MASTER <-
-  file.path(BASE_DIR,
-            "marta.miret@uam.es - Bases de datos maestras Edad con Salud")
-# File pre
-PATH_FILE_PRE <-
-  file.path(PATH_MASTER,
-            "Ola_3/Cohorte_2019", "rawdata_c2019w1.dta")
-# File post
-PATH_FILE_POST <-
-  file.path(PATH_MASTER,
-            "Subestudio_COVID",
-            "Edad_con_salud_Fichero_Completo.dta")
-
-# Covariates outcomes base paths
-
-PATH_OUTCOMES <-
-  file.path(BASE_DIR,
-            "marta.miret@uam.es - Documentacion Edad con Salud")
-PATH_OUTCOMES_PRE <-
-  file.path(PATH_OUTCOMES,
-            "Edad con salud - Ola 3/Outcomes/Cohorte 2019/Outcome datasets")
-PATH_OUTCOMES_POST <-
-  file.path(PATH_OUTCOMES,
-            "Edad con salud - Subestudio COVID/Outcomes/Outcome datasets")
+  ## PATHS BASES ------------
+  
+  # Base directory 
+  BASE_DIR <- "~/../../UAM"
+  
+  # Path master directory
+  PATH_MASTER <- 
+    file.path(BASE_DIR, 
+              "Marta Miret Garcia - Bases de datos maestras Edad con Salud")
+  # File pre
+  PATH_FILE_PRE <- 
+    file.path(PATH_MASTER, 
+              "Ola_3/Cohorte_2019", "rawdata_c2019w1.dta") 
+  # File post
+  PATH_FILE_POST <- 
+    file.path(PATH_MASTER, 
+              "Subestudio_COVID", "Edad_con_salud_Fichero_Completo.dta")
+  
+  # Covariates outcomes base paths
+  
+  PATH_OUTCOMES <- 
+    file.path(BASE_DIR, 
+              "Marta Miret Garcia - Documentacion Edad con Salud")
+  PATH_OUTCOMES_PRE <- 
+    file.path(PATH_OUTCOMES, 
+              "Edad con salud - Ola 3/Outcomes/Cohorte 2019/Outcome datasets")
+  PATH_OUTCOMES_POST <- 
+    file.path(PATH_OUTCOMES, 
+              "Edad con salud - Subestudio COVID/Outcomes/Outcome datasets")
 
 # IMPORT VARIABLES -------------------------------------------------------------
 
