@@ -55,7 +55,7 @@ library(magrittr)
     geom_errorbar(aes(ymin = lower, ymax = upper), 
                   position = position_dodge(.5), width = .2) + 
     theme(axis.title.x = element_blank()) +
-    # coord_cartesian(ylim = c(lim_inf, lim_sup)) +
+    coord_cartesian(ylim = c(lim_inf, lim_sup)) +
     # ggtitle("Lonelines Total") +   
     ylab("Loneliness") #+
     # theme(plot.title = element_text(hjust = 0.5, 
@@ -526,15 +526,12 @@ library(magrittr)
     guides(colour = guide_legend(title.position = "top", title.hjust = .5, nrow = 2)) +
     labs(color = "**Depression<br>(During)**")+
     scale_color_manual(values = group.colors) 
-  
-
- 
-  
 
 ## ---- NEUROTICISM PRE ----------------------------------------------------
   
   # Mew graph
-  plot_neuroticism_pre <- DB_graphs  %>%  
+  plot_neuroticism_pre <-
+    DB_graphs  %>%  
     ggplot(aes(x = neuroticism_pre, 
                y = loneliness, 
                color = Time)) + 
@@ -543,18 +540,102 @@ library(magrittr)
     xlab("Neuroticism") + ylab("Loneliness") +
     coord_cartesian(ylim = c(lim_inf, lim_sup)) 
   
+# #  geom_smooth(formula = "y ~ x + (1|ID_ECS)", method = "lmer", weights = weights)  
+#   
+  # try 1 - works
+  # plot_neuroticism_pre <- 
+    # DB_graphs %>%
+    # ggplot(aes(x = neuroticism_pre,
+    #            y = loneliness,
+    #            color = Time)) +
+    # geom_smooth(formula = "y ~ x", method = "lm", 
+    #             mapping = aes(weight = weights)) +
+    # scale_color_manual(values = group.colors) +
+    # xlab("Neuroticism") + ylab("Loneliness") +
+    # coord_cartesian(ylim = c(lim_inf, lim_sup))
+#   
+#   # try 2 - nothing
+#   plot_neuroticism_pre <- DB_graphs  %>%  
+#     ggplot(aes(x = neuroticism_pre, 
+#                y = loneliness, 
+#                color = Time)) + 
+#     geom_smooth(formula = "y ~ x", method = "lmer", aes(weight = weights)) +
+#     scale_color_manual(values = group.colors) +
+#     xlab("Neuroticism") + ylab("Loneliness") +
+#     coord_cartesian(ylim = c(lim_inf, lim_sup)) 
+#   # try 3 
+#   model <- lmer(r ~ Myc * N * TRTYEAR + (1|site), data=tempEf)
+#   # Fit 
+#   Fit_neuroticism_pre <- 
+#     lmer(loneliness ~ 0 + neuroticism_pre * Time + (1 | ID_ECS), 
+#          data = DB_graphs,
+#          weights = DB_graphs %>% pull(weights))
+#   # predicted data
+#   predict_neuroticism_pre <- predict(Fit_neuroticism_pre)
+#   # plot
+  
+
+  
   
 ## ---- EXTRAVERSION PRE ----------------------------------------------------
   
-  plot_extraversion_pre <- DB_graphs |> 
+  plot_extraversion_pre <-
+      DB_graphs |> 
     ggplot(aes(x = extraversion_pre, # [Change here]
                y = loneliness,
                color = Time)) + 
     geom_smooth(formula = "y ~ x", method = "lm") +
     scale_color_manual(values = group.colors) +
     xlab("Extraversion") + ylab("Loneliness") +
-    coord_cartesian(ylim = c(lim_inf, lim_sup)) 
-  
+    coord_cartesian(ylim = c(lim_inf, lim_sup)) +
+    ggtitle("Sin pesos")
+    
+    # try 1 - works
+    # plot_neuroticism_pre <- 
+    # DB_graphs %>%
+    #   ggplot(aes(x = extraversion_pre,
+    #              y = loneliness,
+    #              color = Time)) +
+    #   geom_smooth(formula = "y ~ x", method = "lm", 
+    #               mapping = aes(weight = weights)) +
+    #   scale_color_manual(values = group.colors) +
+    #   xlab("Extraversion") + ylab("Loneliness") +
+    #   coord_cartesian(ylim = c(lim_inf, lim_sup))+
+    #   ggtitle("Con pesos")
+    # 
+    #     lmer(loneliness ~ 0 + neuroticism_pre * Time + (1 | ID_ECS), 
+    #          data = DB_graphs,
+    #          weights = DB_graphs %>% pull(weights))
+    
+    # try 2
+    # DB_graphs %>%
+    #   ggplot(aes(x = extraversion_pre,
+    #              y = loneliness,
+    #              color = Time)) +
+    #   geom_smooth(method = "lmer",
+    #               method.args = list(
+    #                 formula = loneliness ~ 0 + extraversion_pre * Time + (1 | ID_ECS),
+    #                 data = DB_graphs,
+    #                 weights = DB_graphs %>% pull(weights)
+    #               )) +
+    #   scale_color_manual(values = group.colors) +
+    #   xlab("Extraversion") + ylab("Loneliness") +
+    #   coord_cartesian(ylim = c(lim_inf, lim_sup))+
+    #   ggtitle("Con method.args =")
+    # 
+    # # try 3
+    # DB_graphs %>%
+    #   ggplot(aes(x = extraversion_pre,
+    #              y = loneliness,
+    #              color = Time)) +
+    #   geom_smooth(formula = "y ~ x + (1|ID_ECS)", method = "lmer", 
+    #               method.args = list(
+    #                 weights = DB_graphs %>% pull(weights)
+    #               )) +
+    #   scale_color_manual(values = group.colors) +
+    #   xlab("Extraversion") + ylab("Loneliness") +
+    #   coord_cartesian(ylim = c(lim_inf, lim_sup))+
+    #   ggtitle("Con method.args =")
 ## ---- DISABILITY PRE ----------------------------------------------------
 
   plot_disability_pre <-
@@ -638,19 +719,25 @@ library(magrittr)
 
   # Add spacing between row subplots
   Spacing <- theme(plot.margin = unit(c(0,0,50,0), "pt"))
+  plot_total <- plot_total + Spacing
   plot_age %<>% + Spacing
   plot_sex %<>% + Spacing
   plot_marital %<>% + Spacing
   plot_ed %<>% + Spacing
   plot_material_pre %<>% + Spacing
-  plot_unemployment_post %<>% + Spacing
   
   # Plot merge 
+  # plots_sociod <- 
+  #   (plot_age + plot_sex) /
+  #   (plot_marital + plot_ed) /
+  #   (plot_material_pre + plot_unemployment_post) / 
+  #   (plot_econ_post + plot_spacer())
+  
   plots_sociod <- 
-    (plot_age + plot_sex) /
-    (plot_marital + plot_ed) /
-    (plot_material_pre + plot_unemployment_post) / 
-    (plot_econ_post + plot_spacer())
+    (plot_total + plot_age) /
+    (plot_sex + plot_marital) /
+    (plot_ed + plot_material_pre) / 
+    (plot_unemployment_post + plot_econ_post)
   
 ## ---- MERGE SOCIAL ASPECTS ---------------------------------
   

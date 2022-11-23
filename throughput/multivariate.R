@@ -87,13 +87,36 @@ fit_multi <-
     + disability_pre
     ) 
 
-tbl_multi <- fit_multi %>% 
+tbl_multi <- 
+  fit_multi %>% 
   tbl_regression(
-    pvalue_fun = purrr::partial(style_sigfig, digits = 3)
+    label = list(age ~ labels_pre_post[labels_pre_post == "age",2],
+                 sex ~ labels_pre_post[labels_pre_post == "sex",2],
+                 educlevel ~ labels_pre_post[labels_pre_post == "educlevel",2],
+                 maritalstatus ~ labels_pre_post[labels_pre_post == "maritalstatus",2],
+                 virtualcontact_post ~ labels_pre_post[labels_pre_post == "virtualcontact_post",2],
+                 socialchanges_post ~ labels_pre_post[labels_pre_post == "socialchanges_post",2],
+                 economyworsened_post ~ labels_pre_post[labels_pre_post == "economyworsened_post",2],
+                 unemployment_post ~ labels_pre_post[labels_pre_post == "unemployment_post",2],
+                 depression_pre ~ labels_pre_post[labels_pre_post == "depression_pre",2],
+                 depression_post ~ labels_pre_post[labels_pre_post == "depression_post",2],
+                 neuroticism_pre ~ labels_pre_post[labels_pre_post == "neuroticism_pre",2],
+                 extraversion_pre ~ labels_pre_post[labels_pre_post == "extraversion_pre",2],
+                 disability_pre ~ labels_pre_post[labels_pre_post == "disability_pre",2]
+                 ),
+    # pvalue_fun = purrr::partial(style_sigfig, digits = 3),
+    pvalue_fun = function(x) style_pvalue(x, digits = 3),
+    show_single_row = c(economyworsened_post, unemployment_post,
+                        depression_pre, depression_post)
   ) |>
-  bold_p(t = 0.05) |>
-  add_vif()|>
-  add_global_p(keep = TRUE)
+  # add_global_p(keep = TRUE)  |> 
+  add_q(
+    method = "bonferroni",
+    pvalue_fun = function(x) style_pvalue(x, digits = 3)
+  ) |> 
+  bold_p(t = 0.05, q = TRUE) |> 
+  add_vif()
+
 
 # Plot
 plot_multi <-
