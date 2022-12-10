@@ -13,7 +13,7 @@
 # library(here)
 library(gtsummary)
 
-source("throughput/import_clean.R", encoding = 'UTF-8')
+# source("throughput/import_clean.R", encoding = 'UTF-8')
 
 ## ---- TABLE 1: --------------------------------------------------------------
 
