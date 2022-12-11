@@ -231,9 +231,9 @@ db_maritalstatus  %<>%
       case_when(
         q1012_mar_stat == 1  ~ "Single",
         q1012_mar_stat == 2 | q1012_mar_stat == 3 ~
-          "Married or in partnership",
+          "Married / in partnership",
         q1012_mar_stat == 4 | q1012_mar_stat == 5 ~
-          "Divorced, separated or widowed"
+          "Divorced / separated / widowed"
       ) %>% as_factor()  ,
     .keep = "unused"
   )
