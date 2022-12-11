@@ -324,6 +324,27 @@ db_social_support <-
   full_join(socialsupport_pre, socialsupport_post,
             by = "ID_ECS")
 
+## LIVING STATUS/ALONE POST -------------------------------------------
+
+### PATH ---
+
+PATH_POST_LIVING_ALONE <- 
+  file.path(PATH_OUTCOMES_POST,
+            "Outcome_social interactions_Subestudio_covid.dta")
+
+### READ ---
+
+db_livingalone_post <- PATH_POST_LIVING_ALONE %>%
+  read.dta13(select.cols = all_of(c("ID_ECS", "living_alone")))
+
+### TRANSFORMATION ---
+
+db_livingalone_post %<>%
+  mutate(livingalone_post = living_alone %>% recode_factor(
+    `1` = "Yes",
+    `0` = "No"
+  ), .keep = "unused")
+
 ## VIRTUAL CONTACT (SOLO2) POST ----------------------------------------------
 
 ### PATH ---
@@ -428,26 +449,7 @@ db_material %<>%
     `0` = "No"
   ), .keep = "unused")
 
-## LIVING STATUS/ALONE POST -------------------------------------------
 
-### PATH ---
-
-PATH_POST_LIVING_ALONE <- 
-  file.path(PATH_OUTCOMES_POST,
-            "Outcome_social interactions_Subestudio_covid.dta")
-
-### READ ---
-
-db_livingalone_post <- PATH_POST_LIVING_ALONE %>%
-  read.dta13(select.cols = all_of(c("ID_ECS", "living_alone")))
-
-### TRANSFORMATION ---
-
-db_livingalone_post %<>%
-  mutate(livingalone_post = living_alone %>% recode_factor(
-    `1` = "Yes",
-    `0` = "No"
-  ), .keep = "unused")
 
 ## NEUROTICISM PRE ----------------------------------------------------------
 
