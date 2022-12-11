@@ -342,7 +342,7 @@ db_livingalone_post <- PATH_POST_LIVING_ALONE %>%
 db_livingalone_post %<>%
   mutate(livingalone_post = living_alone %>% recode_factor(
     `1` = "Yes",
-    `0` = "No"
+    `2` = "No"
   ), .keep = "unused")
 
 ## VIRTUAL CONTACT (SOLO2) POST ----------------------------------------------
@@ -407,7 +407,7 @@ db_economy <- PATH_POST_ECONOMIC %>%
 db_economy %<>%
   mutate(
     economyworsened_post = economy %>% recode_factor(`1` = "Yes",
-                                                     `0` = "No"),
+                                                     `2` = "No"),
     .keep = "unused"
   )
 
@@ -446,7 +446,7 @@ db_material <- PATH_PRE_MATERIAL %>%
 db_material %<>%
   mutate(materialdeprivation_pre = material %>% recode_factor(
     `1` = "Yes",
-    `0` = "No"
+    `2` = "No"
   ), .keep = "unused")
 
 
