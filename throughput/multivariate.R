@@ -16,6 +16,8 @@ library(sjPlot)
 library(survey)
 library(magrittr)
 
+# source("throughput/import_clean.R", encoding = 'UTF-8')
+
 ## ---- UNIVARIATE: ------------------------------------------------------------
 
 # Reference level by group
@@ -148,16 +150,3 @@ plot_multi <-
                               "Disability (Before)"
                             ))) + 
   font_size(labels.y = 10)
-
-# plot_multi <- fit_multi |> plot_models(show.values = TRUE, axis.labels = c(
-
-#   "Social relationships changes (Improved)",
-#   "Social relationships changes (Worsened)",
-#   "Economic situation worsened due to COVID-19",
-#   "Neuroticism",
-#   "Extraversion",
-#   "Disability (Before)",
-#   "Depression 12 months (Before)",
-#   "Depression 30 days (During)"
-# )|> rev(), show.legend = FALSE, colors = "Dark2") +
-#   font_size(title =20, labels.y = 10, axis_title.x = 15)

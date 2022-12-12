@@ -2,8 +2,6 @@
 
 ## ----global-configuration----
 
-# rm(list = ls())
-
 # Packages:
 
 ## ----script-configuration----
@@ -19,9 +17,6 @@ library(tidyverse)
 library(magrittr)
 library(haven)
 library(psych)
-
-# source("R/Output.R",        encoding = 'UTF-8')
-
 
 ## ----constants----
 

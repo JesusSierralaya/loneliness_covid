@@ -1,5 +1,5 @@
 ---
-title: "Untitled"
+title: "Report word"
 format: docx
 ---
 
@@ -8,6 +8,7 @@ format: docx
 ```{r}
 #| file: ../throughput/import_clean.R
 #| warning: false
+#| echo: false
 ```
 
 # Descriptives
@@ -15,6 +16,7 @@ format: docx
 ```{r}
 #| file: ../throughput/descriptives.R
 #| warning: false
+#| echo: false
 ```
 
 ```{r}
@@ -27,6 +29,7 @@ tbl_descriptive
 #| file: ../throughput/graphs.R
 #| warning: false
 #| message: false
+#| echo: false
 ```
 
 ```{r}
@@ -63,6 +66,7 @@ plots_health
 ```{r}
 #| file: ../throughput/multivariate.R
 #| warning: false
+#| echo: false
 ```
 
 ## Univariate

@@ -23,46 +23,38 @@ library(labelled)
 library(readstata13)
 library(gt)
 library(magrittr)
+library(ecs.data)
 
 # PARAMETERS -------------------------------------------------------------------
 
-  ## PROGRAM ----------------
-  
-  # Remove all objects
-  rm(list = ls())
+## PROGRAM ----------------
 
-  # Prevent the warnings
-  options(warn=-1)
+# Remove all objects
+rm(list = ls())
 
-  ## PATHS BASES ------------
-  
-  # Base directory 
-  BASE_DIR <- "~/../../UAM"
-  
-  # Path master directory
-  PATH_MASTER <- 
-    file.path(BASE_DIR, 
-              "Marta Miret Garcia - Bases de datos maestras Edad con Salud")
-  # File pre
-  PATH_FILE_PRE <- 
-    file.path(PATH_MASTER, 
-              "Ola_3/Cohorte_2019", "rawdata_c2019w1.dta") 
-  # File post
-  PATH_FILE_POST <- 
-    file.path(PATH_MASTER, 
-              "Subestudio_COVID", "Edad_con_salud_Fichero_Completo.dta")
-  
-  # Covariates outcomes base paths
-  
-  PATH_OUTCOMES <- 
-    file.path(BASE_DIR, 
-              "Marta Miret Garcia - Documentacion Edad con Salud")
-  PATH_OUTCOMES_PRE <- 
-    file.path(PATH_OUTCOMES, 
-              "Edad con salud - Ola 3/Outcomes/Cohorte 2019/Outcome datasets")
-  PATH_OUTCOMES_POST <- 
-    file.path(PATH_OUTCOMES, 
-              "Edad con salud - Subestudio COVID/Outcomes/Outcome datasets")
+## PATHS BASES ------------
+
+# Path master directory
+PATH_MASTER <- read_ecs_folder("DB")
+
+# File pre
+PATH_FILE_PRE <- 
+  file.path(PATH_MASTER, 
+            "Ola_3/Cohorte_2019", "rawdata_c2019w1.dta") 
+# File post
+PATH_FILE_POST <- 
+  file.path(PATH_MASTER, 
+            "Subestudio_COVID", "Edad_con_salud_Fichero_Completo.dta")
+
+# Covariates outcomes base paths
+
+PATH_OUTCOMES <- read_ecs_folder("DOC")
+PATH_OUTCOMES_PRE <- 
+  file.path(PATH_OUTCOMES, 
+            "Edad con salud - Ola 3/Outcomes/Cohorte 2019/Outcome datasets")
+PATH_OUTCOMES_POST <- 
+  file.path(PATH_OUTCOMES, 
+            "Edad con salud - Subestudio COVID/Outcomes/Outcome datasets")
 
 # IMPORT VARIABLES -------------------------------------------------------------
 
@@ -89,15 +81,10 @@ db_filter <- full_join(filter_pre, filter_post, by = "ID_ECS")
 
 ### PATH ---
 
-# PATH_WEIGHTS <- file.path(PATH_MASTER,
-#                           "Ola_3/Cohorte_2019/Pesos/antiguos", "pesos_norm_v2.dta")
-
 PATH_WEIGHTS <- file.path(PATH_MASTER,
                           "Ola_3/Cohorte_2019/Pesos", "pesos_norm.dta")
-### READ ---
 
-# db_weights <- PATH_WEIGHTS |>
-#   read_dta(col_select = c("ID_ECS", "wfinal_norm"))
+### READ ---
 
 db_weights <- PATH_WEIGHTS |>
   read_dta(col_select = c("ID_ECS", "wfinal_norm"))
@@ -217,9 +204,9 @@ db_educ  %<>%
         q1016_highest <= 1 ~ "No formal",
         q1016_highest == 2 ~ "Primary",
         q1016_highest == 3 |
-          q1016_highest == 4 ~ "Secundary",
+          q1016_highest == 4 ~ "Secondary",
         q1016_highest >= 5 ~ "Tertiary"
-      ) %>% as_factor() |> fct_relevel("Primary", after = 1)
+      ) %>% as_factor()
     ,
     .keep = "unused"
   )
@@ -244,9 +231,9 @@ db_maritalstatus  %<>%
       case_when(
         q1012_mar_stat == 1  ~ "Single",
         q1012_mar_stat == 2 | q1012_mar_stat == 3 ~
-          "Married or in partnership",
+          "Married / in partnership",
         q1012_mar_stat == 4 | q1012_mar_stat == 5 ~
-          "Divorced, separated or widowed"
+          "Divorced / separated / widowed"
       ) %>% as_factor()  ,
     .keep = "unused"
   )
@@ -410,45 +397,42 @@ db_economy %<>%
 # PATH_FILE_POST
 
 ### READ ---
-
 db_unemployment <- PATH_FILE_POST %>%
   read.dta13(select.cols = all_of(c("ID_ECS", "ECON5")))
 
 ### TRANSFORMATION ---
 
 db_unemployment %<>%
-  mutate(
-    unemployment_post = ECON5 %>% recode_factor(`1` = "Yes",
-                                                `2` = "No"),
-    .keep = "unused"
-  )
+  mutate(unemployment_post = ECON5 %>% recode_factor(
+    `1` = "Yes",
+    `2` = "No"
+  ), .keep = "unused")
 
 ## MATERIAL DEPRIVATION PRE ------------------------------------------------
 
 ### PATH ---
 
 PATH_PRE_MATERIAL <- file.path(PATH_OUTCOMES_PRE,
-                               "Outcome_materialdeprivation.dta")
+                                "Outcome_materialdeprivation.dta")  
 ### READ ---
 
 db_material <- PATH_PRE_MATERIAL %>%
   read.dta13(select.cols = all_of(c("ID_ECS", # Id
-                                    "material")))
+                                 "material")))
 
 ### TRANSFORMATION ---
 
 db_material %<>%
-  mutate(
-    materialdeprivation_pre = material %>% recode_factor(`1` = "Yes",
-                                                         `0` = "No"),
-    .keep = "unused"
-  )
+  mutate(materialdeprivation_pre = material %>% recode_factor(
+    `1` = "Yes",
+    `0` = "No"
+  ), .keep = "unused")
 
 ## LIVING STATUS/ALONE POST -------------------------------------------
 
 ### PATH ---
 
-PATH_POST_LIVING_ALONE <-
+PATH_POST_LIVING_ALONE <- 
   file.path(PATH_OUTCOMES_POST,
             "Outcome_social interactions_Subestudio_covid.dta")
 
@@ -460,23 +444,22 @@ db_livingalone_post <- PATH_POST_LIVING_ALONE %>%
 ### TRANSFORMATION ---
 
 db_livingalone_post %<>%
-  mutate(
-    livingalone_post = living_alone %>% recode_factor(`1` = "Yes",
-                                                      `0` = "No"),
-    .keep = "unused"
-  )
+  mutate(livingalone_post = living_alone %>% recode_factor(
+    `1` = "Yes",
+    `0` = "No"
+  ), .keep = "unused")
 
 ## NEUROTICISM PRE ----------------------------------------------------------
 
 ### PATH ---
 
-PATH_PRE_NEUROTICISM <- file.path(PATH_OUTCOMES_PRE,
+PATH_PRE_NEUROTICISM <- file.path(PATH_OUTCOMES_PRE, 
                                   "Outcome_EPQR-A.dta")
 
 ### READ ---
 
 db_neuroticism <- PATH_PRE_NEUROTICISM %>%
-  read.dta13(select.cols = all_of(c("ID_ECS", "neuroticism"))) %>%
+  read.dta13(select.cols = all_of(c("ID_ECS", "neuroticism"))) %>% 
   rename(neuroticism_pre = neuroticism)
 
 ### TRANSFORMATION ---
@@ -488,16 +471,16 @@ db_neuroticism <- PATH_PRE_NEUROTICISM %>%
 ### PATH ---
 
 PATH_PRE_EXTRAVERSION <- file.path(PATH_OUTCOMES_PRE,
-                                   "Outcome_EPQR-A.dta")
+                                     "Outcome_EPQR-A.dta")
 
 ### READ ---
 
 db_extraversion <- PATH_PRE_EXTRAVERSION %>%
-  read.dta13(select.cols = all_of(c("ID_ECS", "extraversion"))) %>%
+  read.dta13(select.cols = all_of(c("ID_ECS", "extraversion"))) %>% 
   rename(extraversion_pre = extraversion)
 
 ### TRANSFORMATION ---
-
+  
 # none
 
 ## PHYSICAL ACTIVITY PRE-POST ---------------------------------------------
@@ -520,20 +503,18 @@ physical_post <- PATH_POST_PHYSICAL %>%
 ### TRANSFORMATION ---
 
 physical_pre %<>%
-  mutate(
-    physicalactivity_pre = physical %>% recode_factor(`0` = "High",
-                                                      `1` = "Moderate",
-                                                      `2` = "Low"),
-    .keep = "unused"
-  )
+  mutate(physicalactivity_pre = physical %>% recode_factor(
+    `0` = "High",
+    `1` = "Moderate",
+    `2` = "Low"
+  ), .keep = "unused")
 
 physical_post %<>%
-  mutate(
-    physicalactivity_post = physical %>% recode_factor(`0` = "High",
-                                                       `1` = "Moderate",
-                                                       `2` = "Low"),
-    .keep = "unused"
-  )
+  mutate(physicalactivity_post = physical %>% recode_factor(
+    `0` = "High",
+    `1` = "Moderate",
+    `2` = "Low"
+  ), .keep = "unused")
 
 # Merge
 db_physical_activity <- full_join(physical_pre, physical_post,
@@ -542,14 +523,14 @@ db_physical_activity <- full_join(physical_pre, physical_post,
 ## RESILIENCE BRS POST ------------------------------------------------------
 
 ### PATH ---
-PATH_POST_RESILIENCE <-
+PATH_POST_RESILIENCE <- 
   file.path(PATH_OUTCOMES_POST,
             "Outcome_brief resilience scale_Subestudio_covid.dta")
 
 ### READ ---
 
-db_resilience_post <- PATH_POST_RESILIENCE %>%
-  read.dta13(select.cols = all_of(c("ID_ECS", "resilience_scale"))) %>%
+db_resilience_post <- PATH_POST_RESILIENCE %>% 
+  read.dta13(select.cols = all_of(c("ID_ECS", "resilience_scale"))) %>% 
   rename(resilience_post = resilience_scale)
 
 ### TRANSFORMATION ---
@@ -571,11 +552,9 @@ db_wellbeing_pre <- PATH_FILE_PRE %>%
 ### TRANSFORMATION ---
 
 db_wellbeing_pre %<>%
-  mutate(
-    wellbeingcantril_pre =
-      if_else(q7008d_cantril > 800, NA_real_, q7008d_cantril),
-    .keep = "unused"
-  )
+  mutate(wellbeingcantril_pre = 
+           if_else(q7008d_cantril > 800, NA_real_, q7008d_cantril),
+         .keep = "unused")
 
 ## DEPRESSION PRE-POST ---------------------------------------------
 
@@ -597,16 +576,16 @@ depression_post <- PATH_POST_DEPRESSION %>%
 ### TRANSFORMATION ---
 
 depression_pre %<>%
-  mutate(depression_pre = depression_12m %>% recode_factor(`0` = "No",
-                                                           `1` = "Yes"),
-         .keep = "unused")
+  mutate(depression_pre = depression_12m %>% recode_factor(
+    `0` = "No",
+    `1` = "Yes"
+  ), .keep = "unused")
 
 depression_post %<>%
-  mutate(
-    depression_post = depression_30d %>% recode_factor(`0` = "No",
-                                                       `1` = "Yes"),
-    .keep = "unused"
-  )
+  mutate(depression_post = depression_30d %>% recode_factor(
+    `0` = "No",
+    `1` = "Yes"
+  ), .keep = "unused")
 
 # Merge
 db_depression <- full_join(depression_pre, depression_post,
@@ -695,14 +674,6 @@ DB_graphs <- DB_pre_post %>%
     post = "During",
     .ordered = TRUE
   ))
-
-# LABELS ---not at the moment
-# no assign yet
-# Check if is necessary
-# try to assign labels inside the analysis
-# CREATE DATABASE WITH LABELS BUT NO ASSIGN IT
-# DB_pre_post %>% labelled::look_for(details = "full")
-# DB_longer %>% labelled::look_for(details = "full")
 
 # Labels pre-post data
 
