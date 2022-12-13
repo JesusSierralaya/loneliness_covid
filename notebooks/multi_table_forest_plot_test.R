@@ -3,6 +3,8 @@ library(gridExtra)
 
 library(tidyverse)
 
+## Forest Plot --------------
+
 # data for plot
 
 dat <- data.frame(group = factor(c("A","B","C","D","E","F","G"), 
@@ -22,12 +24,13 @@ p <- ggplot(dat,aes(cen,group)) +
   scale_x_continuous(breaks = seq(0,14,1), labels = seq(0,14,1)) +
   labs(x="Adjusted Odds Ratio", y="")
 
-# label
+## Table ------------
+
+# data frame with data
 
 lab <- data.frame(V0 = factor(c("A","B","C","D","E","F","G","A","B","C","D","E","F","G","A","B","C","D","E","F","G","A","B","C","D","E","F","G"),levels=c("G","F","E","D","C","B","A")),
                   V05 = rep(c(1,2,3,4),each=7),
-                  V1 = c("Occuption","Active","","Inactive","","Inactive","","Recreation","Inactive","","Active","","Inactive","","Gender","Men","Women","Men","Women","Men","Women","OR",3.1,2.0,1.6,3.2,3.6,7.6)
-)
+                  V1 = c("Occuption","Active","","Inactive","","Inactive","","Recreation","Inactive","","Active","","Inactive","","Gender","Men","Women","Men","Women","Men","Women","OR",3.1,2.0,1.6,3.2,3.6,7.6))
 
 # data table
 
@@ -46,4 +49,9 @@ data_table <- ggplot(lab, aes(x = V05, y = V0, label = format(V1, nsmall = 1))) 
   coord_cartesian(xlim=c(1,4.5))
 
 grid.arrange(data_table, p, ncol=2)
+
+## Conclusion ----
+
+# We do here 2 plots and then we merge them
+
 
