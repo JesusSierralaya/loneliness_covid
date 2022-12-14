@@ -39,7 +39,7 @@ data_table <- tibble(
   rows_table = row_letter,
   cols_table = 1:num_row,
   names_cols
-);data_table
+)
 
 ## Variable age ------------
 
@@ -95,7 +95,7 @@ data_table <- data_table |> add_row(
 # merge row by row C
 data_table <- data_table |> add_row(
   rows_table = LETTERS[3],# B B B
-  coltibbles_table = 1:num_row, # 1 2 3
+  cols_table = 1:num_row, # 1 2 3
   names_cols = c(label_var[2], label_val[2], label_beta[2]) # "Age grouped"             "18-34" "0.133918477829876" 
 )
 
