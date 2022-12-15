@@ -154,12 +154,44 @@ data_table_1 <-
   ) 
 
 
-## PLOT -------------------------
+## PLOT TABLE -------------------------
 
-data_table_1 |> 
+table_plot <- data_table_1 |> 
   ggplot(aes(x = cols_table, y = rows_table,
              label = names_col)) +
   geom_text(size = 5, hjust=0, vjust=0.5) +
   theme_bw() +
   labs(x="",y="") +
-  coord_cartesian(xlim= c(1, (n_col+.5)))
+  coord_cartesian(xlim= c(1, (n_col+.2)))
+
+# FORESPLOT ----------------------------------------------
+
+tbl_multi_values <- 
+  tbl_multi$table_body |> 
+  select(estimate, starts_with("conf")) 
+
+
+data_foresplot <- tbl_multi_values |> 
+  filter(!is.na(estimate)) |> 
+  add_row(estimate = NA,
+          conf.low = NA,
+          conf.high = NA, .before = 1) |> 
+  transmute(
+    group = LETTERS[1:rows_content]|> as_factor() |> 
+      fct_relevel(sort(LETTERS[1:rows_content], decreasing = TRUE)),
+    cen = estimate,
+    low = conf.low,
+    high = conf.high
+  )
+
+
+foresplot_data <- data_foresplot |> 
+  ggplot(aes(cen,group)) + 
+  geom_point(size=5, shape=18) +
+  geom_errorbarh(aes(xmax = high, xmin = low), height = 0.15) +
+  geom_vline(xintercept = 0, linetype = "longdash") +
+  scale_x_continuous(breaks = seq(0,14,1), labels = seq(0,14,1)) +
+  labs(x="Beta", y="") +
+  theme_bw() 
+
+grid.arrange(table_plot, foresplot_data, ncol=2)
