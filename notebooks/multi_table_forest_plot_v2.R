@@ -137,7 +137,7 @@ data_table <- tibble(
 
 table_plot <- data_table |> 
   ggplot(aes(x_coord, y_coord, 
-                label = content_col)) +
+             label = content_col)) +
   geom_text(size = 5, hjust=0, vjust=0.5,
             family="serif") +
   theme_bw() +
@@ -151,13 +151,13 @@ table_plot <- data_table |>
 data_foresplot <- tbl_multi_values |> 
   select(estimate, starts_with("conf")) |> 
   add_row(
-  estimate = NA, 
-  conf.low = NA,
-  conf.high = NA,
-  .before = 1
-) |> mutate(
-  group = n_rows:1
-)
+    estimate = NA, 
+    conf.low = NA,
+    conf.high = NA,
+    .before = 1
+  ) |> mutate(
+    group = n_rows:1
+  )
 
 forest_plot <- data_foresplot |> 
   ggplot(aes(estimate,group)) + 
@@ -184,7 +184,7 @@ forest_plot <- data_foresplot |>
   theme(axis.text.y = element_blank(),
         axis.ticks.y = element_blank(),
         panel.border = element_blank(),
-        ) &
+  ) &
   plot_layout(widths = c(2,1))  
-  
+
 
