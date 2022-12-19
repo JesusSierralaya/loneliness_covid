@@ -76,15 +76,10 @@ tbl_univ
 ```
 
 
-## Multivariate table
+## Multivariate table + foresplot
 
 ```{r}
-tbl_multi
-```
-
-## Multivariate Plot
-
-```{r}
-#| fig-height: 10
-plot_multi
+#| fig-height: 15
+#| fig-width:9
+forest_table_plot
 ```
