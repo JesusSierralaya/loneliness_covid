@@ -48,20 +48,28 @@ plot_col_labels <- data_col_labels |>
             family="serif") +
   theme_bw() +
   scale_y_discrete(limits = factor(n_rows:1)) +
-  scale_x_discrete(limits = factor(1:n_cols)) +
+  # scale_x_discrete(limits = factor(1:n_cols)) +
   labs(x="", y="") +
   xlim(c(1,1.5)) 
 
 # FOREST PLOT
 data_foresplot <- 
   tbl_multi_values |> 
-  select(estimate, starts_with("conf")) |> 
+  select(estimate, q.value, starts_with("conf")) |> 
   add_row(
     estimate = NA, 
     conf.low = NA,
     conf.high = NA,
     .before = 1
-  ) |> mutate(
+  )  |> 
+  mutate(
+    sig = case_when(
+      q.value > 0.05 ~ "",
+      q.value > 0.01 ~ "*",
+      q.value > 0.001 ~ "**",
+      !is.na(q.value) ~ "***",
+      TRUE ~ NA_character_
+    ),
     group = n_rows:1
   )
 
@@ -73,6 +81,7 @@ forest_plot <-
                      xmin = conf.low), 
                  height = 0.15) +
   geom_vline(xintercept = 0, linetype = "longdash") +
+  geom_text(aes(label = sig), nudge_y = .35) +
   theme_bw() +
   scale_y_discrete(limits = factor(n_rows:1)) +
   labs(x="Beta", y="") 
@@ -108,8 +117,9 @@ col_qvalue <-
   tbl_multi_values |> 
   select(q.value) |> 
   mutate(q.value = case_when(
-    q.value == 1 ~ "0.99",
+    q.value == 1 ~ "> 0.999",
     q.value < 0.001 ~ "< 0.001",
+    q.value < 0.01 ~ "< 0.01",
     q.value |> is.na() ~ "",
     TRUE ~ q.value |> round(2) |> as.character()
   )) |> 
