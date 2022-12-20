@@ -10,11 +10,15 @@
 
 ## ---- INCLUDES: --------------------------------------------------------------
 
-library(here)
+# library(here)
 library(gtsummary)
-library(sjPlot)
+# library(sjPlot)
 library(survey)
 library(magrittr)
+# table forestplot
+library(tidyverse)
+library(gridExtra) # grid.arrange
+library(patchwork)
 
 # source("throughput/import_clean.R", encoding = 'UTF-8')
 
@@ -131,7 +135,7 @@ col_labels <- tbl_multi_values |>
   select(reference_row, label, row_type) |> 
   mutate(
     label_new = case_when(
-      reference_row == TRUE ~ paste0(indexation, "Ref(",label, ")"),
+      reference_row == TRUE ~ paste0(indexation, "(ref.: ",label, ")"),
       reference_row == FALSE & row_type == "level" ~ paste0(indexation, label),
       TRUE ~ label
     ) 
@@ -288,3 +292,4 @@ forest_table_plot <- (plot_col_labels + x_white + forest_plot + table_plot + x_w
           subtitle = "editable subtitle",
           caption = "*Applied Bonferroni correction"
         ) & theme(text = element_text('serif', size = 14))
+
