@@ -163,6 +163,35 @@ plot_col_labels <- data_col_labels |>
   labs(x="", y="") +
   xlim(c(1,1.5)) 
 
+########## new tidy plot
+new_data <- tbl_multi_values |> 
+  # select(reference_row, header_row, label) |>
+  mutate(
+    new_label = case_when(
+      reference_row == TRUE ~ 
+        paste0(label |> lag(), " (ref.: ",label, ")"), # var
+      reference_row == FALSE & header_row == FALSE ~ 
+        paste0(indexation, label), # level
+      is.na(header_row) ~ label # rest
+    )
+  ) |> 
+  # delete rows without info
+  filter(!is.na(new_label)) |> 
+  add_row(new_label = "VARIABLE", .before = 1)
+  
+  ## ggplot
+plot_col_labels_2 <- new_data |> 
+  ggplot(aes(x = 1, y = (new_label |> length()):1, label = new_label)) +
+  geom_text(size = 5, hjust=0, vjust=0.5, family="serif") +
+  # scale_y_discrete(limits = factor(length(new_label):1)) +
+  xlim(c(1,1.5)) 
+
+########## new tidy plot END ##########################
+
+# Created "new_data" in order to maintain the same number of rows.
+# The idea is to have the output ordered in the data.frame. Created with tidyverse
+# Maybe I could first create this data.frame and the use this data to create the text plots and forestplot
+
 # FOREST PLOT
 data_foresplot <- 
   tbl_multi_values |> 
