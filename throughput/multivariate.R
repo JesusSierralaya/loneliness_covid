@@ -17,8 +17,8 @@ library(survey)
 library(magrittr)
 # table forestplot
 library(tidyverse)
-library(gridExtra) # grid.arrange
-library(patchwork)
+# library(gridExtra) # grid.arrange
+# library(patchwork)
 
 # source("throughput/import_clean.R", encoding = 'UTF-8')
 
@@ -123,86 +123,27 @@ tbl_multi <-
   bold_p(t = 0.05, q = TRUE) |> 
   add_vif()
 
-# DATA
+# Data extracted from gtsummary::tbl_regression
 tbl_multi_values <- 
   tbl_multi$table_body
 
-# Format
+# Indexation reference level
 indexation <- "    "
 
-# col labels
-col_labels <- tbl_multi_values |> 
-  select(reference_row, label, row_type) |> 
-  mutate(
-    label_new = case_when(
-      reference_row == TRUE ~ paste0(indexation, "(ref.: ",label, ")"),
-      reference_row == FALSE & row_type == "level" ~ paste0(indexation, label),
-      TRUE ~ label
-    ) 
-  ) |> 
-  select(label_new) |>
-  add_row(label_new = "VARIABLES", .before = 1) |> pull() |> as.character()
-
-n_rows <- length(col_labels)
-
-# Col labels to graph
-data_col_labels <- 
-  tibble(
-    col_labels,
-    x = 1,
-    y = n_rows:1
-  ) 
-
-plot_col_labels <- data_col_labels |> 
-  ggplot(aes(x, y, label = col_labels)) +
-  geom_text(size = 5, hjust=0, vjust=0.5,
-            family="serif") +
-  theme_bw() +
-  scale_y_discrete(limits = factor(n_rows:1)) +
-  # scale_x_discrete(limits = factor(1:n_cols)) +
-  labs(x="", y="") +
-  xlim(c(1,1.5)) 
-
-########## new tidy plot
-new_data <- tbl_multi_values |> 
+# Data base to plot
+new_data <- 
+  tbl_multi_values |> 
   # select(reference_row, header_row, label) |>
   mutate(
+    # First col labels
     new_label = case_when(
       reference_row == TRUE ~ 
-        paste0(label |> lag(), " (ref.: ",label, ")"), # var
+        paste0(label |> lag(), " (ref.: ",label, ")"), # var + ref
       reference_row == FALSE & header_row == FALSE ~ 
-        paste0(indexation, label), # level
-      is.na(header_row) ~ label # rest
-    )
-  ) |> 
-  # delete rows without info
-  filter(!is.na(new_label)) |> 
-  add_row(new_label = "VARIABLE", .before = 1)
-  
-  ## ggplot
-plot_col_labels_2 <- new_data |> 
-  ggplot(aes(x = 1, y = (new_label |> length()):1, label = new_label)) +
-  geom_text(size = 5, hjust=0, vjust=0.5, family="serif") +
-  # scale_y_discrete(limits = factor(length(new_label):1)) +
-  xlim(c(1,1.5)) 
-
-########## new tidy plot END ##########################
-
-# Created "new_data" in order to maintain the same number of rows.
-# The idea is to have the output ordered in the data.frame. Created with tidyverse
-# Maybe I could first create this data.frame and the use this data to create the text plots and forestplot
-
-# FOREST PLOT
-data_foresplot <- 
-  tbl_multi_values |> 
-  select(estimate, q.value, starts_with("conf")) |> 
-  add_row(
-    estimate = NA, 
-    conf.low = NA,
-    conf.high = NA,
-    .before = 1
-  )  |> 
-  mutate(
+        paste0(indexation, label), # rest of levels
+      is.na(header_row) ~ label # rest of variables
+    ),
+    # Forestplot sig mark
     sig = case_when(
       q.value > 0.05 ~ "",
       q.value > 0.01 ~ "*",
@@ -210,115 +151,80 @@ data_foresplot <-
       !is.na(q.value) ~ "***",
       TRUE ~ NA_character_
     ),
-    group = n_rows:1
-  )
+    # beta 
+    beta = estimate |> round(2) |> as.character(),
+    # CI
+    new_ci = if_else(is.na(ci), "", paste0("(", ci, ")")), 
+    # P-value with Bonferroni correction
+    new_q.value = case_when(
+      q.value == 1 ~ "> 0.999",
+      q.value < 0.001 ~ "< 0.001",
+      q.value < 0.01 ~ "< 0.01",
+      q.value |> is.na() ~ "",
+      TRUE ~ q.value |> round(2) |> as.character()
+    )
+  ) |> 
+  # delete rows without info
+  filter(!is.na(new_label)) |> 
+  # Add title row
+  add_row(new_label = "Variable",
+          beta = "Beta",
+          new_ci = "(CI 95%)",
+          new_q.value = "p-value^1",
+          .before = 1) 
 
-forest_plot <-
-  data_foresplot |> 
-  ggplot(aes(estimate,group)) + 
-  geom_point(size=5, shape=18) +
-  geom_errorbarh(aes(xmax = conf.high, 
-                     xmin = conf.low), 
-                 height = 0.15) +
+# Draw plot
+
+# Position cols
+start_first_col <- -6
+start_second_col <- 2
+start_third_col <- 2.6
+start_fourth_col <- 4.2
+
+# format letter
+size_letter <- 5
+type_letter <- "serif"
+
+forest_table_plot <- new_data |> 
+  ggplot(aes(y = (new_label |> length()):1)) +
+  # xlim(c(start_first_col, 5)) +
+  geom_text(aes(x = start_first_col, 
+                label = new_label), 
+            size = size_letter, hjust=0, vjust=0.5, 
+            family = type_letter) +
+  # forestplot
+  geom_point(aes(estimate),size = 5, shape = 18, 
+             na.rm = TRUE)  +
+  geom_errorbarh(aes(xmax = conf.high, xmin = conf.low), 
+                 height = .15, na.rm = TRUE) + 
   geom_vline(xintercept = 0, linetype = "longdash") +
-  geom_text(aes(label = sig), nudge_y = .35) +
-  theme_bw() +
-  scale_y_discrete(limits = factor(n_rows:1)) +
-  labs(x="Beta", y="") 
-
-# SECOND TABLE
-
-# Second col: beta
-beta_col <- tbl_multi_values |> 
-  select(estimate) |> round(2) |>  
-  mutate_all(as.character)|> 
-  # replace_na(list(estimate = "")) |> 
-  pull()
-
-# Third col: ci (together)
-ci_col <-
-  tbl_multi_values |> 
-  select(ci) |> #mutate_all(as.character)|> 
-  # replace_na(list(ci = "")) |> 
-  pull()
-
-col_beta_ci <- tibble(
-  beta_col, ci_col
-) |> mutate(
-  col_23 = if_else(is.na(beta_col),
-                   "",
-                   paste0(beta_col, " (", ci_col, ")"))
-) |> select(col_23) |>
-  add_row(col_23 = "BETA (CI)", .before = 1) |>
-  pull()
-
-# q value (bonf correction)
-col_qvalue <- 
-  tbl_multi_values |> 
-  select(q.value) |> 
-  mutate(q.value = case_when(
-    q.value == 1 ~ "> 0.999",
-    q.value < 0.001 ~ "< 0.001",
-    q.value < 0.01 ~ "< 0.01",
-    q.value |> is.na() ~ "",
-    TRUE ~ q.value |> round(2) |> as.character()
-  )) |> 
-  add_row(q.value = "p-value*", .before = 1) |>
-  pull()
-
-# col: aGVIF
-col_aGVIF <- tbl_multi_values |> 
-  select(aGVIF) |> round(2) |> 
-  mutate_all(as.character)|>
-  replace_na(list(aGVIF = "")) |> 
-  add_row(aGVIF = "aGVIF", .before = 1) |>
-  pull()
-
-content_col <- c(
-  col_beta_ci, col_qvalue, col_aGVIF
-)
-
-n_cols <- 3 # number of col for this table
-
-x_coord <- c(rep(1, n_rows),
-             rep(1.7, n_rows),
-             rep(2, n_rows))
-
-y_coord <- rep(n_rows:1, n_cols)
-
-# table
-data_table <-
-  tibble(
-    content_col,
-    x_coord,
-    y_coord
+  # Sign mark
+  geom_text(aes(estimate, label = sig), nudge_y = .35, 
+            na.rm = TRUE) +
+  # Beta
+  geom_text(aes(x = start_second_col, label = beta),
+            size = size_letter, hjust=0, vjust=0.5, 
+            family = type_letter, na.rm = TRUE) +
+  # ci
+  geom_text(aes(x = start_third_col, label = new_ci),
+            size = size_letter, hjust=0, vjust=0.5, 
+            family = type_letter) +
+  # p-value
+  geom_text(aes(x = start_fourth_col, label = new_q.value),
+            size = size_letter, hjust=0, vjust=0.5, 
+            family = type_letter) +
+  # Select ticks x axis
+  scale_x_continuous(limits = c(start_first_col, 5), 
+                     breaks = -2:2) + 
+  # hide background and axis ticks and text
+  theme(axis.title =element_blank(),
+        # Remove ticks and labels y
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        # background blank
+        panel.background = element_blank(),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank()
   ) 
 
-table_plot <- 
-  data_table |> 
-  ggplot(aes(x_coord, y_coord, 
-             label = content_col)) +
-  geom_text(size = 5, hjust=0, vjust=0.5,
-            family="serif") +
-  theme_bw() +
-  scale_y_discrete(limits = factor(n_rows:1)) +
-  scale_x_discrete(limits = factor(1:n_cols)) +
-  labs(x="", y="") +
-  xlim(c(1,2.2))  
-
-
-# TOTAL MERGE
-
-x_white <- theme(axis.text.x = element_blank(),
-                 axis.ticks.x = element_blank(),
-                 panel.grid = element_blank())
-
-forest_table_plot <- (plot_col_labels + x_white + forest_plot + table_plot + x_white + plot_layout(widths = c(1.6,1.3, 1.9))) * 
-  theme(axis.text.y = element_blank(),
-        axis.ticks.y = element_blank(),
-        panel.border = element_blank()) + plot_annotation(
-          title = "Multivariate plot",
-          subtitle = "editable subtitle",
-          caption = "*Applied Bonferroni correction"
-        ) & theme(text = element_text('serif', size = 14))
 

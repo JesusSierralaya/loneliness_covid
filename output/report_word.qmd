@@ -82,6 +82,6 @@ plots_health
 #| fig-format: retina
 #| fig-dpi: 300
 #| fig-width: 10
-#| fig-height: 15
+#| fig-height: 10
 forest_table_plot
 ```
