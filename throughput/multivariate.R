@@ -35,7 +35,7 @@ DB_pre_post %<>%
     educlevel = educlevel %>% 
       fct_relevel("Tertiary"),
     socialchanges_post = socialchanges_post %>% 
-      fct_relevel("No"),
+      fct_relevel("Unchanged"),
     economyworsened_post = economyworsened_post %>% 
       fct_relevel("No"),
     unemployment_post = unemployment_post %>% 
@@ -170,7 +170,7 @@ new_data <-
   add_row(new_label = "Variable",
           beta = "Beta",
           new_ci = "(CI 95%)",
-          new_q.value = "p-value^1",
+          new_q.value = "p-value^a",
           .before = 1) 
 
 # Draw plot

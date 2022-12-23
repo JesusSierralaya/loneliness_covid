@@ -365,7 +365,7 @@ db_socialchanges_post %<>%
   mutate(
     socialchanges_post = SOLO3 %>% recode_factor(`1` = "Improved",
                                                  `2` = "Worsened",
-                                                 `3` = "No"),
+                                                 `3` = "Unchanged"),
     .keep = "unused"
   )
 
@@ -687,7 +687,7 @@ var_labels <- c(
   "Marital Status", 
   "Virtual contact (During)",
   "Social changes (During)",
-  "Economy Worsening (During)",
+  "Worsening in economy (During)",
   "Unemployment (During)",   
   "Material Deprivation (Before)",
   "Living Alone (During)",
@@ -725,7 +725,7 @@ var_labels <- c(
   "Marital Status", 
   "Virtual contact (During)",
   "Social changes (During)",
-  "Economy Worsening (During)",
+  "Worsening in economy (During)",
   "Unemployment (During)",   
   "Material Deprivation (Before)",
   "Living Alone (During)",

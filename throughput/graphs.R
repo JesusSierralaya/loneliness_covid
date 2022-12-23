@@ -28,6 +28,8 @@ lim_sup <- 6.5
 # Legend
 leg_dist <- 0
 
+letter_size <- 15
+
 # Theme
 theme_set(theme_minimal())
 
@@ -132,7 +134,7 @@ plot_sex <- effects_sex |>
     legend.position = "top",
     legend.title = element_markdown(),
     axis.title.x = element_blank(),
-    axis.title.y = element_blank(),
+    # axis.title.y = element_blank(),
     legend.margin = margin(t = leg_dist)
   ) +
   coord_cartesian(ylim = c(lim_inf, lim_sup)) +
@@ -174,7 +176,7 @@ plot_ed <- effects_educlevel |>
     legend.position = "top",
     legend.title = element_markdown(),
     axis.title.x = element_blank(),
-    axis.title.y = element_blank(),
+    # axis.title.y = element_blank(),
     legend.margin = margin(t = leg_dist)
   ) +
   coord_cartesian(ylim = c(lim_inf, lim_sup)) +
@@ -268,7 +270,7 @@ plot_virtual <- effects_virtual |>
     title.hjust = .5,
     nrow = 4
   )) +
-  labs(color = "**Virtual Contact (During)**") +
+  labs(color = "**Virtual contact (During)**") +
   ylab("Loneliness") +
   scale_color_manual(values = group.colors)
 
@@ -312,7 +314,7 @@ plot_social_changes <- effects_social_changes  %>%
     title.hjust = .5,
     ncol = 1
   )) +
-  labs(color = "**Social Changes (During)**") +
+  labs(color = "**Social changes (During)**") +
   ylab("Loneliness") +
   scale_color_manual(values = group.colors)
 
@@ -360,7 +362,7 @@ plot_econ_post <-
     title.hjust = .5,
     ncol = 1
   )) +
-  labs(color = "**Economy Worsening (During)**") +
+  labs(color = "**Worsening in economy (During)**") +
   ylab("Loneliness") +
   scale_color_manual(values = group.colors)
 
@@ -398,7 +400,7 @@ plot_unemployment_post <-
     legend.position = "top",
     legend.title = element_markdown(),
     axis.title.x = element_blank(),
-    axis.title.y = element_blank(),
+    # axis.title.y = element_blank(),
     legend.margin = margin(t = leg_dist)
   ) +
   coord_cartesian(ylim = c(lim_inf, lim_sup)) +
@@ -451,7 +453,7 @@ plot_material_pre <- effects_material_pre |> # Copy name effects
     title.hjust = .5,
     ncol = 1
   )) +
-  labs(color = "**Material<br>Deprivation  (Before)**") +
+  labs(color = "**Material<br>deprivation  (Before)**") +
   ylab("Loneliness") +
   scale_color_manual(values = group.colors)
 
@@ -496,7 +498,7 @@ plot_livingalone_post <-
     title.hjust = .5,
     nrow = 2
   )) +
-  labs(color = "**Living Alone<br>(During)**") +
+  labs(color = "**Living alone<br>(During)**") +
   ylab("Loneliness") +
   scale_color_manual(values = group.colors)
 
@@ -539,7 +541,7 @@ plot_physicalactivity_pre <- effects_physicalactivity_pre |>
     title.hjust = .5,
     ncol = 1
   )) +
-  labs(color = "**Physical Activity<br>(During)**") +
+  labs(color = "**Physical activity<br>(During)**") +
   ylab("Loneliness") +
   scale_color_manual(values = group.colors)
 
@@ -582,7 +584,7 @@ plot_physicalactivity_post <- effects_physicalactivity_post |>
     title.hjust = .5,
     ncol = 1
   )) +
-  labs(color = "**Physical Activity<br>(During)**") +
+  labs(color = "**Physical activity<br>(During)**") +
   ylab("Loneliness") +
   scale_color_manual(values = group.colors)
 
@@ -759,7 +761,7 @@ plot_socialsupport_post <-
              color = Time)) +
   geom_smooth(formula = "y ~ x", method = "lm") +
   scale_color_manual(values = group.colors) +
-  xlab("Social Support (During)") + ylab("Loneliness") +
+  xlab("Social support (During)") + ylab("Loneliness") +
   coord_cartesian(ylim = c(lim_inf, lim_sup))
 
 ## ---- WELLBEING CANTRIL PRE -------------------------------------------------
@@ -771,7 +773,7 @@ plot_wellbeingcantril_pre <-
              color = Time)) +
   geom_smooth(formula = "y ~ x", method = "lm") +
   scale_color_manual(values = group.colors) +
-  xlab("Wellbeing Cantril (Before)") + ylab("Loneliness") +
+  xlab("Evaluative wellbeing (Before)") + ylab("Loneliness") +
   coord_cartesian(ylim = c(lim_inf, lim_sup))
 
 
@@ -784,12 +786,25 @@ plot_wellbeingcantril_pre <-
 
 # Add spacing between row subplots
 Spacing <- theme(plot.margin = unit(c(0, 0, 50, 0), "pt"))
-plot_total <- plot_total + Spacing
-plot_age %<>% +Spacing
-plot_sex %<>% +Spacing
-plot_marital %<>% +Spacing
-plot_ed %<>% +Spacing
-plot_material_pre %<>% +Spacing
+no_axis_y <- theme(axis.title.y = element_blank(),
+                                # Remove ticks and labels y
+                                axis.text.y=element_blank(),
+                                axis.ticks.y=element_blank())
+# Row 1
+plot_total <- plot_total + Spacing 
+plot_age <- plot_age + Spacing + no_axis_y
+
+# Row 2
+plot_sex <- plot_sex + Spacing + ylab("Loneliness")
+plot_marital <- plot_marital +Spacing + no_axis_y
+
+# Row 3
+plot_ed <- plot_ed + Spacing + ylab("Loneliness")
+plot_material_pre <- plot_material_pre + Spacing + no_axis_y
+
+# Row 4 
+plot_unemployment_post <- plot_unemployment_post + ylab("Loneliness")
+plot_econ_post <- plot_econ_post + no_axis_y
 
 # Plot merge
 
@@ -797,7 +812,7 @@ plots_sociod <-
   (plot_total + plot_age) /
   (plot_sex + plot_marital) /
   (plot_ed + plot_material_pre) /
-  (plot_unemployment_post + plot_econ_post)
+  (plot_unemployment_post + plot_econ_post) & theme(text = element_text(size = letter_size))    
 
 ## ---- MERGE SOCIAL ASPECTS ---------------------------------
 
@@ -805,13 +820,13 @@ plots_sociod <-
 plot_socialsupport_pre %<>% +Spacing
 plot_socialsupport_post %<>% +Spacing
 plot_livingalone_post %<>% +Spacing
-plot_virtual %<>% +Spacing
+plot_virtual %<>% +Spacing & theme(text = element_text(size = letter_size))    
 
 # Plot
 plots_social <-
   (plot_socialsupport_pre + plot_socialsupport_post) /
   (plot_livingalone_post + plot_virtual) /
-  (plot_social_changes + plot_spacer())
+  (plot_social_changes + plot_spacer()) & theme(text = element_text(size = letter_size))    
 
 # ----- MERGE HEALTH AND WELLBEING ---------------------------------------------
 
@@ -831,4 +846,4 @@ plots_health <-
   (plot_physicalactivity_pre + plot_physicalactivity_post) /
   (plot_disability_pre + plot_disability_post) /
   (plot_neuroticism_pre + plot_extraversion_pre) /
-  (plot_resilience_post + plot_wellbeingcantril_pre)
+  (plot_resilience_post + plot_wellbeingcantril_pre) & theme(text = element_text(size = letter_size))    
