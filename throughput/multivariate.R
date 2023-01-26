@@ -10,11 +10,15 @@
 
 ## ---- INCLUDES: --------------------------------------------------------------
 
-library(here)
+# library(here)
 library(gtsummary)
-library(sjPlot)
+# library(sjPlot)
 library(survey)
 library(magrittr)
+# table forestplot
+library(tidyverse)
+# library(gridExtra) # grid.arrange
+# library(patchwork)
 
 # source("throughput/import_clean.R", encoding = 'UTF-8')
 
@@ -31,7 +35,7 @@ DB_pre_post %<>%
     educlevel = educlevel %>% 
       fct_relevel("Tertiary"),
     socialchanges_post = socialchanges_post %>% 
-      fct_relevel("No"),
+      fct_relevel("Unchanged"),
     economyworsened_post = economyworsened_post %>% 
       fct_relevel("No"),
     unemployment_post = unemployment_post %>% 
@@ -119,34 +123,108 @@ tbl_multi <-
   bold_p(t = 0.05, q = TRUE) |> 
   add_vif()
 
+# Data extracted from gtsummary::tbl_regression
+tbl_multi_values <- 
+  tbl_multi$table_body
 
-# Plot
-plot_multi <-
-  fit_multi %>% 
-  plot_models(show.values = TRUE, 
-                            show.legend = FALSE, 
-                            colors = "Dark2",
-                            axis.labels = rev(c(
-                              "Age (18-34)",
-                              "Age (35-49)",
-                              "Age (+65)", 
-                              "Sex (Female)",
-                              "Education level (No formal)",
-                              "Education level (Secundary)",
-                              "Education level (Primary)",
-                              "Marital status (Divorced, separated or widowed)",
-                              "Marital status (Single)",
-                              "Virtual contact (Once a week)",
-                              "Virtual contact (Less than once a week)",
-                              "Virtual contact (Never)",
-                              "Social changes (Improved)",
-                              "Social changes (Worsened)",
-                              "Economy worsened",
-                              "Unemployment",
-                              "Depression 12 months (Before)",
-                              "Depression 30 days (During)",
-                              "Neuroticism",
-                              "Extraversion",
-                              "Disability (Before)"
-                            ))) + 
-  font_size(labels.y = 10)
+# Indexation reference level
+indexation <- "    "
+
+# Data base to plot
+new_data <- 
+  tbl_multi_values |> 
+  # select(reference_row, header_row, label) |>
+  mutate(
+    # First col labels
+    new_label = case_when(
+      reference_row == TRUE ~ 
+        paste0(label |> lag(), " (ref.: ",label, ")"), # var + ref
+      reference_row == FALSE & header_row == FALSE ~ 
+        paste0(indexation, label), # rest of levels
+      is.na(header_row) ~ label # rest of variables
+    ),
+    # Forestplot sig mark
+    sig = case_when(
+      q.value > 0.05 ~ "",
+      q.value > 0.01 ~ "*",
+      q.value > 0.001 ~ "**",
+      !is.na(q.value) ~ "***",
+      TRUE ~ NA_character_
+    ),
+    # beta 
+    beta = estimate |> round(2) |> as.character(),
+    # CI
+    new_ci = if_else(is.na(ci), "", paste0("(", ci, ")")), 
+    # P-value with Bonferroni correction
+    new_q.value = case_when(
+      q.value == 1 ~ "> 0.999",
+      q.value < 0.001 ~ "< 0.001",
+      q.value < 0.01 ~ "< 0.01",
+      q.value |> is.na() ~ "",
+      TRUE ~ q.value |> round(2) |> as.character()
+    )
+  ) |> 
+  # delete rows without info
+  filter(!is.na(new_label)) |> 
+  # Add title row
+  add_row(new_label = "Variable",
+          beta = "Beta",
+          new_ci = "(CI 95%)",
+          new_q.value = "p-value^a",
+          .before = 1) 
+
+# Draw plot
+
+# Position cols
+start_first_col <- -6
+start_second_col <- 2
+start_third_col <- 2.6
+start_fourth_col <- 4.2
+
+# format letter
+size_letter <- 5
+type_letter <- "serif"
+
+forest_table_plot <- new_data |> 
+  ggplot(aes(y = (new_label |> length()):1)) +
+  # xlim(c(start_first_col, 5)) +
+  geom_text(aes(x = start_first_col, 
+                label = new_label), 
+            size = size_letter, hjust=0, vjust=0.5, 
+            family = type_letter) +
+  # forestplot
+  geom_point(aes(estimate),size = 5, shape = 18, 
+             na.rm = TRUE)  +
+  geom_errorbarh(aes(xmax = conf.high, xmin = conf.low), 
+                 height = .15, na.rm = TRUE) + 
+  geom_vline(xintercept = 0, linetype = "longdash") +
+  # Sign mark
+  geom_text(aes(estimate, label = sig), nudge_y = .35, 
+            na.rm = TRUE) +
+  # Beta
+  geom_text(aes(x = start_second_col, label = beta),
+            size = size_letter, hjust=0, vjust=0.5, 
+            family = type_letter, na.rm = TRUE) +
+  # ci
+  geom_text(aes(x = start_third_col, label = new_ci),
+            size = size_letter, hjust=0, vjust=0.5, 
+            family = type_letter) +
+  # p-value
+  geom_text(aes(x = start_fourth_col, label = new_q.value),
+            size = size_letter, hjust=0, vjust=0.5, 
+            family = type_letter) +
+  # Select ticks x axis
+  scale_x_continuous(limits = c(start_first_col, 5), 
+                     breaks = -2:2) + 
+  # hide background and axis ticks and text
+  theme(axis.title =element_blank(),
+        # Remove ticks and labels y
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        # background blank
+        panel.background = element_blank(),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank()
+  ) 
+
+

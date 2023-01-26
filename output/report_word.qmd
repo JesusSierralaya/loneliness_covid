@@ -72,19 +72,16 @@ plots_health
 ## Univariate
 
 ```{r}
-tbl_univ
+# tbl_univ
 ```
 
 
-## Multivariate table
+## Multivariate table + foresplot
 
 ```{r}
-tbl_multi
-```
-
-## Multivariate Plot
-
-```{r}
+#| fig-format: retina
+#| fig-dpi: 300
+#| fig-width: 10
 #| fig-height: 10
-plot_multi
+forest_table_plot
 ```
