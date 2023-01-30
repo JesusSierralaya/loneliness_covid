@@ -20,16 +20,12 @@ format:
     self-contained: true
 ---
 
-```{r setup}
-#| include: false
-# knitr::opts_chunk$set(fig.width=12, fig.height=10) 
-```
-
 # Import and clean data
 
 ```{r}
 #| file: ../throughput/import_clean.R
 #| warning: false
+#| echo: false
 ```
 
 # Descriptives
@@ -37,6 +33,7 @@ format:
 ```{r}
 #| file: ../throughput/descriptives.R
 #| warning: false
+#| echo: false
 ```
 
 ```{r}
@@ -49,6 +46,7 @@ tbl_descriptive
 #| file: ../throughput/graphs.R
 #| warning: false
 #| message: false
+#| echo: false
 ```
 
 ```{r}
@@ -85,24 +83,22 @@ plots_health
 ```{r}
 #| file: ../throughput/multivariate.R
 #| warning: false
+#| echo: false
 ```
 
 ## Univariate
 
 ```{r}
-tbl_univ
+# tbl_univ
 ```
 
 
-## Multivariate table
+## Multivariate table + foresplot
 
 ```{r}
-tbl_multi
-```
-
-## Multivariate Plot
-
-```{r}
+#| fig-format: retina
+#| fig-dpi: 300
+#| fig-width: 10
 #| fig-height: 10
-plot_multi
+forest_table_plot
 ```
