@@ -60,9 +60,13 @@ plot_total <- effects_total |>
   geom_errorbar(aes(ymin = lower, ymax = upper),
                 position = position_dodge(.5),
                 width = .2) +
-  theme(axis.title.x = element_blank()) +
+
   coord_cartesian(ylim = c(lim_inf, lim_sup)) +
-  ylab("Loneliness")
+  ylab("Loneliness") +
+  ggtitle("Total Loneliness") +
+  theme(axis.title.x = element_blank(),
+        plot.title = element_text(hjust = .5)
+        ) 
 
 ## ---- AGE ----------------------------------------------------
 
@@ -102,7 +106,7 @@ plot_age <- effects_age_cat %>%
     title.hjust = .5,
     nrow = 2
   )) +
-  labs(color = "**Age grouped**")  +
+  labs(color = "**Age groups**")  +
   ylab("Loneliness") +
   scale_color_manual(values = group.colors)
 
@@ -541,7 +545,7 @@ plot_physicalactivity_pre <- effects_physicalactivity_pre |>
     title.hjust = .5,
     ncol = 1
   )) +
-  labs(color = "**Physical activity<br>(During)**") +
+  labs(color = "**Physical activity<br>(Before)**") +
   ylab("Loneliness") +
   scale_color_manual(values = group.colors)
 

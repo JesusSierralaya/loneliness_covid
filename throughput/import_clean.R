@@ -680,7 +680,7 @@ var_names <- DB_pre_post |> variable.names()
 var_names <- var_names[! var_names  %in% c("ID_ECS", "weights")]
 
 var_labels <- c(
-  "Age grouped",
+  "Age groups",
   "Sex", 
   "Education level",
   "Marital Status", 
@@ -714,18 +714,18 @@ labels_pre_post <-
 
 # Labels pre-post data
 
-var_names <- DB_longer |> variable.names() 
+var_names <- DB_longer |> variable.names()
 var_names <- var_names[! var_names  %in% c("ID_ECS", "weights", "Time")]
 
 var_labels <- c(
-  "Age grouped",
-  "Sex", 
+  "Age groups",
+  "Sex",
   "Education level",
-  "Marital Status", 
+  "Marital Status",
   "Virtual contact (During)",
   "Social changes (During)",
   "Worsening in economy (During)",
-  "Unemployment (During)",   
+  "Unemployment (During)",
   "Material Deprivation (Before)",
   "Living Alone (During)",
   "Physical activity",
@@ -739,9 +739,9 @@ var_labels <- c(
   "Wellbeing (Before)"
 )
 
-labels_longer <- 
+labels_longer <-
   data.frame(
-    var_names, 
+    var_names,
     var_labels
   )
 
