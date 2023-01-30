@@ -170,19 +170,20 @@ new_data <-
   add_row(new_label = "Variable",
           beta = "Beta",
           new_ci = "(CI 95%)",
-          new_q.value = "p-value^a",
+          new_q.value = "p-value",
           .before = 1) 
 
 # Draw plot
 
-# Position cols
+# Position cols x axis
 start_first_col <- -6
 start_second_col <- 2
-start_third_col <- 2.6
-start_fourth_col <- 4.2
+start_third_col <- 2.8
+start_fourth_col <- 4.8
+margin_left <- 5.3
 
 # format letter
-size_letter <- 5
+size_letter <- 7
 type_letter <- "serif"
 
 forest_table_plot <- new_data |> 
@@ -193,9 +194,9 @@ forest_table_plot <- new_data |>
             size = size_letter, hjust=0, vjust=0.5, 
             family = type_letter) +
   # forestplot
-  geom_point(aes(estimate),size = 5, shape = 18, 
+  geom_point(aes(estimate, color = variable),size = 5, shape = 18, 
              na.rm = TRUE)  +
-  geom_errorbarh(aes(xmax = conf.high, xmin = conf.low), 
+  geom_errorbarh(aes(xmax = conf.high, xmin = conf.low, color = variable), 
                  height = .15, na.rm = TRUE) + 
   geom_vline(xintercept = 0, linetype = "longdash") +
   # Sign mark
@@ -214,7 +215,7 @@ forest_table_plot <- new_data |>
             size = size_letter, hjust=0, vjust=0.5, 
             family = type_letter) +
   # Select ticks x axis
-  scale_x_continuous(limits = c(start_first_col, 5), 
+  scale_x_continuous(limits = c(start_first_col, margin_left), 
                      breaks = -2:2) + 
   # hide background and axis ticks and text
   theme(axis.title =element_blank(),
@@ -224,7 +225,7 @@ forest_table_plot <- new_data |>
         # background blank
         panel.background = element_blank(),
         panel.grid.major = element_blank(), 
-        panel.grid.minor = element_blank()
+        panel.grid.minor = element_blank(),
+        # no legend 
+        legend.position = "none"
   ) 
-
-
