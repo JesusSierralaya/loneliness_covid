@@ -820,7 +820,7 @@ plots_sociod <-
 plot_socialsupport_pre %<>% +Spacing
 plot_socialsupport_post %<>% +Spacing
 plot_livingalone_post %<>% +Spacing
-plot_virtual %<>% +Spacing & theme(text = element_text(size = letter_size))    
+plot_virtual <- plot_virtual & theme(text = element_text(size = letter_size))    
 
 # Plot
 plots_social <-
