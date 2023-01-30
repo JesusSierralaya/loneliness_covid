@@ -203,8 +203,7 @@ db_educ  %<>%
       case_when(
         q1016_highest <= 1 ~ "No formal",
         q1016_highest == 2 ~ "Primary",
-        q1016_highest == 3 |
-          q1016_highest == 4 ~ "Secondary",
+        q1016_highest == 3 | q1016_highest == 4 ~ "Secondary",
         q1016_highest >= 5 ~ "Tertiary"
       ) %>% as_factor()
     ,
@@ -744,4 +743,60 @@ labels_longer <-
   data.frame(
     var_names, 
     var_labels
+  )
+
+# Relevel Changes 30-Jan-2023 -------------------
+
+# Relevel DB_longer (Table descriptives)
+DB_longer <- DB_longer |> 
+  mutate(
+    sex = sex |> fct_relevel("Female"),
+    maritalstatus = maritalstatus |> fct_relevel("Single"),
+    educlevel = educlevel |> fct_relevel("No formal", "Primary"),
+    virtualcontact = virtualcontact |> 
+      fct_relevel("Never", "Less than once a week", "Once a week"),
+    socialchanges = socialchanges |> fct_relevel("Worsened", "Unchanged"),
+    # physical activity
+    physicalactivity = physicalactivity |> fct_relevel("Low", "Moderate"),
+    # physical_post = physical_post |> fct_relevel("Low", "Moderate")
+  )
+  
+# Relevel educlevel DB_graphs
+DB_graphs <- DB_graphs |> 
+  mutate(
+    sex = sex |> fct_relevel("Female"),
+    maritalstatus = maritalstatus |> fct_relevel("Single"),
+    educlevel = educlevel |> fct_relevel("No formal", "Primary"),
+    virtualcontact_post = virtualcontact_post |>
+      fct_relevel("Never", "Less than once a week", "Once a week"),
+    socialchanges_post = socialchanges_post |> 
+      fct_relevel("Worsened", "Unchanged"),
+    physicalactivity_pre = physicalactivity_pre |> 
+      fct_relevel("Low", "Moderate"),
+    physicalactivity_post = physicalactivity_post |> 
+      fct_relevel("Low", "Moderate"),
+    # No-Yes reassigned 
+    materialdeprivation_pre = materialdeprivation_pre |> 
+      fct_relevel("No"),
+    unemployment_post = unemployment_post |> 
+      fct_relevel("No"), 
+    economyworsened_post = economyworsened_post |> 
+      fct_relevel("No"), 
+    livingalone_post = livingalone_post |> 
+      fct_relevel("No"), 
+    depression_pre = depression_pre |> 
+      fct_relevel("No"), 
+    depression_post = depression_post |> 
+      fct_relevel("No")
+  )
+
+# Relevel educlevel DB_pre_post
+DB_pre_post <- DB_pre_post |> 
+  mutate(
+    maritalstatus = maritalstatus |> fct_relevel("Single"),
+    educlevel = educlevel |> fct_relevel("No formal", "Primary"),
+    virtualcontact_post = virtualcontact_post |>
+      fct_relevel("Never", "Less than once a week", "Once a week"),
+    socialchanges_post = socialchanges_post |> 
+      fct_relevel("Worsened", "Unchanged")
   )
