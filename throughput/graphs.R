@@ -65,8 +65,9 @@ plot_total <- effects_total |>
   ylab("Loneliness") +
   ggtitle("Total Loneliness") +
   theme(axis.title.x = element_blank(),
-        plot.title = element_text(hjust = .5)
-        ) 
+        plot.title = element_text(hjust = .5, vjust = -15, 
+                                  face = "bold")
+        )
 
 ## ---- AGE ----------------------------------------------------
 
@@ -691,7 +692,11 @@ plot_neuroticism_pre <-
   geom_smooth(formula = "y ~ x", method = "lm") +
   scale_color_manual(values = group.colors) +
   xlab("Neuroticism") + ylab("Loneliness") +
-  coord_cartesian(ylim = c(lim_inf, lim_sup))
+  coord_cartesian(ylim = c(lim_inf, lim_sup)) +
+  ggtitle("Neuroticism (Before)") +
+  theme(plot.title = element_text(hjust = .5,
+                                  face = "bold")
+  )
 
 
 ## ---- EXTRAVERSION PRE ----------------------------------------------------
@@ -705,7 +710,10 @@ plot_extraversion_pre <-
   scale_color_manual(values = group.colors) +
   xlab("Extraversion") + ylab("Loneliness") +
   coord_cartesian(ylim = c(lim_inf, lim_sup)) +
-  ggtitle("Sin pesos")
+  ggtitle("Extraversion (Before)") +
+  theme(plot.title = element_text(hjust = .5,
+                                  face = "bold")
+  )
 
 ## ---- DISABILITY PRE ----------------------------------------------------
 
@@ -716,8 +724,12 @@ plot_disability_pre <-
              color = Time)) +
   geom_smooth(formula = "y ~ x", method = "lm") +
   scale_color_manual(values = group.colors) +
-  xlab("Disability (Before)") + ylab("Loneliness") +
-  coord_cartesian(ylim = c(lim_inf, lim_sup))
+  xlab("Disability") + ylab("Loneliness") +
+  coord_cartesian(ylim = c(lim_inf, lim_sup)) +
+  ggtitle("Disability (Before)") +
+  theme(plot.title = element_text(hjust = .5,
+                                  face = "bold")
+  )
 
 
 ## ---- DISABILITY POST ----------------------------------------------------
@@ -729,8 +741,12 @@ plot_disability_post <-
              color = Time)) +
   geom_smooth(formula = "y ~ x", method = "lm") +
   scale_color_manual(values = group.colors) +
-  xlab("Disability (During)") + ylab("Loneliness") +
-  coord_cartesian(ylim = c(lim_inf, lim_sup))
+  xlab("Disability") + ylab("Loneliness") +
+  coord_cartesian(ylim = c(lim_inf, lim_sup)) +
+  ggtitle("Disability (During)") +
+  theme(plot.title = element_text(hjust = .5,
+                                  face = "bold")
+  )
 
 ## ---- RESILIENCE POST ----------------------------------------------------
 
@@ -741,8 +757,12 @@ plot_resilience_post <-
              color = Time)) +
   geom_smooth(formula = "y ~ x", method = "lm") +
   scale_color_manual(values = group.colors) +
-  xlab("Resilience (During)") + ylab("Loneliness") +
-  coord_cartesian(ylim = c(lim_inf, lim_sup))
+  xlab("Resilience") + ylab("Loneliness") +
+  coord_cartesian(ylim = c(lim_inf, lim_sup)) +
+  ggtitle("Resilience (Before)") +
+  theme(plot.title = element_text(hjust = .5,
+                                  face = "bold")
+  )
 
 ## ---- SOCIAL SUPPORT PRE -------------------------------------------------
 
@@ -753,8 +773,13 @@ plot_socialsupport_pre <-
              color = Time)) +
   geom_smooth(formula = "y ~ x", method = "lm") +
   scale_color_manual(values = group.colors) +
-  xlab("Social Support (Before)") + ylab("Loneliness") +
-  coord_cartesian(ylim = c(lim_inf, lim_sup))
+  xlab("Social Support") + ylab("Loneliness") +
+  coord_cartesian(ylim = c(lim_inf, lim_sup)) +
+  ggtitle("Social support (Before)") +
+  theme(plot.title = element_text(hjust = .5,
+                                  face = "bold")
+  )
+  
 
 ## ---- SOCIAL SUPPORT POST -------------------------------------------------
 
@@ -765,8 +790,12 @@ plot_socialsupport_post <-
              color = Time)) +
   geom_smooth(formula = "y ~ x", method = "lm") +
   scale_color_manual(values = group.colors) +
-  xlab("Social support (During)") + ylab("Loneliness") +
-  coord_cartesian(ylim = c(lim_inf, lim_sup))
+  xlab("Social support") + ylab("Loneliness") +
+  coord_cartesian(ylim = c(lim_inf, lim_sup)) +
+  ggtitle("Social support (During)") +
+  theme(plot.title = element_text(hjust = .5,
+                                  face = "bold")
+  )
 
 ## ---- WELLBEING CANTRIL PRE -------------------------------------------------
 
@@ -777,23 +806,31 @@ plot_wellbeingcantril_pre <-
              color = Time)) +
   geom_smooth(formula = "y ~ x", method = "lm") +
   scale_color_manual(values = group.colors) +
-  xlab("Evaluative wellbeing (Before)") + ylab("Loneliness") +
-  coord_cartesian(ylim = c(lim_inf, lim_sup))
+  xlab("Evaluative wellbeing") + ylab("Loneliness") +
+  coord_cartesian(ylim = c(lim_inf, lim_sup))+
+  ggtitle("Evaluative wellbeing (Before)") +
+  theme(plot.title = element_text(hjust = .5,
+                                  face = "bold")
+  )
 
 
 
 # LONELINESS TOTAL
 
-# plot_total
-
-## ---- MERGE SOCIODEMOGRAPHICS ---------------------------------
+# properties
 
 # Add spacing between row subplots
 Spacing <- theme(plot.margin = unit(c(0, 0, 50, 0), "pt"))
+# remove the y axis
 no_axis_y <- theme(axis.title.y = element_blank(),
-                                # Remove ticks and labels y
-                                axis.text.y=element_blank(),
-                                axis.ticks.y=element_blank())
+                   # Remove ticks and labels y
+                   axis.text.y=element_blank(),
+                   axis.ticks.y=element_blank())
+# Remove legend (for quantitative variables)
+no_legend <- theme(legend.position = "none")
+
+## ---- MERGE SOCIODEMOGRAPHICS ---------------------------------
+
 # Row 1
 plot_total <- plot_total + Spacing 
 plot_age <- plot_age + Spacing + no_axis_y
@@ -816,15 +853,21 @@ plots_sociod <-
   (plot_total + plot_age) /
   (plot_sex + plot_marital) /
   (plot_ed + plot_material_pre) /
-  (plot_unemployment_post + plot_econ_post) & theme(text = element_text(size = letter_size))    
+  (plot_unemployment_post + plot_econ_post) & 
+      theme(text = element_text(size = letter_size))    
 
 ## ---- MERGE SOCIAL ASPECTS ---------------------------------
 
 # Add spacing between row subplots
-plot_socialsupport_pre %<>% +Spacing
-plot_socialsupport_post %<>% +Spacing
-plot_livingalone_post %<>% +Spacing
-plot_virtual <- plot_virtual & theme(text = element_text(size = letter_size))    
+# First row
+plot_socialsupport_pre <- plot_socialsupport_pre + no_legend + Spacing 
+plot_socialsupport_post <- plot_socialsupport_post + no_axis_y + Spacing
+# Second row
+plot_livingalone_post <- plot_livingalone_post + Spacing
+plot_virtual <- plot_virtual + no_axis_y
+#& theme(text = element_text(size = letter_size))
+# Third row
+plot_social_changes <- plot_social_changes
 
 # Plot
 plots_social <-
@@ -832,17 +875,24 @@ plots_social <-
   (plot_livingalone_post + plot_virtual) /
   (plot_social_changes + plot_spacer()) & theme(text = element_text(size = letter_size))    
 
-# ----- MERGE HEALTH AND WELLBEING ---------------------------------------------
+# ----- MERGE HEALTH AND WELLBEING -----------------------------------------
 
 # Add spacing between row subplots
-plot_depression_pre %<>% +Spacing
-plot_depression_post %<>% +Spacing
-plot_physicalactivity_pre %<>% +Spacing
-plot_physicalactivity_post %<>% +Spacing
-plot_disability_pre %<>% +Spacing
-plot_disability_post %<>% +Spacing
-plot_neuroticism_pre %<>% +Spacing
-plot_extraversion_pre %<>% +Spacing
+# First row
+plot_depression_pre <- plot_depression_pre + Spacing
+plot_depression_post <- plot_depression_post + no_axis_y + Spacing
+# Second row
+plot_physicalactivity_pre <- plot_physicalactivity_pre + Spacing
+plot_physicalactivity_post <- plot_physicalactivity_post + no_axis_y + Spacing
+# Third row
+plot_disability_pre <- plot_disability_pre + no_legend + Spacing
+plot_disability_post <- plot_disability_post + no_axis_y + Spacing
+# Fourth row
+plot_neuroticism_pre <- plot_neuroticism_pre + no_legend + Spacing
+plot_extraversion_pre <- plot_extraversion_pre + no_axis_y  + Spacing
+# fifth row
+plot_resilience_post <- plot_resilience_post + no_legend
+plot_wellbeingcantril_pre <- plot_wellbeingcantril_pre + no_axis_y
 
 # PLOT
 plots_health <-
