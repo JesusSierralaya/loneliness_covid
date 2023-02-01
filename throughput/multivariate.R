@@ -186,11 +186,13 @@ margin_left <- 5.3
 size_letter <- 7
 type_letter <- "serif"
 
-forest_table_plot <- new_data |> 
+forest_table_plot <-
+  new_data |> 
   ggplot(aes(y = (new_label |> length()):1)) +
   # xlim(c(start_first_col, 5)) +
   geom_text(aes(x = start_first_col, 
-                label = new_label), 
+                label = new_label,
+                fontface = if_else(new_label == "Variable", 2, 1)), 
             size = size_letter, hjust=0, vjust=0.5, 
             family = type_letter) +
   # forestplot
@@ -203,15 +205,18 @@ forest_table_plot <- new_data |>
   geom_text(aes(estimate, label = sig), nudge_y = .35, 
             na.rm = TRUE) +
   # Beta
-  geom_text(aes(x = start_second_col, label = beta),
+  geom_text(aes(x = start_second_col, label = beta,
+                fontface = if_else(beta == "Beta", 2, 1)),
             size = size_letter, hjust=0, vjust=0.5, 
             family = type_letter, na.rm = TRUE) +
   # ci
-  geom_text(aes(x = start_third_col, label = new_ci),
+  geom_text(aes(x = start_third_col, label = new_ci,
+                fontface = if_else(new_ci == "(CI 95%)", 2, 1)),
             size = size_letter, hjust=0, vjust=0.5, 
             family = type_letter) +
   # p-value
-  geom_text(aes(x = start_fourth_col, label = new_q.value),
+  geom_text(aes(x = start_fourth_col, label = new_q.value,
+                fontface = if_else(new_q.value == "p-value", 2, 1)),
             size = size_letter, hjust=0, vjust=0.5, 
             family = type_letter) +
   # Select ticks x axis
@@ -229,3 +234,4 @@ forest_table_plot <- new_data |>
         # no legend 
         legend.position = "none"
   ) 
+  
