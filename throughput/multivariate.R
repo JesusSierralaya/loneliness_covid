@@ -180,7 +180,7 @@ start_first_col <- -6
 start_second_col <- 2
 start_third_col <- 2.8
 start_fourth_col <- 4.8
-margin_left <- 5.3
+margin_left <- 5.4
 
 # format letter
 size_letter <- 7
@@ -200,7 +200,9 @@ forest_table_plot <-
              na.rm = TRUE)  +
   geom_errorbarh(aes(xmax = conf.high, xmin = conf.low, color = variable), 
                  height = .15, na.rm = TRUE) + 
-  geom_vline(xintercept = 0, linetype = "longdash") +
+  geom_vline(xintercept = 0, linetype = "longdash", alpha = .5) +
+  geom_vline(xintercept = -1, linetype = "longdash", alpha = .1) +
+  geom_vline(xintercept = 1, linetype = "longdash", alpha = .1) +
   # Sign mark
   geom_text(aes(estimate, label = sig), nudge_y = .35, 
             na.rm = TRUE) +
@@ -233,5 +235,20 @@ forest_table_plot <-
         panel.grid.minor = element_blank(),
         # no legend 
         legend.position = "none"
-  ) 
+  ) +
+  # colors
+  scale_color_manual(values = c("age" = "#4070AE",
+                                "sex"= "#D13D39",
+                                "educlevel" = "#C39C11",
+                                "maritalstatus" = "#3F706D",
+                                "virtualcontact_post" = "#705A81",
+                                "socialchanges_post" = "#4070AE",  
+                                "economyworsened_post"= "#D13D39",
+                                "unemployment_post"  = "#C39C11", 
+                                "depression_pre" = "#3F706D",     
+                                "depression_post" = "#705A81",    
+                                "neuroticism_pre" = "#4070AE",   
+                                "extraversion_pre" = "#D13D39",    
+                                "disability_pre"= "#C39C11"))
+    
   
