@@ -180,7 +180,7 @@ start_first_col <- -6
 start_second_col <- 2
 start_third_col <- 2.8
 start_fourth_col <- 4.8
-margin_left <- 5.4
+margin_left <- 5.8
 
 # format letter
 size_letter <- 7
