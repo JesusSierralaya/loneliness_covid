@@ -50,7 +50,8 @@ DB_pre_post %<>%
 tbl_univ <-
   svydesign(
   data = DB_pre_post,
-  ids = ~ID_ECS,
+  # ids = ~ID_ECS,
+  ids = ~0,
   weights = DB_pre_post %>% pull(weights)
 ) %>% 
   tbl_uvregression(
