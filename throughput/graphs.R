@@ -905,7 +905,7 @@ plot_extraversion_pre <-
   DB_graphs |>
   ggplot(aes(x = extraversion_pre, # [Change here]
              y = loneliness,
-             color = Time)) +
+             color = Time, weight = weights)) +
   geom_smooth(formula = "y ~ x", method = "lm") +
   scale_color_manual(values = group.colors) +
   xlab("Extraversion") + ylab("Loneliness") +
@@ -929,7 +929,7 @@ plot_disability_pre <-
   DB_graphs |> # [Change here]
   ggplot(aes(x = disability_pre,
              y = loneliness,
-             color = Time)) +
+             color = Time, weight = weights)) +
   geom_smooth(formula = "y ~ x", method = "lm") +
   scale_color_manual(values = group.colors) +
   xlab("Disability") + ylab("Loneliness") +
@@ -954,7 +954,7 @@ plot_disability_post <-
   DB_graphs |> # [Change here]
   ggplot(aes(x = disability_post,
              y = loneliness,
-             color = Time)) +
+             color = Time, weight = weights)) +
   geom_smooth(formula = "y ~ x", method = "lm") +
   scale_color_manual(values = group.colors) +
   xlab("Disability") + ylab("Loneliness") +
@@ -978,7 +978,7 @@ plot_resilience_post <-
   DB_graphs |>
   ggplot(aes(x = resilience_post,
              y = loneliness,
-             color = Time)) +
+             color = Time, weight = weights)) +
   geom_smooth(formula = "y ~ x", method = "lm") +
   scale_color_manual(values = group.colors) +
   xlab("Resilience") + ylab("Loneliness") +
@@ -1002,7 +1002,7 @@ plot_socialsupport_pre <-
   DB_graphs |>
   ggplot(aes(x = socialsupport_pre,
              y = loneliness,
-             color = Time)) +
+             color = Time, weight = weights)) +
   geom_smooth(formula = "y ~ x", method = "lm") +
   scale_color_manual(values = group.colors) +
   xlab("Social Support") + ylab("Loneliness") +
@@ -1023,7 +1023,7 @@ plot_socialsupport_post <-
   DB_graphs |>
   ggplot(aes(x = socialsupport_post,
              y = loneliness,
-             color = Time)) +
+             color = Time, weight = weights)) +
   geom_smooth(formula = "y ~ x", method = "lm") +
   scale_color_manual(values = group.colors) +
   xlab("Social support") + ylab("Loneliness") +
@@ -1047,7 +1047,7 @@ plot_wellbeingcantril_pre <-
   DB_graphs |>
   ggplot(aes(x = wellbeingcantril_pre,
              y = loneliness,
-             color = Time)) +
+             color = Time, weight = weights)) +
   geom_smooth(formula = "y ~ x", method = "lm") +
   scale_color_manual(values = group.colors) +
   xlab("Evaluative wellbeing") + ylab("Loneliness") +
