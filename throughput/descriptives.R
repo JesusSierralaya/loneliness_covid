@@ -68,7 +68,8 @@ tbl_descriptive <- DB_longer %>%
                 physicalactivity, depression, !everything()),
     test = list(c(loneliness, disability, socialsupport) ~ "paired.t.test",
                 c(physicalactivity, depression) ~ "mcnemar.test"),
-    group = ID_ECS, 
+    group = ID_ECS,
+    test.args = all_tests("mcnemar.test") ~ list(correct = FALSE)
    
   ) %>% 
   bold_labels()
