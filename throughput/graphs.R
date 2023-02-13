@@ -880,7 +880,7 @@ plot_neuroticism_pre <-
   DB_graphs  %>%
   ggplot(aes(x = neuroticism_pre,
              y = loneliness,
-             color = Time)) +
+             color = Time, weight = weights)) +
   geom_smooth(formula = "y ~ x", method = "lm") +
   scale_color_manual(values = group.colors) +
   xlab("Neuroticism") + ylab("Loneliness") +
