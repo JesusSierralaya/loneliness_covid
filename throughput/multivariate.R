@@ -252,4 +252,9 @@ forest_table_plot <-
                                 "extraversion_pre" = "#D13D39",    
                                 "disability_pre"= "#C39C11"))
     
+# Add the figure keys incorporated into the graphic
+forest_table_plot <- forest_table_plot + 
+  plot_annotation(
+    caption = "** (<0.01), *** (<0.001). CI = confidence interval. Bonferroni correction applied in p-value", 
+    theme = theme(plot.caption = element_text(size = 18, family = 'serif')))
   
